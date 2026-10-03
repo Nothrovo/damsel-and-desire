@@ -193,7 +193,7 @@ class DamselDesireApp {
     copy.name = original.name + " (Copy)";
     this.roster.push(copy);
     this.saveRoster();
-    if (this.currentRoom && this.supabase) {
+    if (this.supabase) {
       this.saveCharacterToCloud(copy);
     }
     this.renderRoster();
@@ -206,7 +206,7 @@ class DamselDesireApp {
     if (confirm(`Yakin ingin menghapus karakter "${char.name}"?`)) {
       this.roster = this.roster.filter(c => c.id !== charId);
       this.saveRoster();
-      if (this.currentRoom && this.supabase) {
+      if (this.supabase) {
         await this.deleteCharacterFromCloud(charId);
       }
       this.renderRoster();
@@ -487,9 +487,9 @@ class DamselDesireApp {
         const canDown = baseVal > 8;
         inputHtml = `
           <div class="pointbuy-control">
-            <button class="btn-micro ${!canDown ? 'disabled' : ''}" onclick="app.adjustPointBuyStat('${statKey}', -1)" ${!canDown ? 'disabled' : ''}>−</button>
+            <button class="btn-stepper ${!canDown ? 'disabled' : ''}" onclick="app.adjustPointBuyStat('${statKey}', -1)" ${!canDown ? 'disabled' : ''}>−</button>
             <span class="pointbuy-val">${baseVal}</span>
-            <button class="btn-micro ${!canUp ? 'disabled' : ''}" onclick="app.adjustPointBuyStat('${statKey}', +1)" ${!canUp ? 'disabled' : ''}>+</button>
+            <button class="btn-stepper ${!canUp ? 'disabled' : ''}" onclick="app.adjustPointBuyStat('${statKey}', +1)" ${!canUp ? 'disabled' : ''}>+</button>
           </div>
           <div style="font-size:0.7rem;color:var(--text-muted);text-align:center;margin-top:0.2rem;">Biaya: ${cost} poin</div>
         `;
@@ -631,6 +631,8 @@ class DamselDesireApp {
     document.getElementById("builderIdeals").value = this.builderDraft.ideals || "";
     document.getElementById("builderBonds").value = this.builderDraft.bonds || "";
     document.getElementById("builderFlaws").value = this.builderDraft.flaws || "";
+    const elBackstory = document.getElementById("builderBackstory");
+    if (elBackstory) elBackstory.value = this.builderDraft.backstory || "";
   }
 
   finishBuilder() {
@@ -666,6 +668,8 @@ class DamselDesireApp {
     this.builderDraft.ideals = document.getElementById("builderIdeals").value;
     this.builderDraft.bonds = document.getElementById("builderBonds").value;
     this.builderDraft.flaws = document.getElementById("builderFlaws").value;
+    const elBackstory = document.getElementById("builderBackstory");
+    this.builderDraft.backstory = elBackstory ? elBackstory.value.trim() : (this.builderDraft.backstory || "");
 
     if (!this.builderDraft.name) this.builderDraft.name = "Murid Baru (Tanpa Nama)";
 
@@ -699,7 +703,7 @@ class DamselDesireApp {
     else this.roster.unshift(this.builderDraft);
     this.saveRoster();
 
-    if (this.currentRoom && this.supabase) {
+    if (this.supabase) {
       this.saveCharacterToCloud(this.builderDraft);
     }
 
@@ -876,6 +880,8 @@ class DamselDesireApp {
     featList.innerHTML = featHtml;
 
     // Tab 4: Roleplay & Calendar
+    const elBs = document.getElementById("sheetDisplayBackstory");
+    if (elBs) elBs.textContent = char.backstory || "Belum ada catatan kisah masa lalu.";
     document.getElementById("sheetDisplayPersonality").textContent = char.personality || "-";
     document.getElementById("sheetDisplayIdeals").textContent = char.ideals || "-";
     document.getElementById("sheetDisplayBonds").textContent = char.bonds || "-";
@@ -982,20 +988,198 @@ class DamselDesireApp {
   }
 
   // =========================================================================
-  // INVENTORY: Edit Savings
+  // BACKSTORY MODAL
   // =========================================================================
-  editSavings() {
+  openBackstoryModal() {
     if (!this.currentCharacter) return;
-    const cur = this.currentCharacter.savings || "¥0";
-    const val = prompt("Edit tabungan / rekening sekarang:", cur);
-    if (val === null) return;
-    this.currentCharacter.savings = val.trim() || cur;
-    // Try to parse numeric amount
-    const match = val.match(/\d[\d,.]*/);
-    if (match) this.currentCharacter.savingsAmount = parseInt(match[0].replace(/[,.]/g, "")) || 0;
+    const input = document.getElementById("modalBackstoryInput");
+    if (input) input.value = this.currentCharacter.backstory || "";
+    const modal = document.getElementById("backstoryModal");
+    if (modal) modal.style.display = "flex";
+  }
+
+  closeBackstoryModal() {
+    const modal = document.getElementById("backstoryModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  saveBackstoryFromModal() {
+    if (!this.currentCharacter) return;
+    const input = document.getElementById("modalBackstoryInput");
+    this.currentCharacter.backstory = input ? input.value.trim() : "";
     this.saveCurrentCharacter();
     this.renderCharacterSheet();
-    this.showToast("Tabungan diperbarui!");
+    this.closeBackstoryModal();
+    this.showToast("Kisah masa lalu (Backstory) berhasil diperbarui!");
+  }
+
+  // =========================================================================
+  // SAVINGS MODAL (+ / - RUPIAH DENGAN LIVE KONVERSI YEN)
+  // =========================================================================
+  openSavingsModal() {
+    if (!this.currentCharacter) return;
+    const char = this.currentCharacter;
+    this.savingsTxType = "add";
+    const curYen = char.savingsAmount || 0;
+    const curRp = curYen * 100;
+
+    const disp = document.getElementById("modalSavingsCurrentDisplay");
+    if (disp) disp.textContent = `¥${curYen.toLocaleString()} / Rp ${curRp.toLocaleString()}`;
+
+    const inputRp = document.getElementById("inputSavingsRp");
+    if (inputRp) inputRp.value = "";
+
+    const inputNote = document.getElementById("inputSavingsNote");
+    if (inputNote) inputNote.value = "";
+
+    this.setSavingsTxType("add");
+    this.updateSavingsPreview();
+
+    const modal = document.getElementById("savingsModal");
+    if (modal) modal.style.display = "flex";
+  }
+
+  closeSavingsModal() {
+    const modal = document.getElementById("savingsModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  setSavingsTxType(type) {
+    this.savingsTxType = type; // 'add' | 'sub'
+    const btnAdd = document.getElementById("txBtnAdd");
+    const btnSub = document.getElementById("txBtnSub");
+    if (btnAdd && btnSub) {
+      if (type === "add") {
+        btnAdd.className = "tx-type-btn active type-add";
+        btnSub.className = "tx-type-btn";
+      } else {
+        btnAdd.className = "tx-type-btn";
+        btnSub.className = "tx-type-btn active type-sub";
+      }
+    }
+    this.updateSavingsPreview();
+  }
+
+  updateSavingsPreview() {
+    const input = document.getElementById("inputSavingsRp");
+    const prev = document.getElementById("savingsConversionPreview");
+    if (!input || !prev) return;
+    const rp = parseInt(input.value) || 0;
+    const yen = Math.round(rp / 100);
+    const sign = this.savingsTxType === "add" ? "+" : "−";
+    prev.textContent = `≈ ${sign}¥${yen.toLocaleString()} (Rp ${rp.toLocaleString()})`;
+    prev.style.color = this.savingsTxType === "add" ? "var(--green-health)" : "var(--rose-primary)";
+  }
+
+  applySavingsTransaction() {
+    if (!this.currentCharacter) return;
+    const char = this.currentCharacter;
+    const input = document.getElementById("inputSavingsRp");
+    const rp = parseInt(input ? input.value : 0) || 0;
+    if (rp <= 0) {
+      alert("Masukkan nominal transaksi Rupiah yang valid (lebih dari 0).");
+      return;
+    }
+
+    const deltaYen = Math.round(rp / 100);
+    const note = document.getElementById("inputSavingsNote")?.value.trim() || "";
+    let currentYen = char.savingsAmount || 0;
+
+    if (this.savingsTxType === "add") {
+      currentYen += deltaYen;
+    } else {
+      if (currentYen < deltaYen) {
+        if (!confirm(`Tabungan hanya memiliki ¥${currentYen.toLocaleString()} (Rp ${(currentYen*100).toLocaleString()}). Pengurangan ini akan membuat tabungan menjadi 0. Lanjutkan?`)) {
+          return;
+        }
+        currentYen = 0;
+      } else {
+        currentYen -= deltaYen;
+      }
+    }
+
+    char.savingsAmount = currentYen;
+    char.savings = `¥${currentYen.toLocaleString()} / Rp ${(currentYen * 100).toLocaleString()}`;
+    this.saveCurrentCharacter();
+    this.renderCharacterSheet();
+    this.closeSavingsModal();
+
+    const actionText = this.savingsTxType === "add" ? `+Rp ${rp.toLocaleString()} (+¥${deltaYen}) dimasukkan ke tabungan.` : `−Rp ${rp.toLocaleString()} (−¥${deltaYen}) dikurangkan dari tabungan.`;
+    this.showToast(`${actionText}${note ? ' (' + note + ')' : ''}`);
+  }
+
+  // =========================================================================
+  // BAITO MODAL (KERJA PARUH WAKTU: MULAI / BERHENTI / UBAH GAJI)
+  // =========================================================================
+  openBaitoModal() {
+    if (!this.currentCharacter) return;
+    const char = this.currentCharacter;
+
+    const jobInput = document.getElementById("inputBaitoJob");
+    const wageInput = document.getElementById("inputBaitoWageRp");
+    const alertBox = document.getElementById("baitoActiveAlert");
+
+    const hasActiveJob = char.jobWageAmount > 0 && char.job && char.job !== "-";
+
+    if (jobInput) jobInput.value = hasActiveJob ? char.job : "";
+    if (wageInput) wageInput.value = hasActiveJob ? (char.jobWageAmount * 100) : "";
+    if (alertBox) alertBox.style.display = hasActiveJob ? "block" : "none";
+
+    this.updateBaitoPreview();
+
+    const modal = document.getElementById("baitoModal");
+    if (modal) modal.style.display = "flex";
+  }
+
+  closeBaitoModal() {
+    const modal = document.getElementById("baitoModal");
+    if (modal) modal.style.display = "none";
+  }
+
+  updateBaitoPreview() {
+    const wageInput = document.getElementById("inputBaitoWageRp");
+    const preview = document.getElementById("baitoWagePreview");
+    if (!wageInput || !preview) return;
+    const rp = parseInt(wageInput.value) || 0;
+    const yen = Math.round(rp / 100);
+    preview.textContent = `¥${yen.toLocaleString()} / Rp ${rp.toLocaleString()} per hari`;
+  }
+
+  saveBaitoFromModal() {
+    if (!this.currentCharacter) return;
+    const char = this.currentCharacter;
+    const jobInput = document.getElementById("inputBaitoJob");
+    const wageInput = document.getElementById("inputBaitoWageRp");
+
+    const jobTitle = jobInput ? jobInput.value.trim() : "";
+    const wageRp = parseInt(wageInput ? wageInput.value : 0) || 0;
+
+    if (!jobTitle) {
+      alert("Masukkan nama pekerjaan paruh waktu (misal: Kasir Minimarket, Barista).");
+      return;
+    }
+
+    const wageYen = Math.round(wageRp / 100);
+    char.job = jobTitle;
+    char.jobWageAmount = wageYen;
+
+    this.saveCurrentCharacter();
+    this.renderCharacterSheet();
+    this.closeBaitoModal();
+    this.showToast(`Pekerjaan paruh waktu diatur: ${jobTitle} (Gaji: ¥${wageYen.toLocaleString()} / Rp ${wageRp.toLocaleString()} per hari).`);
+  }
+
+  stopBaito() {
+    if (!this.currentCharacter) return;
+    if (confirm("Yakin ingin berhenti bekerja paruh waktu (resign)? Karakter tidak akan lagi menerima upah saat Long Rest.")) {
+      const char = this.currentCharacter;
+      char.job = "-";
+      char.jobWageAmount = 0;
+      this.saveCurrentCharacter();
+      this.renderCharacterSheet();
+      this.closeBaitoModal();
+      this.showToast("Karakter berhenti bekerja (status menganggur).");
+    }
   }
 
   editProficiencies() {
@@ -1196,7 +1380,7 @@ class DamselDesireApp {
     if (!this.currentCharacter) return;
     const idx = this.roster.findIndex(c => c.id === this.currentCharacter.id);
     if (idx >= 0) { this.roster[idx] = this.currentCharacter; this.saveRoster(); }
-    if (this.currentRoom && this.supabase) {
+    if (this.supabase) {
       this.saveCharacterToCloud(this.currentCharacter);
     }
   }
@@ -1467,6 +1651,8 @@ class DamselDesireApp {
         <table class="print-table">
           <tr>
             <td style="width:50%;vertical-align:top;">
+              <div class="print-title">BACKSTORY &amp; KISAH MASA LALU</div>
+              <div class="print-box" style="margin-bottom:4px;">${this.escapeHtml(char.backstory || 'Tidak ada catatan kisah masa lalu.')}</div>
               <div class="print-title">PERSONALITY TRAITS (SIFAT &amp; KEBIASAAN)</div>
               <div class="print-box">${this.escapeHtml(char.personality || 'Tidak ada catatan.')}</div>
               <div class="print-title">IDEALS &amp; YOUTH DREAMS (PRINSIP &amp; CITA-CITA)</div>
@@ -1581,9 +1767,9 @@ class DamselDesireApp {
   }
 
   // =========================================================================
-  // CLOUD ROOM & SUPABASE INTEGRATION (REALTIME SYNC)
+  // CLOUD SUPABASE INTEGRATION (AUTOMATIC GLOBAL REALTIME SYNC)
   // =========================================================================
-  initSupabase() {
+  async initSupabase() {
     try {
       if (typeof window !== "undefined" && window.supabase) {
         this.supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
@@ -1592,38 +1778,42 @@ class DamselDesireApp {
       console.warn("Supabase init error:", err);
     }
 
-    if (this.currentRoom) {
-      this.joinRoom(this.currentRoom, false);
-    } else {
-      this.updateCloudUI();
+    this.updateCloudUI();
+
+    if (this.supabase) {
+      await this.loadRosterFromSupabase(false);
+      this.setupGlobalRealtimeSubscription();
     }
   }
 
-  updateCloudUI() {
+  updateCloudUI(customStatus = null) {
     const dot = document.getElementById("cloudStatusDot");
     const modalDot = document.getElementById("cloudModalStatusDot");
     const navLabel = document.getElementById("navCloudLabel");
     const title = document.getElementById("cloudStatusTitle");
     const desc = document.getElementById("cloudStatusDesc");
-    const actions = document.getElementById("cloudActiveActions");
-    const input = document.getElementById("inputRoomCode");
 
-    if (this.currentRoom) {
-      if (dot) { dot.className = "cloud-status-dot online"; }
-      if (modalDot) { modalDot.className = "cloud-status-dot large online"; }
-      if (navLabel) { navLabel.textContent = `Room: ${this.currentRoom}`; }
-      if (title) { title.textContent = `🟢 Terhubung: Room ${this.currentRoom}`; }
-      if (desc) { desc.textContent = `Karakter tersinkronisasi realtime dengan seluruh pemain & DM di room ini.`; }
-      if (actions) { actions.style.display = "block"; }
-      if (input) { input.value = this.currentRoom; }
+    const isConnected = !!this.supabase;
+
+    if (customStatus === "syncing") {
+      if (dot) dot.className = "cloud-status-dot syncing";
+      if (modalDot) modalDot.className = "cloud-status-dot large syncing";
+      if (navLabel) navLabel.textContent = "Cloud: Menyinkronkan...";
+      return;
+    }
+
+    if (isConnected) {
+      if (dot) dot.className = "cloud-status-dot online";
+      if (modalDot) modalDot.className = "cloud-status-dot large online";
+      if (navLabel) navLabel.textContent = "Cloud: Online (Global)";
+      if (title) title.textContent = "🟢 Terhubung: Database Cloud Global";
+      if (desc) desc.textContent = "Semua karakter disinkronkan secara publik. Perubahan HP, status, & tabungan otomatis realtime.";
     } else {
-      if (dot) { dot.className = "cloud-status-dot offline"; }
-      if (modalDot) { modalDot.className = "cloud-status-dot large offline"; }
-      if (navLabel) { navLabel.textContent = `Cloud: Lokal`; }
-      if (title) { title.textContent = `⚪ Mode Lokal (Offline)`; }
-      if (desc) { desc.textContent = `Data tersimpan di browser ini. Masukkan Room Code untuk sync online.`; }
-      if (actions) { actions.style.display = "none"; }
-      if (input) { input.value = ""; }
+      if (dot) dot.className = "cloud-status-dot offline";
+      if (modalDot) modalDot.className = "cloud-status-dot large offline";
+      if (navLabel) navLabel.textContent = "Cloud: Offline";
+      if (title) title.textContent = "⚪ Mode Lokal (Offline)";
+      if (desc) desc.textContent = "Koneksi cloud tidak terhubung. Data tersimpan di memori browser lokal.";
     }
   }
 
@@ -1638,41 +1828,14 @@ class DamselDesireApp {
     if (modal) modal.style.display = "none";
   }
 
-  async joinRoomFromInput() {
-    const input = document.getElementById("inputRoomCode");
-    const rawCode = input ? input.value.trim().toUpperCase() : "";
-    if (!rawCode) {
-      alert("Masukkan kode ruangan terlebih dahulu.");
-      return;
-    }
-    const cleanCode = rawCode.replace(/[^A-Z0-9_-]/g, "");
-    if (!cleanCode) {
-      alert("Kode ruangan hanya boleh memuat huruf, angka, atau tanda strip.");
-      return;
-    }
-    await this.joinRoom(cleanCode, true);
-    this.closeCloudModal();
-  }
-
-  async joinRoom(roomCode, showToast = true) {
-    this.currentRoom = roomCode;
-    localStorage.setItem("dd_current_room", roomCode);
-    this.updateCloudUI();
-
-    if (!this.supabase) {
-      if (showToast) this.showToast(`Mode Room: ${roomCode} (Koneksi Supabase belum siap)`);
-      return;
-    }
-
+  async loadRosterFromSupabase(showToast = false) {
+    if (!this.supabase) return;
     try {
-      const dot = document.getElementById("cloudStatusDot");
-      if (dot) dot.className = "cloud-status-dot syncing";
+      this.updateCloudUI("syncing");
 
-      // 1. Fetch characters from room
       const { data, error } = await this.supabase
         .from('characters')
         .select('*')
-        .eq('room_code', roomCode)
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
@@ -1680,29 +1843,25 @@ class DamselDesireApp {
       if (data && data.length > 0) {
         const cloudChars = data.map(row => row.data);
         this.roster = cloudChars;
-        this.saveRoster(); // Cache locally
+        this.saveRoster(); // Local cache
         this.renderRoster();
-        if (showToast) this.showToast(`Berhasil masuk Room "${roomCode}" (${data.length} karakter ditemukan)`);
+        this.updateCloudUI();
+        if (showToast) this.showToast(`✓ Berhasil memuat ${data.length} karakter dari Cloud Global.`);
       } else {
-        if (showToast) this.showToast(`Masuk ke Room baru: "${roomCode}".`);
-        // If current roster has items, auto-sync them to this room
+        // If Supabase table is empty but we have local roster, seed it to cloud
         if (this.roster.length > 0) {
-          this.syncCurrentRosterToCloud(false);
+          await this.syncCurrentRosterToCloud(false);
         }
+        this.updateCloudUI();
       }
-
-      // 2. Setup Realtime subscription
-      this.setupRealtimeSubscription(roomCode);
-      this.updateCloudUI();
-
     } catch (err) {
-      console.error("Gagal terhubung ke Supabase:", err);
-      if (showToast) this.showToast(`Gagal memuat room: ${err.message || 'Error koneksi'}`);
+      console.warn("Gagal memuat roster dari Supabase:", err);
       this.updateCloudUI();
+      if (showToast) this.showToast("Gagal memuat dari Cloud: " + (err.message || "Error jaringan"));
     }
   }
 
-  setupRealtimeSubscription(roomCode) {
+  setupGlobalRealtimeSubscription() {
     if (!this.supabase) return;
     if (this.realtimeChannel) {
       this.supabase.removeChannel(this.realtimeChannel);
@@ -1710,10 +1869,10 @@ class DamselDesireApp {
     }
 
     this.realtimeChannel = this.supabase
-      .channel('room-' + roomCode)
+      .channel('global-characters')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'characters', filter: `room_code=eq.${roomCode}` },
+        { event: '*', schema: 'public', table: 'characters' },
         (payload) => this.handleRealtimeEvent(payload)
       )
       .subscribe((status) => {
@@ -1733,7 +1892,7 @@ class DamselDesireApp {
         this.roster.unshift(newChar);
         this.saveRoster();
         this.renderRoster();
-        this.showToast(`Karakter baru: "${newChar.name}" bergabung ke room!`);
+        this.showToast(`Karakter baru: "${newChar.name}" ditambahkan!`);
       }
     } else if (eventType === "UPDATE") {
       const updatedChar = payload.new.data;
@@ -1750,7 +1909,7 @@ class DamselDesireApp {
       if (this.currentCharacter && this.currentCharacter.id === updatedChar.id) {
         this.currentCharacter = updatedChar;
         this.renderCharacterSheet();
-        this.showToast(`Status "${updatedChar.name}" diupdate oleh DM / pemain lain!`);
+        this.showToast(`Status "${updatedChar.name}" ter-update realtime!`);
       }
     } else if (eventType === "DELETE") {
       const deletedId = payload.old.id;
@@ -1765,13 +1924,13 @@ class DamselDesireApp {
   }
 
   async saveCharacterToCloud(char) {
-    if (!this.supabase || !this.currentRoom || !char) return;
+    if (!this.supabase || !char) return;
     try {
       const { error } = await this.supabase
         .from('characters')
         .upsert({
           id: char.id,
-          room_code: this.currentRoom,
+          room_code: 'global',
           name: char.name,
           data: char,
           updated_at: new Date().toISOString()
@@ -1783,51 +1942,36 @@ class DamselDesireApp {
   }
 
   async deleteCharacterFromCloud(charId) {
-    if (!this.supabase || !this.currentRoom) return;
+    if (!this.supabase) return;
     try {
       await this.supabase
         .from('characters')
         .delete()
-        .eq('id', charId)
-        .eq('room_code', this.currentRoom);
+        .eq('id', charId);
     } catch (e) {
       console.warn("Error deleting from cloud:", e);
     }
   }
 
   async syncCurrentRosterToCloud(showToast = true) {
-    if (!this.supabase || !this.currentRoom) {
-      alert("Pilih atau buat room terlebih dahulu.");
+    if (!this.supabase) {
+      alert("Koneksi Supabase belum siap.");
       return;
     }
     if (this.roster.length === 0) {
-      alert("Tidak ada karakter lokal untuk diunggah.");
+      alert("Tidak ada karakter untuk disinkronkan.");
       return;
     }
     try {
-      this.showToast("Mengunggah karakter ke cloud...");
+      if (showToast) this.showToast("Menyinkronkan karakter ke Cloud Global...");
       for (const char of this.roster) {
         await this.saveCharacterToCloud(char);
       }
-      if (showToast) this.showToast(`✓ Seluruh (${this.roster.length}) karakter berhasil disinkronkan ke Room ${this.currentRoom}!`);
+      if (showToast) this.showToast(`✓ Seluruh (${this.roster.length}) karakter berhasil disinkronkan ke Cloud Global!`);
       this.closeCloudModal();
     } catch (err) {
-      alert("Gagal mengunggah ke cloud: " + err.message);
+      alert("Gagal menyinkronkan ke cloud: " + err.message);
     }
-  }
-
-  leaveRoom() {
-    if (this.realtimeChannel && this.supabase) {
-      this.supabase.removeChannel(this.realtimeChannel);
-      this.realtimeChannel = null;
-    }
-    this.currentRoom = null;
-    localStorage.removeItem("dd_current_room");
-    this.roster = this.loadRoster();
-    this.updateCloudUI();
-    this.renderRoster();
-    this.closeCloudModal();
-    this.showToast("Keluar dari Cloud Room. Kembali ke Mode Lokal.");
   }
 
   escapeHtml(str) {
