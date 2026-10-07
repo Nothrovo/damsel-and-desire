@@ -602,8 +602,13 @@
     font-size: 11pt !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    display: block !important;
   }
 
+  .global-navbar,
   .app-header,
   .app-nav,
   .handbook-sidebar,
@@ -614,11 +619,22 @@
     display: none !important;
   }
 
+  .app-main {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
   .handbook-view-wrapper {
     display: block !important;
     padding: 0 !important;
     margin: 0 !important;
     background: #ffffff !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
 
   .handbook-content-area {
@@ -627,6 +643,9 @@
     width: 100% !important;
     max-width: 100% !important;
     display: block !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
   }
 
   .phb-document {
