@@ -109,9 +109,11 @@ CREATE TABLE IF NOT EXISTS public.calendar_events (
   id TEXT PRIMARY KEY,
   term TEXT NOT NULL,
   name TEXT NOT NULL,
-  event_type TEXT NOT NULL,
+  event_type TEXT DEFAULT 'school_event',
   description TEXT NOT NULL
 );
+
+ALTER TABLE public.calendar_events ALTER COLUMN event_type DROP NOT NULL;
 
 -- Indexes for Compendium Lookup
 CREATE INDEX IF NOT EXISTS idx_skills_ability ON public.skills (ability_id);
