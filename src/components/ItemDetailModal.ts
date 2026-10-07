@@ -85,7 +85,8 @@ export class ItemDetailModal {
   }
 
   show(itemName: string) {
-    const item = getItemDetails(itemName);
+    const char = characterStore.currentCharacter;
+    const item = getItemDetails(itemName, char?.inventory?.customItems);
     this.currentItem = item;
 
     if (!this.modalEl) {

@@ -1,17 +1,5 @@
-export interface ItemDefinition {
-  name: string;
-  category: "student" | "social" | "club" | "archetype" | "keepsake" | "custom";
-  origin: string;
-  rarity: "Common" | "Uncommon" | "Rare" | "Very Rare" | "Special Keepsake";
-  flavorText: string;
-  mechanic: string;
-  actionType: "passive" | "action" | "bonus_action" | "reaction" | "utility" | "consumable";
-  rollCheck?: {
-    stat: string;
-    label: string;
-    die?: string;
-  };
-}
+import type { ItemDefinition } from "../types";
+export type { ItemDefinition };
 
 export const MASTER_ITEM_REGISTRY: Record<string, ItemDefinition> = {
   // =========================================================================
@@ -937,9 +925,19 @@ export const MASTER_ITEM_REGISTRY: Record<string, ItemDefinition> = {
 };
 
 /**
+ * Get all items from the master compendium registry
+ */
+export function getAllCompendiumItems(): ItemDefinition[] {
+  return Object.values(MASTER_ITEM_REGISTRY);
+}
+
+/**
  * Get full item details with heuristic fallback for custom items
  */
-export function getItemDetails(itemName: string): ItemDefinition {
+export function getItemDetails(
+  itemName: string,
+  customRegistry?: Record<string, ItemDefinition>
+): ItemDefinition {
   if (!itemName) {
     return {
       name: "Barang Misterius",
@@ -953,6 +951,19 @@ export function getItemDetails(itemName: string): ItemDefinition {
   }
 
   const cleanName = itemName.trim();
+  const lowerName = cleanName.toLowerCase();
+
+  // 0. Priority: Custom Registry defined by player
+  if (customRegistry) {
+    if (customRegistry[cleanName]) {
+      return customRegistry[cleanName];
+    }
+    for (const key of Object.keys(customRegistry)) {
+      if (key.toLowerCase() === lowerName) {
+        return customRegistry[key];
+      }
+    }
+  }
 
   // 1. Exact match
   if (MASTER_ITEM_REGISTRY[cleanName]) {
@@ -960,7 +971,6 @@ export function getItemDetails(itemName: string): ItemDefinition {
   }
 
   // 2. Case-insensitive match
-  const lowerName = cleanName.toLowerCase();
   for (const key of Object.keys(MASTER_ITEM_REGISTRY)) {
     if (key.toLowerCase() === lowerName) {
       return MASTER_ITEM_REGISTRY[key];

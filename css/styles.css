@@ -2936,5 +2936,193 @@ h1, h2, h3, h4, h5 {
   box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
 }
 
+/* ==========================================================================
+   ADD ITEM MODAL (CATALOG & CUSTOM CREATOR)
+   ========================================================================== */
+.add-item-modal-card {
+  max-width: 620px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.add-item-nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.add-item-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.add-item-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.add-item-tab-btn.active {
+  color: var(--rose-light);
+  border-bottom-color: var(--rose-primary);
+}
+
+.add-item-modal-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 180px);
+  padding: 1.25rem;
+}
+
+/* Destination Selector Bar */
+.dest-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.dest-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.dest-toggle-group {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.dest-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  transition: all 0.15s ease;
+}
+
+.dest-radio-label:hover {
+  border-color: rgba(244, 63, 94, 0.4);
+}
+
+.dest-radio-label input[type="radio"] {
+  accent-color: var(--rose-primary);
+  margin: 0;
+}
+
+.dest-radio-label:has(input:checked) {
+  border-color: var(--rose-primary);
+  background: rgba(225, 29, 72, 0.15);
+  color: #fff;
+}
+
+/* Catalog Filter Toolbar */
+.catalog-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.catalog-search-wrap {
+  flex: 1;
+  min-width: 180px;
+}
+
+.catalog-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.catalog-item-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.95rem;
+  transition: all 0.15s ease;
+}
+
+.catalog-item-card:hover {
+  border-color: rgba(244, 63, 94, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.catalog-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.catalog-item-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.catalog-item-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #fff;
+}
+
+.catalog-item-badge-row {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.catalog-item-actions {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.catalog-item-desc {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.custom-roll-check-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-top: 0.85rem;
+}
+
 
 

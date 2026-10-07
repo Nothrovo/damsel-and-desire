@@ -1,10 +1,18 @@
 import { describe, it, expect } from "vitest";
-import { getItemDetails, MASTER_ITEM_REGISTRY } from "../src/data/itemCompendium";
+import { getItemDetails, getAllCompendiumItems, MASTER_ITEM_REGISTRY } from "../src/data/itemCompendium";
+import type { ItemDefinition } from "../src/types";
 
 describe("Item Compendium & Registry", () => {
   it("contains complete preset items in master registry", () => {
     const keys = Object.keys(MASTER_ITEM_REGISTRY);
     expect(keys.length).toBeGreaterThan(80);
+  });
+
+  it("getAllCompendiumItems returns full array of preset definitions", () => {
+    const all = getAllCompendiumItems();
+    expect(all.length).toBe(Object.keys(MASTER_ITEM_REGISTRY).length);
+    expect(all.some(i => i.name === "Buku Pelajaran & Buku Tulis Catatan")).toBe(true);
+    expect(all.some(i => i.name === "Smartphone Flagship Terbaru")).toBe(true);
   });
 
   it("retrieves standard student items with valid mechanics and flavor text", () => {
@@ -65,7 +73,28 @@ describe("Item Compendium & Registry", () => {
     expect(subItem.origin).toContain("Popular Kids");
   });
 
-  it("generates intelligent procedural fallback for custom player items", () => {
+  it("prioritizes custom item registry created by player", () => {
+    const customRegistry: Record<string, ItemDefinition> = {
+      "Kunci Loker Karatan": {
+        name: "Kunci Loker Karatan",
+        category: "custom",
+        origin: "Lantai 3 Gedung Lama",
+        rarity: "Rare",
+        flavorText: "Kunci kuningan berkarat dengan gantungan pita merah misterius.",
+        mechanic: "Membuka loker nomor 44 di gedung lama. Memberikan +2 pada check Intelligent (Investigation).",
+        actionType: "utility",
+        rollCheck: { stat: "intelligent", label: "Check Investigation Loker" }
+      }
+    };
+
+    const lookedUp = getItemDetails("Kunci Loker Karatan", customRegistry);
+    expect(lookedUp.rarity).toBe("Rare");
+    expect(lookedUp.origin).toBe("Lantai 3 Gedung Lama");
+    expect(lookedUp.mechanic).toContain("loker nomor 44");
+    expect(lookedUp.rollCheck?.label).toBe("Check Investigation Loker");
+  });
+
+  it("generates intelligent procedural fallback for custom player items without explicit definition", () => {
     const customTool = getItemDetails("Kunci Inggris Karatan");
     expect(customTool.name).toBe("Kunci Inggris Karatan");
     expect(customTool.category).toBe("custom");

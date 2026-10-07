@@ -53,9 +53,25 @@ export interface CharacterFinances {
   jobWageAmount: number;
 }
 
+export interface ItemDefinition {
+  name: string;
+  category: "student" | "social" | "club" | "archetype" | "keepsake" | "custom";
+  origin: string;
+  rarity: "Common" | "Uncommon" | "Rare" | "Very Rare" | "Special Keepsake";
+  flavorText: string;
+  mechanic: string;
+  actionType: "passive" | "action" | "bonus_action" | "reaction" | "utility" | "consumable";
+  rollCheck?: {
+    stat: string;
+    label: string;
+    die?: string;
+  };
+}
+
 export interface CharacterInventory {
   bagItems: string[];
   keepsakes: string[];
+  customItems?: Record<string, ItemDefinition>;
 }
 
 export interface CharacterBackstory {

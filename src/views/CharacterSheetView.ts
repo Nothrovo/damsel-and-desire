@@ -31,6 +31,7 @@ import { baitoModal } from "../components/BaitoModal";
 import { backstoryModal } from "../components/BackstoryModal";
 import { diceRollerModal } from "../components/DiceRollerModal";
 import { itemDetailModal } from "../components/ItemDetailModal";
+import { addItemModal } from "../components/AddItemModal";
 import { renderSheetSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
 import type {
@@ -598,9 +599,10 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                 </ul>
               </div>
 
-              <div class="add-custom-item-wrap">
-                <input type="text" id="addCustomItemInput" class="input-text-sm" placeholder="Tambah barang baru ke tas...">
-                <button class="btn btn-secondary btn-sm" id="btnAddCustomItem">+ Tambah</button>
+              <div class="add-inventory-actions-row" style="margin-top:1.25rem;">
+                <button class="btn btn-primary btn-sm" id="btnOpenAddItemModal" style="width:100%;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;padding:0.6rem 1rem;">
+                  📦 + Tambah Barang (Pilih dari Katalog / Buat Custom)
+                </button>
               </div>
             </div>
 
@@ -1058,25 +1060,8 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   document.getElementById("btnManageSavings")?.addEventListener("click", () => savingsModal.show());
   document.getElementById("btnManageBaito")?.addEventListener("click", () => baitoModal.show());
 
-  // 13. Inventory Custom Items (Add / Remove)
-  document.getElementById("btnAddCustomItem")?.addEventListener("click", async () => {
-    const input = document.getElementById("addCustomItemInput") as HTMLInputElement;
-    const val = input ? input.value.trim() : "";
-    if (!val) return;
-
-    if (!char.inventory.bagItems) char.inventory.bagItems = [];
-    char.inventory.bagItems.push(val);
-    input.value = "";
-
-    try {
-      const updated = await updateCharacterDirect(char.id, { inventory: char.inventory }, char.version);
-      char.version = updated.version;
-      renderInventoryLists(char);
-      showToast(`Barang ditambahkan: ${val}`, "success");
-    } catch (err: any) {
-      showToast(`Gagal menambahkan barang: ${err.message}`, "error");
-    }
-  });
+  // 13. Open Add Item Modal (Catalog & Custom)
+  document.getElementById("btnOpenAddItemModal")?.addEventListener("click", () => addItemModal.show());
 
   attachInventoryDeleteEvents(container, char);
   attachInventoryDetailEvents(container);
