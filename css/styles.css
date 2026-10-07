@@ -2750,5 +2750,191 @@ h1, h2, h3, h4, h5 {
   margin-top: 0.5rem;
 }
 
+/* ==========================================================================
+   INVENTORY ITEM DETAIL MODAL & INTERACTIVE ROWS
+   ========================================================================== */
+.inventory-item-list li.inv-item-row {
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid transparent;
+}
+
+.inventory-item-list li.inv-item-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(244, 63, 94, 0.3);
+  transform: translateX(2px);
+}
+
+.inv-item-clickable {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  user-select: none;
+}
+
+.inv-item-name {
+  color: var(--text-main);
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.inv-item-row:hover .inv-item-name {
+  color: #fff;
+}
+
+.inv-info-icon {
+  font-size: 0.72rem;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  margin-left: 2px;
+}
+
+.inv-item-row:hover .inv-info-icon {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Item Detail Modal Card */
+.item-modal-card {
+  max-width: 520px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+.item-modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.item-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.item-modal-badge-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.rarity-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.rarity-pill.rarity-common {
+  background: #374151;
+  color: #d1d5db;
+  border: 1px solid #4b5563;
+}
+
+.rarity-pill.rarity-uncommon {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.rarity-pill.rarity-rare {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.45);
+}
+
+.rarity-pill.rarity-very-rare {
+  background: rgba(168, 85, 247, 0.18);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.45);
+}
+
+.rarity-pill.rarity-special-keepsake {
+  background: rgba(244, 63, 94, 0.2);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.5);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+}
+
+.origin-pill, .action-type-pill {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-dim);
+  border: 1px solid var(--border-subtle);
+}
+
+.item-detail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.item-detail-heading {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.item-flavor-box {
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 3px solid var(--rose-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+.item-mechanic-box {
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: #fef3c7;
+  font-weight: 500;
+}
+
+.item-roll-section {
+  margin-top: 1.25rem;
+}
+
+.item-roll-btn {
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  border: none;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+}
+
+.item-roll-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(225, 29, 72, 0.5);
+}
+
 
 

@@ -30,6 +30,7 @@ import { savingsModal } from "../components/SavingsModal";
 import { baitoModal } from "../components/BaitoModal";
 import { backstoryModal } from "../components/BackstoryModal";
 import { diceRollerModal } from "../components/DiceRollerModal";
+import { itemDetailModal } from "../components/ItemDetailModal";
 import { renderSheetSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
 import type {
@@ -577,8 +578,8 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                 <div class="inv-head-title">Isi Tas Sekolah &amp; Barang Bawaan</div>
                 <ul class="inventory-item-list" id="sheetBagList">
                   ${(char.inventory.bagItems || []).map((item, idx) => `
-                    <li>
-                      <span>• ${escapeHtml(item)}</span>
+                    <li class="inv-item-row" data-item-name="${escapeHtml(item)}" title="Klik/Tap untuk melihat detail mekanik &amp; efek">
+                      <span class="inv-item-clickable">• <strong class="inv-item-name">${escapeHtml(item)}</strong> <span class="inv-info-icon" title="Lihat detail">ℹ️</span></span>
                       <button class="btn btn-xs btn-secondary btn-del-inv" data-kind="bag" data-idx="${idx}" title="Hapus barang">&times;</button>
                     </li>
                   `).join("")}
@@ -589,8 +590,8 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                 <div class="inv-head-title">Benda Kenangan &amp; Jimat Kuil (Keepsakes)</div>
                 <ul class="inventory-item-list" id="sheetKeepsakeList">
                   ${(char.inventory.keepsakes || []).map((item, idx) => `
-                    <li>
-                      <span style="color:#fbcfe8">♥ ${escapeHtml(item)}</span>
+                    <li class="inv-item-row" data-item-name="${escapeHtml(item)}" title="Klik/Tap untuk melihat detail mekanik &amp; efek">
+                      <span class="inv-item-clickable inv-item-keepsake" style="color:#fbcfe8">♥ <strong class="inv-item-name">${escapeHtml(item)}</strong> <span class="inv-info-icon" title="Lihat detail">ℹ️</span></span>
                       <button class="btn btn-xs btn-secondary btn-del-inv" data-kind="keepsake" data-idx="${idx}" title="Hapus keepsake">&times;</button>
                     </li>
                   `).join("")}
@@ -1078,6 +1079,7 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   });
 
   attachInventoryDeleteEvents(container, char);
+  attachInventoryDetailEvents(container);
 
   // 14. Backstory Modal Trigger
   document.getElementById("btnEditBackstory")?.addEventListener("click", () => backstoryModal.show());
@@ -1203,12 +1205,24 @@ function attachInventoryDeleteEvents(container: HTMLElement, char: Character) {
   });
 }
 
+function attachInventoryDetailEvents(container: HTMLElement) {
+  container.querySelectorAll(".inv-item-row").forEach((el: any) => {
+    el.addEventListener("click", (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest(".btn-del-inv")) return;
+      const itemName = el.dataset.itemName;
+      if (itemName) {
+        itemDetailModal.show(itemName);
+      }
+    });
+  });
+}
+
 function renderInventoryLists(char: Character) {
   const bagList = document.getElementById("sheetBagList");
   if (bagList) {
     bagList.innerHTML = (char.inventory.bagItems || []).map((item, idx) => `
-      <li>
-        <span>• ${escapeHtml(item)}</span>
+      <li class="inv-item-row" data-item-name="${escapeHtml(item)}" title="Klik/Tap untuk melihat detail mekanik &amp; efek">
+        <span class="inv-item-clickable">• <strong class="inv-item-name">${escapeHtml(item)}</strong> <span class="inv-info-icon" title="Lihat detail">ℹ️</span></span>
         <button class="btn btn-xs btn-secondary btn-del-inv" data-kind="bag" data-idx="${idx}" title="Hapus barang">&times;</button>
       </li>
     `).join("");
@@ -1217,15 +1231,18 @@ function renderInventoryLists(char: Character) {
   const keepList = document.getElementById("sheetKeepsakeList");
   if (keepList) {
     keepList.innerHTML = (char.inventory.keepsakes || []).map((item, idx) => `
-      <li>
-        <span style="color:#fbcfe8">♥ ${escapeHtml(item)}</span>
+      <li class="inv-item-row" data-item-name="${escapeHtml(item)}" title="Klik/Tap untuk melihat detail mekanik &amp; efek">
+        <span class="inv-item-clickable inv-item-keepsake" style="color:#fbcfe8">♥ <strong class="inv-item-name">${escapeHtml(item)}</strong> <span class="inv-info-icon" title="Lihat detail">ℹ️</span></span>
         <button class="btn btn-xs btn-secondary btn-del-inv" data-kind="keepsake" data-idx="${idx}" title="Hapus keepsake">&times;</button>
       </li>
     `).join("");
   }
 
   const container = document.getElementById("appMain");
-  if (container) attachInventoryDeleteEvents(container, char);
+  if (container) {
+    attachInventoryDeleteEvents(container, char);
+    attachInventoryDetailEvents(container);
+  }
 }
 
 function attachTargetHeartEvents(container: HTMLElement, char: Character) {

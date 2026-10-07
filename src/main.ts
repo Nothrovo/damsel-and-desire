@@ -5,6 +5,7 @@ import { diceRollerModal } from "./components/DiceRollerModal";
 import { savingsModal } from "./components/SavingsModal";
 import { baitoModal } from "./components/BaitoModal";
 import { backstoryModal } from "./components/BackstoryModal";
+import { itemDetailModal } from "./components/ItemDetailModal";
 
 // Views
 import { renderLandingView } from "./views/LandingView";
@@ -40,11 +41,13 @@ function mountGlobalShell() {
       ${savingsModal.render()}
       ${baitoModal.render()}
       ${backstoryModal.render()}
+      ${itemDetailModal.render()}
     `;
     diceRollerModal.attachEvents();
     savingsModal.attachEvents();
     baitoModal.attachEvents();
     backstoryModal.attachEvents();
+    itemDetailModal.attachEvents();
   }
 }
 
