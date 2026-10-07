@@ -725,8 +725,11 @@ function renderSkillsRows(char: Character, mods: Record<string, number>, profBon
 }
 
 function renderMovesList(char: Character, filter: string): string {
-  const curEkskul = compEkskul.find(e => e.id === char.ekskul_id);
-  const curArchetype = compArchetypes.find(a => a.id === char.archetype_id);
+  const charEkskulId = (char.ekskul_id || (char as any).ekskulId || "").toLowerCase();
+  const charArchetypeId = (char.archetype_id || (char as any).archetypeId || "").toLowerCase();
+
+  const curEkskul = compEkskul.find(e => e.id.toLowerCase() === charEkskulId || e.name.toLowerCase().includes(charEkskulId));
+  const curArchetype = compArchetypes.find(a => a.id.toLowerCase() === charArchetypeId || a.name.toLowerCase().includes(charArchetypeId));
 
   let moves: MoveItem[] = [];
 
@@ -744,31 +747,33 @@ function renderMovesList(char: Character, filter: string): string {
   });
 
   // Club Moves
-  if (curEkskul && curEkskul.club_moves) {
-    curEkskul.club_moves.forEach(m => {
+  const clubMoves = (curEkskul?.club_moves || (curEkskul as any)?.clubMoves || []);
+  if (curEkskul && clubMoves.length > 0) {
+    clubMoves.forEach((m: any) => {
       moves.push({
         name: m.name,
         category: "club_move",
-        type: `${m.move_type || 'Action'} [${curEkskul.name.split('(')[0].trim()}]`,
+        type: `${m.move_type || m.type || 'Action'} [${curEkskul.name.split('(')[0].trim()}]`,
         range: m.range || "Self / 15 ft",
-        check: m.check_type || "Otomatis",
-        damage: m.effect || "-",
-        desc: m.description || ""
+        check: m.check_type || m.check || "Otomatis",
+        damage: m.effect || m.damage || "-",
+        desc: m.description || m.desc || ""
       });
     });
   }
 
   // Archetype Moves
-  if (curArchetype && curArchetype.archetype_moves) {
-    curArchetype.archetype_moves.forEach(m => {
+  const arcMoves = (curArchetype?.archetype_moves || (curArchetype as any)?.archetypeMoves || []);
+  if (curArchetype && arcMoves.length > 0) {
+    arcMoves.forEach((m: any) => {
       moves.push({
         name: m.name,
         category: "archetype_move",
-        type: `${m.move_type || 'Action'} [${curArchetype.name.split('(')[0].trim()}]`,
+        type: `${m.move_type || m.type || 'Action'} [${curArchetype.name.split('(')[0].trim()}]`,
         range: m.range || "Self / Pandangan",
-        check: m.check_type || "Otomatis",
-        damage: m.effect || "-",
-        desc: m.description || ""
+        check: m.check_type || m.check || "Otomatis",
+        damage: m.effect || m.damage || "-",
+        desc: m.description || m.desc || ""
       });
     });
   }

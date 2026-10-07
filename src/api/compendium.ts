@@ -60,7 +60,26 @@ export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
       .order("name");
 
     if (!error && data && data.length > 0) {
-      cacheEkskul = data as EkskulCompendium[];
+      cacheEkskul = (data as any[]).map(e => {
+        const fallback = FALLBACK_DD_DATA.ekskul.find((fe: any) => fe.id === e.id);
+        const moves = (e.club_moves && e.club_moves.length > 0)
+          ? e.club_moves
+          : (fallback?.clubMoves || []).map((m: any, idx: number) => ({
+              id: `${e.id}_move_${idx + 1}`,
+              ekskul_id: e.id,
+              name: m.name,
+              move_type: m.type,
+              cost: m.cost,
+              range: m.range,
+              check_type: m.check,
+              effect: m.effect,
+              description: m.desc
+            }));
+        return {
+          ...e,
+          club_moves: moves
+        };
+      }) as EkskulCompendium[];
       return cacheEkskul;
     }
   } catch (err) {
@@ -106,7 +125,26 @@ export async function getCompendiumArchetypes(): Promise<ArchetypeCompendium[]> 
       .order("name");
 
     if (!error && data && data.length > 0) {
-      cacheArchetypes = data as ArchetypeCompendium[];
+      cacheArchetypes = (data as any[]).map(a => {
+        const fallback = FALLBACK_DD_DATA.archetypes.find((fa: any) => fa.id === a.id);
+        const moves = (a.archetype_moves && a.archetype_moves.length > 0)
+          ? a.archetype_moves
+          : (fallback?.archetypeMoves || []).map((m: any, idx: number) => ({
+              id: `${a.id}_move_${idx + 1}`,
+              archetype_id: a.id,
+              name: m.name,
+              move_type: m.type,
+              cost: m.cost,
+              range: m.range,
+              check_type: m.check,
+              effect: m.effect,
+              description: m.desc
+            }));
+        return {
+          ...a,
+          archetype_moves: moves
+        };
+      }) as ArchetypeCompendium[];
       return cacheArchetypes;
     }
   } catch (err) {
