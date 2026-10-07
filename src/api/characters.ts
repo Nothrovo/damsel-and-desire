@@ -76,19 +76,19 @@ function normalizeCharacter(item: any): Character {
   };
 }
 
-export async function listMyCharacters(): Promise<Character[]> {
+export async function listAllCharacters(): Promise<Character[]> {
   try {
-    const { data: user } = await supabase.auth.getUser();
-    if (user?.user) {
-      const { data, error } = await supabase
-        .from("characters")
-        .select("*")
-        .eq("owner_id", user.user.id)
-        .order("updated_at", { ascending: false });
+    const { data, error } = await supabase
+      .from("characters")
+      .select("*")
+      .order("updated_at", { ascending: false });
 
-      if (!error && data && data.length > 0) {
-        return (data || []).map((c: any) => normalizeCharacter(c));
-      }
+    if (!error && data) {
+      const remote = (data || []).map((c: any) => normalizeCharacter(c));
+      const local = getLocalRoster();
+      const remoteIds = new Set(remote.map(r => r.id));
+      const merged = [...remote, ...local.filter(l => !remoteIds.has(l.id))];
+      return merged;
     }
   } catch (e) {
     console.warn("Gagal mengambil karakter dari Supabase, beralih ke cache lokal:", e);
@@ -97,6 +97,8 @@ export async function listMyCharacters(): Promise<Character[]> {
   // Fallback to local storage
   return getLocalRoster();
 }
+
+export const listMyCharacters = listAllCharacters;
 
 export async function listCampaignCharacters(campaignId: string): Promise<Character[]> {
   const { data, error } = await supabase
@@ -131,21 +133,21 @@ export async function getCharacter(id: string): Promise<Character | null> {
 }
 
 export async function createCharacterRpc(payload: any): Promise<Character> {
-  const { data: user } = await supabase.auth.getUser();
+  try {
+    const { data, error } = await supabase.rpc("create_character", {
+      p_payload: payload
+    });
 
-  if (user?.user) {
-    try {
-      const { data, error } = await supabase.rpc("create_character", {
-        p_payload: payload
-      });
-
-      if (!error && data) {
-        return normalizeCharacter(data);
-      }
-      console.warn("RPC create_character error:", error?.message);
-    } catch (e) {
-      console.warn("Gagal mengeksekusi RPC create_character di cloud, beralih ke local:", e);
+    if (!error && data) {
+      const created = normalizeCharacter(data);
+      const roster = getLocalRoster();
+      roster.unshift(created);
+      saveLocalRoster(roster);
+      return created;
     }
+    if (error) console.warn("RPC create_character info:", error.message);
+  } catch (e) {
+    console.warn("Gagal mengeksekusi RPC create_character di cloud, beralih ke local:", e);
   }
 
   // Offline / Fallback local character creation
@@ -166,7 +168,7 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
 
   const localChar: Character = {
     id: `char_${Date.now()}`,
-    owner_id: user?.user?.id || "local_user",
+    owner_id: payload.ownerId || "public",
     campaign_id: payload.campaignId || null,
     name: payload.name,
     ekskul_id: payload.ekskulId,

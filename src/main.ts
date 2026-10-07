@@ -59,14 +59,13 @@ function initApp() {
   // Register All Routes
   router
     .register("/", renderLandingView)
-    .register("/login", renderLoginView)
-    .register("/campaigns", renderCampaignsView, { requiresAuth: true })
-    .register("/campaigns/:id", renderCampaignDetailView, { requiresAuth: true })
     .register("/characters/new", renderBuilderWizardView)
     .register("/characters/:id", renderCharacterSheetView)
-    .register("/dm/:campaignId", renderDmDashboardView, { requiresAuth: true, requiresDm: true })
     .register("/compendium", renderCompendiumView)
-    .register("/settings", renderSettingsView, { requiresAuth: true })
+    .register("/login", renderLandingView)
+    .register("/campaigns", renderLandingView)
+    .register("/campaigns/:id", renderLandingView)
+    .register("/settings", renderLandingView)
     .setNotFound(renderNotFoundView);
 
   // Initialize Router

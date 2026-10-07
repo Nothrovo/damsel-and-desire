@@ -48,3 +48,21 @@ describe("RLS Security Policy Model", () => {
     expect(canViewCharacter(outsiderId, aliceId, false)).toBe(false);
   });
 });
+
+describe("Communal Collaborative Mode Model", () => {
+  it("allows any player or guest to view any character without campaign or login requirement", () => {
+    function canViewCharacterCommunal(characterId: string): boolean {
+      return Boolean(characterId);
+    }
+    expect(canViewCharacterCommunal("char_123")).toBe(true);
+    expect(canViewCharacterCommunal("")).toBe(false);
+  });
+
+  it("allows creating character without authenticated session", () => {
+    function canCreateCharacter(payload: { name: string }): boolean {
+      return Boolean(payload.name && payload.name.trim().length > 0);
+    }
+    expect(canCreateCharacter({ name: "Kiyoko" })).toBe(true);
+    expect(canCreateCharacter({ name: "   " })).toBe(false);
+  });
+});

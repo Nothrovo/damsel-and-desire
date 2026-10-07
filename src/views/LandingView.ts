@@ -31,8 +31,8 @@ export async function renderLandingView(): Promise<void> {
               📥 Import Karakter (JSON)
             </button>
             <input type="file" id="landingImportFile" style="display:none;" accept=".json">
-            <a href="/campaigns" class="btn btn-secondary btn-large">
-              ⚔️ Masuk Campaign
+            <a href="/compendium" class="btn btn-secondary btn-large">
+              📖 Buka Compendium
             </a>
           </div>
         </div>
@@ -42,7 +42,7 @@ export async function renderLandingView(): Promise<void> {
       <div class="roster-section" style="max-width:1200px;margin:2rem auto;padding:0 1.5rem;">
         <div class="roster-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div class="roster-title-group" style="display:flex;align-items:center;gap:12px;">
-            <h2 style="font-family:var(--font-heading);margin:0;">Karakter Saya</h2>
+            <h2 style="font-family:var(--font-heading);margin:0;">Roster Karakter Sekolah</h2>
             <span id="rosterCountBadge" class="roster-count" style="background:var(--bg-card);border:1px solid var(--border-subtle);padding:3px 10px;border-radius:12px;font-size:0.8rem;color:var(--text-muted);">Memuat...</span>
           </div>
           <div class="roster-filters" style="display:flex;gap:10px;">
@@ -87,13 +87,9 @@ function attachLandingEvents() {
           return;
         }
 
-        if (authStore.isAuthenticated()) {
-          const newId = await importLegacyCharacter(validated.data);
-          showToast(`Karakter "${validated.data.name}" berhasil diimpor ke akun cloud Anda!`, "success");
-          router.navigate(`/characters/${newId}`);
-        } else {
-          showToast("Karakter dibaca. Silakan masuk akun untuk menyinkronkan ke cloud.", "info");
-        }
+        const newId = await importLegacyCharacter(validated.data);
+        showToast(`Karakter "${validated.data.name}" berhasil diimpor ke Roster!`, "success");
+        router.navigate(`/characters/${newId}`);
       } catch (err: any) {
         showToast(`Gagal mengimpor file: ${err.message}`, "error");
       }

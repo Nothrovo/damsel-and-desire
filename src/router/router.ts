@@ -125,21 +125,10 @@ class Router {
       }
 
       if (match) {
-        // Route Guard 1: Auth check
-        if (route.requiresAuth && !authStore.isAuthenticated()) {
-          showToast("Silakan masuk terlebih dahulu untuk mengakses halaman ini.", "warning");
-          this.navigate(`/login?redirect=${encodeURIComponent(normalizedPath)}`, true);
+        // In communal open access mode, routes are directly accessible
+        if (normalizedPath === "/login" || normalizedPath.startsWith("/campaigns") || normalizedPath === "/settings") {
+          this.navigate("/", true);
           return;
-        }
-
-        // Route Guard 2: DM Role check
-        if (route.requiresDm && params.campaignId) {
-          const role = await getUserRoleInCampaign(params.campaignId);
-          if (role !== "dm") {
-            showToast("Akses ditolak: Anda bukan Game Master (DM) di campaign ini.", "error");
-            this.navigate(`/campaigns/${params.campaignId}`, true);
-            return;
-          }
         }
 
         try {
