@@ -1,10 +1,13 @@
 import { MAP_FLOORS } from "../map/mapData";
 import { Map2DRenderer } from "../map/Map2DRenderer";
+import { searchSchoolMap, type SearchResult } from "../map/mapSearch";
+import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
 import type { FloorId, Room } from "../map/types";
-import { getCategoryColor } from "../map/mapUtils";
+import { getCategoryColor, getCategoryLabel } from "../map/mapUtils";
 import { router } from "../router/router";
 
 let activeRenderer: Map2DRenderer | null = null;
+let currentFloorId: FloorId = "f1";
 
 export async function renderMapView(params: Record<string, string>): Promise<void> {
   const appContainer = document.getElementById("appMain");
@@ -16,8 +19,8 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     activeRenderer = null;
   }
 
-  // Parse initial parameters
-  let currentFloorId: FloorId =
+  // Parse initial parameters from route
+  currentFloorId =
     params.floor && params.floor in MAP_FLOORS ? (params.floor as FloorId) : "f1";
   const initialRoomId = params.room || null;
 
@@ -26,57 +29,90 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
       <!-- Toolbar -->
       <header class="map-toolbar">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-          <div class="map-floor-selector" id="mapFloorSelector">
-            <button class="map-floor-btn ${currentFloorId === 'roof' ? 'active' : ''}" data-floor="roof">Roof</button>
-            <button class="map-floor-btn ${currentFloorId === 'f3' ? 'active' : ''}" data-floor="f3">3F</button>
-            <button class="map-floor-btn ${currentFloorId === 'f2' ? 'active' : ''}" data-floor="f2">2F</button>
-            <button class="map-floor-btn ${currentFloorId === 'f1' ? 'active' : ''}" data-floor="f1">1F</button>
-            <button class="map-floor-btn ${currentFloorId === 'campus' ? 'active' : ''}" data-floor="campus">Campus</button>
+          <!-- Floor Selector -->
+          <div class="map-floor-selector" id="mapFloorSelector" role="tablist" aria-label="Pilih Lantai">
+            <button class="map-floor-btn ${currentFloorId === 'roof' ? 'active' : ''}" data-floor="roof" role="tab" aria-selected="${currentFloorId === 'roof'}">Roof</button>
+            <button class="map-floor-btn ${currentFloorId === 'f3' ? 'active' : ''}" data-floor="f3" role="tab" aria-selected="${currentFloorId === 'f3'}">3F</button>
+            <button class="map-floor-btn ${currentFloorId === 'f2' ? 'active' : ''}" data-floor="f2" role="tab" aria-selected="${currentFloorId === 'f2'}">2F</button>
+            <button class="map-floor-btn ${currentFloorId === 'f1' ? 'active' : ''}" data-floor="f1" role="tab" aria-selected="${currentFloorId === 'f1'}">1F</button>
+            <button class="map-floor-btn ${currentFloorId === 'campus' ? 'active' : ''}" data-floor="campus" role="tab" aria-selected="${currentFloorId === 'campus'}">Campus</button>
           </div>
 
+          <!-- Mode Toggle -->
           <div class="map-mode-toggle">
-            <button class="map-mode-btn active" data-mode="2d">2D Vector (SVG)</button>
-            <button class="map-mode-btn" data-mode="3d" title="Mode 3D Three.js akan aktif di Fase C" style="opacity:0.5;cursor:not-allowed;">3D (Fase C)</button>
+            <button class="map-mode-btn active" data-mode="2d">2D Vector</button>
+            <button class="map-mode-btn" data-mode="3d" title="Mode 3D Three.js akan aktif di Fase C" style="opacity:0.45;cursor:not-allowed;">3D (Fase C)</button>
           </div>
+        </div>
+
+        <!-- Search Autocomplete Input -->
+        <div class="map-search-container" id="mapSearchContainer">
+          <div class="map-search-input-wrapper">
+            <span class="map-search-icon" aria-hidden="true">🔍</span>
+            <input
+              type="text"
+              id="mapSearchInput"
+              class="map-search-input"
+              placeholder="Cari ruangan atau klub... ( / )"
+              autocomplete="off"
+              spellcheck="false"
+              aria-label="Cari ruangan atau klub"
+            />
+            <button id="mapSearchClearBtn" class="map-search-clear" style="display:none;" title="Hapus pencarian" aria-label="Hapus pencarian">✕</button>
+          </div>
+          <div id="mapSearchDropdown" class="map-search-dropdown" role="listbox"></div>
         </div>
       </header>
 
       <!-- Map Canvas Area -->
-      <div class="map-canvas-area" id="mapCanvasContainer"></div>
+      <div class="map-canvas-area" id="mapCanvasContainer" role="region" aria-label="Denah Interaktif"></div>
 
       <!-- Floating HUD Controls -->
-      <div class="map-floating-controls">
-        <button class="map-hud-btn" id="mapZoomInBtn" title="Perbesar (+)">+</button>
-        <button class="map-hud-btn" id="mapZoomOutBtn" title="Perkecil (−)">−</button>
-        <button class="map-hud-btn" id="mapResetBtn" title="Reset Tampilan (⟲)">⟲</button>
+      <div class="map-floating-controls" role="toolbar" aria-label="Kontrol Tampilan Peta">
+        <button class="map-hud-btn" id="mapZoomInBtn" title="Perbesar (+)" aria-label="Perbesar">+</button>
+        <button class="map-hud-btn" id="mapZoomOutBtn" title="Perkecil (−)" aria-label="Perkecil">−</button>
+        <button class="map-hud-btn" id="mapResetBtn" title="Reset Tampilan (⟲)" aria-label="Reset Tampilan">⟲</button>
       </div>
 
-      <!-- Room Detail Panel -->
-      <div id="mapRoomPanel" class="map-room-panel" style="display:none;"></div>
+      <!-- Room Detail Drawer / Panel -->
+      <aside id="mapRoomPanel" class="map-room-panel" style="display:none;" aria-label="Detail Ruangan"></aside>
     </div>
   `;
 
   const canvasContainer = document.getElementById("mapCanvasContainer");
   const roomPanel = document.getElementById("mapRoomPanel");
+  const searchInput = document.getElementById("mapSearchInput") as HTMLInputElement | null;
+  const searchClearBtn = document.getElementById("mapSearchClearBtn");
+  const searchDropdown = document.getElementById("mapSearchDropdown");
   if (!canvasContainer) return;
 
-  function updateUrl() {
+  // Build ekskul dictionary for quick detail lookup
+  const ekskulMap = new Map<string, any>();
+  for (const ek of FALLBACK_DD_DATA.ekskul) {
+    ekskulMap.set(ek.id, ek);
+  }
+
+  function updateUrl(roomId?: string | null, pushState: boolean = false) {
     const queryParts: string[] = [`floor=${currentFloorId}`];
-    if (activeRenderer && (activeRenderer as any).selectedRoomId) {
-      queryParts.push(`room=${(activeRenderer as any).selectedRoomId}`);
+    const targetRoom = roomId !== undefined ? roomId : activeRenderer?.getSelectedRoomId();
+    if (targetRoom) {
+      queryParts.push(`room=${targetRoom}`);
     }
     const newUrl = `/map?${queryParts.join("&")}`;
-    router.navigate(newUrl, true);
+    router.navigate(newUrl, !pushState);
   }
 
   function showRoomDetails(room: Room) {
     if (!roomPanel) return;
     const colors = getCategoryColor(room.category);
     const floorLabel = MAP_FLOORS[room.floorId].label;
-
     const isCampusMainBuilding = room.id === "campus_main_building";
 
+    // Lookup ekskul data if available
+    const ekskulData = room.ekskulId ? ekskulMap.get(room.ekskulId) : null;
+
     roomPanel.innerHTML = `
+      <div class="map-drawer-handle" aria-hidden="true"></div>
       <div class="map-room-panel-header">
         <h3 class="map-room-panel-title">${room.name}</h3>
         <button class="map-room-panel-close" id="mapClosePanelBtn" aria-label="Tutup Panel">✕</button>
@@ -84,12 +120,43 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
       <div>
         <span
           class="map-room-category-badge"
-          style="background-color:${colors.fill};color:${colors.stroke};border:1px solid ${colors.stroke};"
+          style="background-color:${colors.fill};color:${colors.text};border:1px solid ${colors.stroke};"
         >
-          ${room.category} • ${floorLabel}
+          ${getCategoryLabel(room.category)} • ${floorLabel}
         </span>
       </div>
       <p class="map-room-desc">${room.description || "Tidak ada deskripsi tambahan untuk ruangan ini."}</p>
+
+      ${
+        ekskulData
+          ? `
+          <div class="map-ekskul-card">
+            <div class="map-ekskul-card-title">🏆 ${ekskulData.name}</div>
+            <div class="map-ekskul-card-tagline">“${ekskulData.tagline || ''}”</div>
+            <div class="map-ekskul-card-stats">
+              Hit Die: <strong>${ekskulData.hit_die}</strong> • Atribut Utama: <strong>${ekskulData.primary_stat}</strong>
+            </div>
+          </div>
+          `
+          : ""
+      }
+
+      ${
+        room.relatedEkskulIds && room.relatedEkskulIds.length > 0
+          ? `
+          <div style="margin-bottom:0.85rem;font-size:0.75rem;color:var(--text-muted);">
+            <span>Ekskul Terkait: </span>
+            ${room.relatedEkskulIds
+              .map(id => {
+                const e = ekskulMap.get(id);
+                return `<span style="background:var(--bg-surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;color:var(--text-main);margin-right:4px;">${e ? e.name : id}</span>`;
+              })
+              .join("")}
+          </div>
+          `
+          : ""
+      }
+
       <div class="map-room-actions">
         ${
           room.ekskulId
@@ -105,6 +172,9 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
                </button>`
             : ""
         }
+        <button id="mapBtnFocusRoom" class="map-ctrl-btn" style="font-size:0.8rem;padding:6px 10px;" title="Pusatkan kamera pada ruangan ini">
+          <span>🎯</span> Pusatkan
+        </button>
       </div>
     `;
     roomPanel.style.display = "block";
@@ -112,16 +182,23 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     document.getElementById("mapClosePanelBtn")?.addEventListener("click", () => {
       roomPanel.style.display = "none";
       if (activeRenderer) activeRenderer.selectRoom(null);
+      updateUrl(null, false);
+    });
+
+    document.getElementById("mapBtnFocusRoom")?.addEventListener("click", () => {
+      activeRenderer?.focusRoom(room.id, true);
     });
 
     if (isCampusMainBuilding) {
       document.getElementById("mapBtnEnter1F")?.addEventListener("click", () => {
-        switchToFloor("f1");
+        switchToFloor("f1", true);
       });
     }
   }
 
-  function switchToFloor(targetFloorId: FloorId) {
+  function switchToFloor(targetFloorId: FloorId, pushHistory: boolean = false) {
+    if (targetFloorId === currentFloorId && activeRenderer) return;
+
     currentFloorId = targetFloorId;
     if (activeRenderer) {
       activeRenderer.setFloor(MAP_FLOORS[targetFloorId]);
@@ -131,14 +208,32 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
 
     // Update active floor button
     document.querySelectorAll(".map-floor-btn").forEach(btn => {
-      if (btn.getAttribute("data-floor") === targetFloorId) {
-        btn.classList.add("active");
-      } else {
-        btn.classList.remove("active");
-      }
+      const isSelected = btn.getAttribute("data-floor") === targetFloorId;
+      btn.classList.toggle("active", isSelected);
+      btn.setAttribute("aria-selected", String(isSelected));
     });
 
-    updateUrl();
+    updateUrl(null, pushHistory);
+  }
+
+  function selectAndFocusRoom(targetRoom: Room, targetFloorId: FloorId) {
+    if (targetFloorId !== currentFloorId) {
+      currentFloorId = targetFloorId;
+      if (activeRenderer) {
+        activeRenderer.setFloor(MAP_FLOORS[targetFloorId]);
+      }
+      document.querySelectorAll(".map-floor-btn").forEach(btn => {
+        const isSelected = btn.getAttribute("data-floor") === targetFloorId;
+        btn.classList.toggle("active", isSelected);
+        btn.setAttribute("aria-selected", String(isSelected));
+      });
+    }
+
+    if (activeRenderer) {
+      activeRenderer.focusRoom(targetRoom.id, true);
+    }
+    showRoomDetails(targetRoom);
+    updateUrl(targetRoom.id, false);
   }
 
   // Initialize Map2DRenderer
@@ -147,32 +242,32 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     floor: MAP_FLOORS[currentFloorId],
     selectedRoomId: initialRoomId,
     onRoomSelect: (room: Room) => {
-      // Requirement: Klik Main Building di peta Campus: arahkan ke 1F
+      // Klik Main Building di peta Campus: arahkan ke 1F
       if (room.id === "campus_main_building") {
-        switchToFloor("f1");
+        switchToFloor("f1", true);
         return;
       }
       showRoomDetails(room);
-      updateUrl();
+      updateUrl(room.id, false);
     }
   });
 
-  // Focus room if provided initially
+  // Focus initial room if present in query parameters
   if (initialRoomId) {
     const room = MAP_FLOORS[currentFloorId].rooms.find(r => r.id === initialRoomId);
     if (room) {
-      activeRenderer.focusRoom(initialRoomId);
+      activeRenderer.focusRoom(initialRoomId, false);
       showRoomDetails(room);
     }
   }
 
-  // Attach Floor Selector Events
+  // Floor Selector Events
   document.getElementById("mapFloorSelector")?.addEventListener("click", e => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".map-floor-btn");
     if (!btn) return;
     const targetFloor = btn.getAttribute("data-floor") as FloorId;
     if (targetFloor && targetFloor in MAP_FLOORS && targetFloor !== currentFloorId) {
-      switchToFloor(targetFloor);
+      switchToFloor(targetFloor, true);
     }
   });
 
@@ -184,6 +279,149 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     activeRenderer?.zoomOut();
   });
   document.getElementById("mapResetBtn")?.addEventListener("click", () => {
-    activeRenderer?.resetView();
+    activeRenderer?.resetView(true);
+  });
+
+  // =========================================================================
+  // Search Autocomplete Logic
+  // =========================================================================
+  let searchResults: SearchResult[] = [];
+  let highlightedIndex = -1;
+
+  function renderSearchDropdown() {
+    if (!searchDropdown) return;
+    if (searchResults.length === 0) {
+      searchDropdown.innerHTML = `<div class="map-search-empty">Tidak ada ruangan atau klub yang cocok.</div>`;
+      searchDropdown.classList.add("open");
+      return;
+    }
+
+    searchDropdown.innerHTML = searchResults
+      .map((res, idx) => {
+        return `
+          <div
+            class="map-search-item ${idx === highlightedIndex ? 'highlighted' : ''}"
+            data-index="${idx}"
+            data-room-id="${res.room.id}"
+            data-floor-id="${res.floorId}"
+            role="option"
+          >
+            <div class="map-search-item-header">
+              <span class="map-search-item-name">${res.room.name}</span>
+              <span class="map-search-item-floor">${res.floorId.toUpperCase()}</span>
+            </div>
+            <div class="map-search-item-meta">
+              <span>${res.categoryLabel}</span>
+              ${res.ekskulName ? ` • <span style="color:var(--rose-light);">Klub: ${res.ekskulName}</span>` : ""}
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+    searchDropdown.classList.add("open");
+  }
+
+  function closeSearchDropdown() {
+    if (searchDropdown) {
+      searchDropdown.classList.remove("open");
+      searchDropdown.innerHTML = "";
+    }
+    highlightedIndex = -1;
+  }
+
+  function handleSelectSearchItem(index: number) {
+    const item = searchResults[index];
+    if (!item) return;
+
+    if (searchInput) {
+      searchInput.value = item.room.name;
+    }
+    closeSearchDropdown();
+    selectAndFocusRoom(item.room, item.floorId);
+  }
+
+  searchInput?.addEventListener("input", () => {
+    const q = searchInput.value.trim();
+    if (searchClearBtn) {
+      searchClearBtn.style.display = q ? "block" : "none";
+    }
+
+    if (!q) {
+      closeSearchDropdown();
+      return;
+    }
+
+    searchResults = searchSchoolMap(q, 8);
+    highlightedIndex = searchResults.length > 0 ? 0 : -1;
+    renderSearchDropdown();
+  });
+
+  searchClearBtn?.addEventListener("click", () => {
+    if (searchInput) {
+      searchInput.value = "";
+      searchInput.focus();
+    }
+    if (searchClearBtn) searchClearBtn.style.display = "none";
+    closeSearchDropdown();
+  });
+
+  // Keyboard navigation within search input
+  searchInput?.addEventListener("keydown", e => {
+    if (!searchDropdown?.classList.contains("open")) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (searchResults.length > 0) {
+        highlightedIndex = (highlightedIndex + 1) % searchResults.length;
+        renderSearchDropdown();
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (searchResults.length > 0) {
+        highlightedIndex = (highlightedIndex - 1 + searchResults.length) % searchResults.length;
+        renderSearchDropdown();
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < searchResults.length) {
+        handleSelectSearchItem(highlightedIndex);
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      closeSearchDropdown();
+      searchInput.blur();
+    }
+  });
+
+  // Search dropdown item click delegation
+  searchDropdown?.addEventListener("click", e => {
+    const targetItem = (e.target as HTMLElement).closest<HTMLElement>(".map-search-item");
+    if (!targetItem) return;
+    const idx = parseInt(targetItem.getAttribute("data-index") || "0", 10);
+    handleSelectSearchItem(idx);
+  });
+
+  // Close dropdown on outside click
+  document.addEventListener("click", e => {
+    const searchContainer = document.getElementById("mapSearchContainer");
+    if (searchContainer && !searchContainer.contains(e.target as Node)) {
+      closeSearchDropdown();
+    }
+  });
+
+  // Global hotkey: press '/' to focus search input, press 'Escape' to close drawer/search
+  window.addEventListener("keydown", e => {
+    if (e.key === "/" && document.activeElement !== searchInput) {
+      e.preventDefault();
+      searchInput?.focus();
+      searchInput?.select();
+    } else if (e.key === "Escape") {
+      closeSearchDropdown();
+      if (roomPanel && roomPanel.style.display !== "none") {
+        roomPanel.style.display = "none";
+        activeRenderer?.selectRoom(null);
+        updateUrl(null, false);
+      }
+    }
   });
 }

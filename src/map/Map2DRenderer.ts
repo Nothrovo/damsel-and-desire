@@ -53,6 +53,10 @@ export class Map2DRenderer {
     this.updateRoomHighlights();
   }
 
+  public getSelectedRoomId(): string | null {
+    return this.selectedRoomId;
+  }
+
   public zoomIn() {
     this.applyZoom(1.25);
   }
@@ -61,14 +65,17 @@ export class Map2DRenderer {
     this.applyZoom(0.8);
   }
 
-  public resetView() {
+  public resetView(smooth: boolean = true) {
+    if (this.viewportGroup && smooth) {
+      this.viewportGroup.style.transition = "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)";
+    }
     this.scale = 1.0;
     this.panX = 0;
     this.panY = 0;
     this.updateTransform();
   }
 
-  public focusRoom(roomId: string) {
+  public focusRoom(roomId: string, smooth: boolean = true) {
     const room = this.floor.rooms.find(r => r.id === roomId);
     if (!room || !this.svgElement) return;
 
@@ -79,6 +86,9 @@ export class Map2DRenderer {
     const [, , vbW, vbH] = this.floor.viewBox.split(" ").map(Number);
     const targetScale = Math.min(2.2, Math.max(1.5, 400 / Math.max(room.rect.width, room.rect.height)));
 
+    if (this.viewportGroup && smooth) {
+      this.viewportGroup.style.transition = "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)";
+    }
     this.scale = targetScale;
     this.panX = (vbW / 2 - center.x) * targetScale;
     this.panY = (vbH / 2 - center.y) * targetScale;
@@ -412,6 +422,7 @@ export class Map2DRenderer {
       "wheel",
       e => {
         e.preventDefault();
+        if (this.viewportGroup) this.viewportGroup.style.transition = "none";
         const factor = e.deltaY < 0 ? 1.15 : 0.87;
         const rect = svg.getBoundingClientRect();
         const anchorX = e.clientX - rect.left;
@@ -425,6 +436,7 @@ export class Map2DRenderer {
     svg.addEventListener("mousedown", e => {
       // Left click
       if (e.button !== 0) return;
+      if (this.viewportGroup) this.viewportGroup.style.transition = "none";
       this.isDragging = true;
       this.hasMoved = false;
       this.dragStartX = e.clientX - this.panX;
@@ -457,6 +469,7 @@ export class Map2DRenderer {
     svg.addEventListener(
       "touchstart",
       e => {
+        if (this.viewportGroup) this.viewportGroup.style.transition = "none";
         if (e.touches.length === 1) {
           this.isDragging = true;
           this.hasMoved = false;

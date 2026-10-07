@@ -968,8 +968,224 @@
 
 .map-room-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
+
+/* Map Search Autocomplete Box */
+.map-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.map-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 260px;
+  max-width: 100%;
+}
+
+.map-search-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+}
+
+.map-search-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 6px 30px 6px 32px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  transition: all var(--transition-fast);
+}
+
+.map-search-input:focus {
+  border-color: var(--rose-primary);
+  outline: none;
+  box-shadow: 0 0 10px var(--rose-glow);
+  width: 300px;
+}
+
+.map-search-clear {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.map-search-clear:hover {
+  color: #fff;
+}
+
+.map-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 320px;
+  max-width: calc(100vw - 2rem);
+  max-height: 380px;
+  overflow-y: auto;
+  background: rgba(17, 24, 39, 0.98);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  z-index: 50;
+  display: none;
+  animation: slideUpFade 0.15s ease-out;
+}
+
+.map-search-dropdown.open {
+  display: block;
+}
+
+.map-search-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-search-item:last-child {
+  border-bottom: none;
+}
+
+.map-search-item:hover,
+.map-search-item.highlighted {
+  background: var(--bg-card-hover);
+  border-left: 3px solid var(--rose-primary);
+  padding-left: 9px;
+}
+
+.map-search-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.map-search-item-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.map-search-item-floor {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--rose-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+  text-transform: uppercase;
+}
+
+.map-search-item-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.map-search-empty {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Ekskul info card inside drawer */
+.map-ekskul-card {
+  background: rgba(36, 19, 33, 0.6);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: 0.85rem;
+}
+
+.map-ekskul-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--rose-light);
+  margin-bottom: 2px;
+}
+
+.map-ekskul-card-tagline {
+  font-size: 0.75rem;
+  color: var(--amber-gold);
+  margin-bottom: 6px;
+}
+
+.map-ekskul-card-stats {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* Mobile drawer responsiveness */
+.map-drawer-handle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .map-toolbar {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .map-search-input-wrapper {
+    width: 100%;
+  }
+
+  .map-search-input:focus {
+    width: 100%;
+  }
+
+  .map-search-dropdown {
+    width: 100%;
+    left: 0;
+  }
+
+  .map-room-panel {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100vw;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 1rem 1.25rem 1.5rem 1.25rem;
+    box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
+  }
+
+  .map-drawer-handle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: #475569;
+    margin: 0 auto 0.75rem auto;
+  }
+}
+
 
 
   </style>
