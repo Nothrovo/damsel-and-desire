@@ -293,25 +293,141 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
   groundMesh.receiveShadow = true;
   group.add(groundMesh);
 
-  // 2. Campus Zones
+  // 2. Campus Walkway Network
+  const walkwayMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.85
+  });
+  // Central South entrance walkway
+  const southWalkway = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 80), walkwayMat);
+  southWalkway.position.set(0, 0.15, 200);
+  southWalkway.receiveShadow = true;
+  group.add(southWalkway);
+
+  // Cross walkway connecting pool, gym, and main building
+  const crossWalkway = new THREE.Mesh(new THREE.BoxGeometry(240, 0.3, 16), walkwayMat);
+  crossWalkway.position.set(0, 0.15, -45);
+  crossWalkway.receiveShadow = true;
+  group.add(crossWalkway);
+
+  // Walkway to athletic field
+  const fieldWalkway = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 55), walkwayMat);
+  fieldWalkway.position.set(0, 0.15, -135);
+  fieldWalkway.receiveShadow = true;
+  group.add(fieldWalkway);
+
+  // 3. Campus Zones & Buildings
   campusFloor.rooms.forEach(room => {
     const roomCenter = getRoomCenter(room);
     const worldPos = svgToWorld3D(roomCenter.x, roomCenter.y, viewBox);
     const w = room.rect.width * SCALE_3D;
     const d = room.rect.height * SCALE_3D;
 
+    // --- MAIN BUILDING (3 Storeys with courtyard atrium) ---
     if (room.id === "campus_main_building") {
-      // Create transparent proxy volume covering the main building footprint for raycasting
-      const buildingHeight = 4 * FLOOR_HEIGHT_3D;
-      const geom = new THREE.BoxGeometry(w, buildingHeight, d);
-      const mat = new THREE.MeshBasicMaterial({
+      const bGroup = new THREE.Group();
+      bGroup.name = "campus_main_building_structure";
+
+      const totalW = w; // 145
+      const totalD = d; // 164
+      const buildingHeight = 22; // 3 storeys
+
+      // Courtyard inner dimensions
+      const courtyardW = 175 * SCALE_3D; // 87.5
+      const courtyardD = 174 * SCALE_3D; // 87
+      const wingThickX = (totalW - courtyardW) / 2; // 28.75
+      const courtyardRelZ = -10.5;
+      const northWingD = (totalD - courtyardD) / 2 + courtyardRelZ; // ~ 28
+      const southWingD = (totalD - courtyardD) / 2 - courtyardRelZ; // ~ 49
+
+      const facadeMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.7,
+        metalness: 0.2
+      });
+
+      const roofMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        roughness: 0.85,
+        metalness: 0.1
+      });
+
+      // West Wing
+      const westWing = new THREE.Mesh(
+        new THREE.BoxGeometry(wingThickX, buildingHeight, totalD),
+        facadeMat
+      );
+      westWing.position.set(worldPos.x - totalW / 2 + wingThickX / 2, buildingHeight / 2, worldPos.z);
+      westWing.castShadow = true;
+      westWing.receiveShadow = true;
+      bGroup.add(westWing);
+
+      // East Wing
+      const eastWing = new THREE.Mesh(
+        new THREE.BoxGeometry(wingThickX, buildingHeight, totalD),
+        facadeMat
+      );
+      eastWing.position.set(worldPos.x + totalW / 2 - wingThickX / 2, buildingHeight / 2, worldPos.z);
+      eastWing.castShadow = true;
+      eastWing.receiveShadow = true;
+      bGroup.add(eastWing);
+
+      // North Wing
+      const northWing = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW, buildingHeight, northWingD),
+        facadeMat
+      );
+      northWing.position.set(worldPos.x, buildingHeight / 2, worldPos.z - totalD / 2 + northWingD / 2);
+      northWing.castShadow = true;
+      northWing.receiveShadow = true;
+      bGroup.add(northWing);
+
+      // South Wing (Main Front Facade)
+      const southWing = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW, buildingHeight, southWingD),
+        facadeMat
+      );
+      southWing.position.set(worldPos.x, buildingHeight / 2, worldPos.z + totalD / 2 - southWingD / 2);
+      southWing.castShadow = true;
+      southWing.receiveShadow = true;
+      bGroup.add(southWing);
+
+      // Roof terrace overhang caps
+      const roofCap = new THREE.Mesh(
+        new THREE.BoxGeometry(totalW + 2, 1.2, totalD + 2),
+        roofMat
+      );
+      roofCap.position.set(worldPos.x, buildingHeight + 0.6, worldPos.z);
+      bGroup.add(roofCap);
+
+      // Inner Courtyard Grass & Plaza
+      const courtSlab = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW, 0.4, courtyardD),
+        new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.9 })
+      );
+      courtSlab.position.set(worldPos.x, 0.2, worldPos.z + courtyardRelZ);
+      bGroup.add(courtSlab);
+
+      // South Entrance Portico Canopy
+      const canopy = new THREE.Mesh(
+        new THREE.BoxGeometry(32, 2.5, 10),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 })
+      );
+      canopy.position.set(worldPos.x, 5, worldPos.z + totalD / 2 + 5);
+      canopy.castShadow = true;
+      bGroup.add(canopy);
+
+      // Raycasting volume covering the whole building
+      const hitGeom = new THREE.BoxGeometry(totalW + 4, buildingHeight + 4, totalD + 4);
+      const hitMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
         transparent: true,
-        opacity: 0,
+        opacity: 0.05,
         depthWrite: false
       });
-      const mesh = new THREE.Mesh(geom, mat);
-      mesh.position.set(worldPos.x, buildingHeight / 2, worldPos.z);
-      mesh.userData = {
+      const hitMesh = new THREE.Mesh(hitGeom, hitMat);
+      hitMesh.position.set(worldPos.x, buildingHeight / 2, worldPos.z);
+      hitMesh.userData = {
         isRoom: true,
         roomId: room.id,
         room: room,
@@ -319,55 +435,239 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
         emissiveColor: 0xe11d48,
         category: room.category
       };
-      group.add(mesh);
+      bGroup.add(hitMesh);
+
+      group.add(bGroup);
+
+      // Label
+      const label = createRoomLabelSprite(room, viewBox, buildingHeight + 5);
+      group.add(label);
       return;
     }
 
-    let zoneColor = 0x1e293b;
-    let zoneHeight = 1.5;
+    // --- GYMNASIUM ---
+    if (room.id === "campus_gymnasium") {
+      const gymGroup = new THREE.Group();
+      const gymHeight = 16;
 
-    if (room.id === "campus_athletic_field") {
-      zoneColor = 0x831843; // Running track wine red
-      zoneHeight = 0.8;
-    } else if (room.id === "campus_swimming_pool") {
-      zoneColor = 0x0284c7; // Water azure
-      zoneHeight = 0.5;
-    } else if (room.id === "campus_gymnasium") {
-      zoneColor = 0x334155; // Gym building
-      zoneHeight = 16;
-    } else if (room.id.includes("garden")) {
-      zoneColor = 0x064e3b; // Garden emerald
-      zoneHeight = 1.0;
-    } else if (room.id === "campus_hedge_maze") {
-      zoneColor = 0x14532d; // Maze forest green
-      zoneHeight = 6.0;
+      const hallGeom = new THREE.BoxGeometry(w, gymHeight, d);
+      const hallMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.65,
+        metalness: 0.2
+      });
+      const hall = new THREE.Mesh(hallGeom, hallMat);
+      hall.position.set(worldPos.x, gymHeight / 2, worldPos.z);
+      hall.castShadow = true;
+      hall.receiveShadow = true;
+      gymGroup.add(hall);
+
+      const roofGeom = new THREE.BoxGeometry(w + 3, 4.5, d + 3);
+      const roofMat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        roughness: 0.7,
+        metalness: 0.3
+      });
+      const roof = new THREE.Mesh(roofGeom, roofMat);
+      roof.position.set(worldPos.x, gymHeight + 2.25, worldPos.z);
+      roof.castShadow = true;
+      gymGroup.add(roof);
+
+      hall.userData = {
+        isRoom: true,
+        roomId: room.id,
+        room: room,
+        baseColor: 0x1e293b,
+        emissiveColor: 0xe11d48,
+        category: room.category
+      };
+
+      group.add(gymGroup);
+
+      const label = createRoomLabelSprite(room, viewBox, gymHeight + 6);
+      group.add(label);
+      return;
     }
 
-    const geom = new THREE.BoxGeometry(w, zoneHeight, d);
-    const mat = new THREE.MeshStandardMaterial({
-      color: zoneColor,
-      roughness: room.id === "campus_swimming_pool" ? 0.1 : 0.7,
-      metalness: room.id === "campus_swimming_pool" ? 0.4 : 0.1
-    });
+    // --- SWIMMING POOL ---
+    if (room.id === "campus_swimming_pool") {
+      const poolGroup = new THREE.Group();
 
+      const deckGeom = new THREE.BoxGeometry(w, 1.2, d);
+      const deckMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        roughness: 0.8
+      });
+      const deck = new THREE.Mesh(deckGeom, deckMat);
+      deck.position.set(worldPos.x, 0.6, worldPos.z);
+      deck.receiveShadow = true;
+      poolGroup.add(deck);
+
+      const waterW = w - 16;
+      const waterD = d - 14;
+      const waterGeom = new THREE.BoxGeometry(waterW, 0.5, waterD);
+      const waterMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        roughness: 0.08,
+        metalness: 0.45,
+        transparent: true,
+        opacity: 0.92
+      });
+      const water = new THREE.Mesh(waterGeom, waterMat);
+      water.position.set(worldPos.x, 0.7, worldPos.z);
+      poolGroup.add(water);
+
+      const bleacherGeom = new THREE.BoxGeometry(waterW, 3.5, 8);
+      const bleacherMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 });
+      const bleachers = new THREE.Mesh(bleacherGeom, bleacherMat);
+      bleachers.position.set(worldPos.x, 1.75, worldPos.z - d / 2 + 4);
+      bleachers.castShadow = true;
+      poolGroup.add(bleachers);
+
+      deck.userData = {
+        isRoom: true,
+        roomId: room.id,
+        room: room,
+        baseColor: 0x1e293b,
+        emissiveColor: 0xe11d48,
+        category: room.category
+      };
+
+      group.add(poolGroup);
+
+      const label = createRoomLabelSprite(room, viewBox, 6);
+      group.add(label);
+      return;
+    }
+
+    // --- ATHLETIC FIELD ---
+    if (room.id === "campus_athletic_field") {
+      const fieldGroup = new THREE.Group();
+
+      const trackGeom = new THREE.BoxGeometry(w, 0.8, d);
+      const trackMat = new THREE.MeshStandardMaterial({
+        color: 0x831843,
+        roughness: 0.85
+      });
+      const track = new THREE.Mesh(trackGeom, trackMat);
+      track.position.set(worldPos.x, 0.4, worldPos.z);
+      track.receiveShadow = true;
+      fieldGroup.add(track);
+
+      const grassW = w - 50;
+      const grassD = d - 32;
+      const grassGeom = new THREE.BoxGeometry(grassW, 0.4, grassD);
+      const grassMat = new THREE.MeshStandardMaterial({
+        color: 0x064e3b,
+        roughness: 0.95
+      });
+      const grass = new THREE.Mesh(grassGeom, grassMat);
+      grass.position.set(worldPos.x, 0.7, worldPos.z);
+      grass.receiveShadow = true;
+      fieldGroup.add(grass);
+
+      const podiumGeom = new THREE.CylinderGeometry(8, 8, 1.5, 16);
+      const podiumMat = new THREE.MeshStandardMaterial({ color: 0x047857 });
+      const podium = new THREE.Mesh(podiumGeom, podiumMat);
+      podium.position.set(worldPos.x, 1.0, worldPos.z - d / 2 + 10);
+      fieldGroup.add(podium);
+
+      const poleGeom = new THREE.CylinderGeometry(0.5, 0.5, 16, 8);
+      const poleMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8 });
+      const pole = new THREE.Mesh(poleGeom, poleMat);
+      pole.position.set(worldPos.x, 9.0, worldPos.z - d / 2 + 10);
+      fieldGroup.add(pole);
+
+      track.userData = {
+        isRoom: true,
+        roomId: room.id,
+        room: room,
+        baseColor: 0x831843,
+        emissiveColor: 0xe11d48,
+        category: room.category
+      };
+
+      group.add(fieldGroup);
+
+      const label = createRoomLabelSprite(room, viewBox, 6);
+      group.add(label);
+      return;
+    }
+
+    // --- HEDGE MAZE ---
+    if (room.id === "campus_hedge_maze") {
+      const mazeGroup = new THREE.Group();
+
+      const baseGeom = new THREE.BoxGeometry(w, 0.5, d);
+      const baseMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.9 });
+      const base = new THREE.Mesh(baseGeom, baseMat);
+      base.position.set(worldPos.x, 0.25, worldPos.z);
+      mazeGroup.add(base);
+
+      const hedgeMat = new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.9 });
+      const hHeight = 4.5;
+      const wallThickness = 3.5;
+
+      const northHedge = new THREE.Mesh(new THREE.BoxGeometry(w, hHeight, wallThickness), hedgeMat);
+      northHedge.position.set(worldPos.x, hHeight / 2, worldPos.z - d / 2 + wallThickness / 2);
+      mazeGroup.add(northHedge);
+
+      const southHedge = new THREE.Mesh(new THREE.BoxGeometry(w - 20, hHeight, wallThickness), hedgeMat);
+      southHedge.position.set(worldPos.x - 10, hHeight / 2, worldPos.z + d / 2 - wallThickness / 2);
+      mazeGroup.add(southHedge);
+
+      const westHedge = new THREE.Mesh(new THREE.BoxGeometry(wallThickness, hHeight, d), hedgeMat);
+      westHedge.position.set(worldPos.x - w / 2 + wallThickness / 2, hHeight / 2, worldPos.z);
+      mazeGroup.add(westHedge);
+
+      const eastHedge = new THREE.Mesh(new THREE.BoxGeometry(wallThickness, hHeight, d), hedgeMat);
+      eastHedge.position.set(worldPos.x + w / 2 - wallThickness / 2, hHeight / 2, worldPos.z);
+      mazeGroup.add(eastHedge);
+
+      const innerWall1 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.6, hHeight, wallThickness), hedgeMat);
+      innerWall1.position.set(worldPos.x, hHeight / 2, worldPos.z);
+      mazeGroup.add(innerWall1);
+
+      base.userData = {
+        isRoom: true,
+        roomId: room.id,
+        room: room,
+        baseColor: 0x14532d,
+        emissiveColor: 0xe11d48,
+        category: room.category
+      };
+
+      group.add(mazeGroup);
+
+      const label = createRoomLabelSprite(room, viewBox, hHeight + 3);
+      group.add(label);
+      return;
+    }
+
+    // --- GARDENS (West/East Zen & Botanical) ---
+    const isZen = room.id.includes("zen");
+    const gardenHeight = isZen ? 1.0 : 1.2;
+    const geom = new THREE.BoxGeometry(w, gardenHeight, d);
+    const mat = new THREE.MeshStandardMaterial({
+      color: isZen ? 0x334155 : 0x064e3b,
+      roughness: 0.95
+    });
     const mesh = new THREE.Mesh(geom, mat);
-    mesh.position.set(worldPos.x, zoneHeight / 2, worldPos.z);
-    mesh.castShadow = zoneHeight > 2;
+    mesh.position.set(worldPos.x, gardenHeight / 2, worldPos.z);
     mesh.receiveShadow = true;
 
     mesh.userData = {
       isRoom: true,
       roomId: room.id,
       room: room,
-      baseColor: zoneColor,
+      baseColor: isZen ? 0x334155 : 0x064e3b,
       emissiveColor: 0xe11d48,
       category: room.category
     };
 
     group.add(mesh);
 
-    // Label
-    const label = createRoomLabelSprite(room, viewBox, zoneHeight + 2);
+    const label = createRoomLabelSprite(room, viewBox, gardenHeight + 3);
     group.add(label);
   });
 

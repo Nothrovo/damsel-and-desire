@@ -115,7 +115,8 @@ export class Map3DRenderer {
 
     // 3. Orthographic Isometric Camera
     const aspect = width / height;
-    const d = 160;
+    const isCampus = this.currentFloorId === "campus";
+    const d = isCampus ? 210 : 150;
     this.camera = new THREE.OrthographicCamera(
       -d * aspect,
       d * aspect,
@@ -124,8 +125,12 @@ export class Map3DRenderer {
       1,
       2500
     );
-    this.camera.position.set(220, 280, 220);
-    this.camera.lookAt(0, 0, 0);
+
+    const initTarget = isCampus ? new THREE.Vector3(0, 0, -25) : new THREE.Vector3(0, 0, 0);
+    const initCamPos = isCampus ? new THREE.Vector3(260, 320, 240) : new THREE.Vector3(220, 280, 220);
+
+    this.camera.position.copy(initCamPos);
+    this.camera.lookAt(initTarget);
 
     // 4. OrbitControls
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
@@ -135,7 +140,7 @@ export class Map3DRenderer {
     this.controls.minPolarAngle = Math.PI / 6;
     this.controls.minZoom = 0.4;
     this.controls.maxZoom = 4.0;
-    this.controls.target.set(0, 0, 0);
+    this.controls.target.copy(initTarget);
 
     // 5. Lighting Setup
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x0f172a, 0.85);
@@ -232,18 +237,15 @@ export class Map3DRenderer {
     const isCampus = this.currentFloorId === "campus";
 
     if (isCampus) {
-      // Show campus ground
+      // 1. Show campus grounds with outdoor facilities and 3D Main Building
       const campusGroup = this.floorGroups.get("campus");
       if (campusGroup) campusGroup.visible = true;
 
-      // Show stacked building as full composite volume
+      // 2. Hide interior building floor plans completely so they do not overlap campus facilities
       const buildingIds: FloorId[] = ["f1", "f2", "f3", "roof"];
-      buildingIds.forEach((id, idx) => {
+      buildingIds.forEach(id => {
         const grp = this.floorGroups.get(id);
-        if (grp) {
-          grp.visible = true;
-          grp.position.set(0, (idx + 1) * FLOOR_HEIGHT_3D, 0);
-        }
+        if (grp) grp.visible = false;
       });
     } else {
       // Hide campus grounds
@@ -286,8 +288,24 @@ export class Map3DRenderer {
     this.updateFloorVisibility();
     this.updateRoomHighlights();
 
-    // Reset camera target smoothly to center of newly selected floor
-    this.animateCameraTo(new THREE.Vector3(0, 0, 0));
+    // Adjust camera projection distance for campus vs interior
+    const aspect = (this.container.clientWidth || 800) / (this.container.clientHeight || 600);
+    const d = this.currentFloorId === "campus" ? 210 : 150;
+    this.camera.left = -d * aspect;
+    this.camera.right = d * aspect;
+    this.camera.top = d;
+    this.camera.bottom = -d;
+    this.camera.updateProjectionMatrix();
+
+    const newTarget = this.currentFloorId === "campus"
+      ? new THREE.Vector3(0, 0, -25)
+      : new THREE.Vector3(0, 0, 0);
+
+    const newCamPos = this.currentFloorId === "campus"
+      ? new THREE.Vector3(260, 320, 240)
+      : new THREE.Vector3(220, 280, 220);
+
+    this.animateCameraTo(newTarget, newCamPos);
   }
 
   public selectRoom(roomId: string | null) {
@@ -351,10 +369,25 @@ export class Map3DRenderer {
     this.camera.updateProjectionMatrix();
   }
 
-  public resetView() {
+  public resetView(_smooth: boolean = true) {
     this.camera.zoom = 1.0;
+    const aspect = (this.container.clientWidth || 800) / (this.container.clientHeight || 600);
+    const d = this.currentFloorId === "campus" ? 210 : 150;
+    this.camera.left = -d * aspect;
+    this.camera.right = d * aspect;
+    this.camera.top = d;
+    this.camera.bottom = -d;
     this.camera.updateProjectionMatrix();
-    this.animateCameraTo(new THREE.Vector3(0, 0, 0), new THREE.Vector3(220, 280, 220));
+
+    const newTarget = this.currentFloorId === "campus"
+      ? new THREE.Vector3(0, 0, -25)
+      : new THREE.Vector3(0, 0, 0);
+
+    const newCamPos = this.currentFloorId === "campus"
+      ? new THREE.Vector3(260, 320, 240)
+      : new THREE.Vector3(220, 280, 220);
+
+    this.animateCameraTo(newTarget, newCamPos);
   }
 
   private animateCameraTo(newTarget: THREE.Vector3, newCamPos?: THREE.Vector3) {
@@ -460,7 +493,7 @@ export class Map3DRenderer {
       if (width === 0 || height === 0) return;
 
       const aspect = width / height;
-      const d = 160;
+      const d = this.currentFloorId === "campus" ? 210 : 150;
       this.camera.left = -d * aspect;
       this.camera.right = d * aspect;
       this.camera.top = d;
