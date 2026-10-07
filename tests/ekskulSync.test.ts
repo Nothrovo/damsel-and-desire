@@ -1,9 +1,21 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { FALLBACK_DD_DATA } from "../src/data/fallbackCompendium";
 import { MASTER_ITEM_REGISTRY } from "../src/data/itemCompendium";
-import { getCompendiumEkskul, getCompendiumEquipmentPacks } from "../src/api/compendium";
 import fs from "fs";
 import path from "path";
+
+// Mock supabase to test offline fallback behavior and avoid WebSocket initialization issues
+vi.mock("../src/api/supabase", () => ({
+  supabase: {
+    from: () => ({
+      select: () => ({
+        order: () => Promise.resolve({ data: null, error: new Error("offline fallback test") })
+      })
+    })
+  }
+}));
+
+import { getCompendiumEkskul, getCompendiumEquipmentPacks } from "../src/api/compendium";
 
 describe("Ekskul Synchronization & Regression Suite", () => {
   const legacyIds = [

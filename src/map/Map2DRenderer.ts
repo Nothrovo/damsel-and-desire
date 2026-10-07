@@ -90,8 +90,10 @@ export class Map2DRenderer {
 
     const { scale: targetScale, panX, panY } = calculateFocusTransform(room, this.floor.viewBox);
 
-    if (this.viewportGroup && smooth) {
-      this.viewportGroup.style.transition = "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)";
+    if (this.viewportGroup) {
+      this.viewportGroup.style.transition = smooth
+        ? "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)"
+        : "none";
     }
     this.scale = targetScale;
     this.panX = panX;
@@ -181,7 +183,7 @@ export class Map2DRenderer {
             </filter>
           </defs>
 
-          <g id="mapViewportGroup" transform="translate(${this.panX}, ${this.panY}) scale(${this.scale})">
+          <g id="mapViewportGroup" transform="translate(${this.panX}, ${this.panY}) scale(${this.scale})" style="transform-origin:0 0;transform-box:view-box;">
             <!-- 1. Outer Floor Outline Slab -->
             <polygon
               class="map-outer-outline"

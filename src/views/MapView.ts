@@ -134,7 +134,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
             <div class="map-ekskul-card-title">🏆 ${ekskulData.name}</div>
             <div class="map-ekskul-card-tagline">“${ekskulData.tagline || ''}”</div>
             <div class="map-ekskul-card-stats">
-              Hit Die: <strong>${ekskulData.hit_die}</strong> • Atribut Utama: <strong>${ekskulData.primary_stat}</strong>
+              Hit Die: <strong>${ekskulData.hit_die || ekskulData.hitDie || '-'}</strong> • Atribut Utama: <strong>${ekskulData.primary_stat || ekskulData.primaryStat || '-'}</strong>
             </div>
           </div>
           `
@@ -247,6 +247,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
         switchToFloor("f1", true);
         return;
       }
+      activeRenderer?.focusRoom(room.id, true);
       showRoomDetails(room);
       updateUrl(room.id, false);
     }
