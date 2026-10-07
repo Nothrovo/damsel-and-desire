@@ -273,6 +273,58 @@ export function createRoomLabelSprite(room: Room, viewBox: string, wallHeight: n
 }
 
 /**
+ * Converts an SVG path string (consisting of M, L, Z commands) into an extruded 3D mesh.
+ */
+export function createSvgPathMesh(
+  pathData: string,
+  viewBox: string,
+  depth: number = 0.35,
+  color: number = 0x24324a,
+  scale: number = SCALE_3D
+): THREE.Mesh | null {
+  const [, , vbW, vbH] = viewBox.split(" ").map(Number);
+  const shapePath = new THREE.ShapePath();
+  const tokens = pathData.trim().split(/\s+/);
+  let i = 0;
+  while (i < tokens.length) {
+    const cmd = tokens[i];
+    if (cmd === "M") {
+      shapePath.moveTo(parseFloat(tokens[i + 1]), parseFloat(tokens[i + 2]));
+      i += 3;
+    } else if (cmd === "L") {
+      shapePath.lineTo(parseFloat(tokens[i + 1]), parseFloat(tokens[i + 2]));
+      i += 3;
+    } else if (cmd === "Z") {
+      i++;
+    } else {
+      i++;
+    }
+  }
+
+  const shapes = shapePath.toShapes();
+  if (!shapes || shapes.length === 0) return null;
+
+  const geom = new THREE.ExtrudeGeometry(shapes, {
+    depth,
+    bevelEnabled: false
+  });
+
+  geom.rotateX(Math.PI / 2);
+  geom.scale(scale, 1, scale);
+  geom.translate(-vbW * scale / 2, depth, -vbH * scale / 2);
+
+  const mat = new THREE.MeshStandardMaterial({
+    color,
+    roughness: 0.8,
+    metalness: 0.15
+  });
+
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+/**
  * Creates 3D representation for campus grounds (Athletic field, pool, gym, gardens, maze).
  */
 export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
@@ -293,28 +345,14 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
   groundMesh.receiveShadow = true;
   group.add(groundMesh);
 
-  // 2. Campus Walkway Network
-  const walkwayMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    roughness: 0.85
-  });
-  // Central South entrance walkway
-  const southWalkway = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 80), walkwayMat);
-  southWalkway.position.set(0, 0.15, 200);
-  southWalkway.receiveShadow = true;
-  group.add(southWalkway);
-
-  // Cross walkway connecting pool, gym, and main building
-  const crossWalkway = new THREE.Mesh(new THREE.BoxGeometry(240, 0.3, 16), walkwayMat);
-  crossWalkway.position.set(0, 0.15, -45);
-  crossWalkway.receiveShadow = true;
-  group.add(crossWalkway);
-
-  // Walkway to athletic field
-  const fieldWalkway = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 55), walkwayMat);
-  fieldWalkway.position.set(0, 0.15, -135);
-  fieldWalkway.receiveShadow = true;
-  group.add(fieldWalkway);
+  // 2. Full Campus Walkway Network (Extruded from authentic SVG path)
+  const walkwayElement = campusFloor.decorativeElements?.find(e => e.id === "campus_walkways");
+  if (walkwayElement && walkwayElement.type === "path" && walkwayElement.pathData) {
+    const walkwaysMesh = createSvgPathMesh(walkwayElement.pathData, viewBox, 0.35, 0x24324a);
+    if (walkwaysMesh) {
+      group.add(walkwaysMesh);
+    }
+  }
 
   // 3. Campus Zones & Buildings
   campusFloor.rooms.forEach(room => {
@@ -392,13 +430,34 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
       southWing.receiveShadow = true;
       bGroup.add(southWing);
 
-      // Roof terrace overhang caps
-      const roofCap = new THREE.Mesh(
-        new THREE.BoxGeometry(totalW + 2, 1.2, totalD + 2),
+      // Roof caps on the 4 wings (leaves the central courtyard atrium open to the sky!)
+      const westRoofCap = new THREE.Mesh(
+        new THREE.BoxGeometry(wingThickX + 1, 1.2, totalD + 1),
         roofMat
       );
-      roofCap.position.set(worldPos.x, buildingHeight + 0.6, worldPos.z);
-      bGroup.add(roofCap);
+      westRoofCap.position.set(worldPos.x - totalW / 2 + wingThickX / 2, buildingHeight + 0.6, worldPos.z);
+      bGroup.add(westRoofCap);
+
+      const eastRoofCap = new THREE.Mesh(
+        new THREE.BoxGeometry(wingThickX + 1, 1.2, totalD + 1),
+        roofMat
+      );
+      eastRoofCap.position.set(worldPos.x + totalW / 2 - wingThickX / 2, buildingHeight + 0.6, worldPos.z);
+      bGroup.add(eastRoofCap);
+
+      const northRoofCap = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW + 1, 1.2, northWingD + 1),
+        roofMat
+      );
+      northRoofCap.position.set(worldPos.x, buildingHeight + 0.6, worldPos.z - totalD / 2 + northWingD / 2);
+      bGroup.add(northRoofCap);
+
+      const southRoofCap = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW + 1, 1.2, southWingD + 1),
+        roofMat
+      );
+      southRoofCap.position.set(worldPos.x, buildingHeight + 0.6, worldPos.z + totalD / 2 - southWingD / 2);
+      bGroup.add(southRoofCap);
 
       // Inner Courtyard Grass & Plaza
       const courtSlab = new THREE.Mesh(
@@ -493,29 +552,40 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
     if (room.id === "campus_swimming_pool") {
       const poolGroup = new THREE.Group();
 
-      const deckGeom = new THREE.BoxGeometry(w, 1.2, d);
+      const deckGeom = new THREE.BoxGeometry(w, 0.8, d);
       const deckMat = new THREE.MeshStandardMaterial({
         color: 0x1e293b,
         roughness: 0.8
       });
       const deck = new THREE.Mesh(deckGeom, deckMat);
-      deck.position.set(worldPos.x, 0.6, worldPos.z);
+      deck.position.set(worldPos.x, 0.4, worldPos.z);
       deck.receiveShadow = true;
       poolGroup.add(deck);
 
       const waterW = w - 16;
       const waterD = d - 14;
-      const waterGeom = new THREE.BoxGeometry(waterW, 0.5, waterD);
+      const waterGeom = new THREE.BoxGeometry(waterW, 0.4, waterD);
       const waterMat = new THREE.MeshStandardMaterial({
         color: 0x0284c7,
-        roughness: 0.08,
-        metalness: 0.45,
-        transparent: true,
-        opacity: 0.92
+        roughness: 0.1,
+        metalness: 0.3,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.35
       });
       const water = new THREE.Mesh(waterGeom, waterMat);
-      water.position.set(worldPos.x, 0.7, worldPos.z);
+      water.position.set(worldPos.x, 0.82, worldPos.z);
       poolGroup.add(water);
+
+      // Swimming lane divider lines
+      const laneCount = 4;
+      for (let l = 1; l < laneCount; l++) {
+        const laneZ = worldPos.z - waterD / 2 + (waterD / laneCount) * l;
+        const laneGeom = new THREE.BoxGeometry(waterW - 4, 0.05, 0.6);
+        const laneMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const lane = new THREE.Mesh(laneGeom, laneMat);
+        lane.position.set(worldPos.x, 1.05, laneZ);
+        poolGroup.add(lane);
+      }
 
       const bleacherGeom = new THREE.BoxGeometry(waterW, 3.5, 8);
       const bleacherMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 });

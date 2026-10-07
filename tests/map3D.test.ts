@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { svgToWorld3D, getCategory3DColor, SCALE_3D, FLOOR_HEIGHT_3D, create3DRoomGroup, createFloorSlabMesh } from "../src/map/map3DUtils";
+import { svgToWorld3D, getCategory3DColor, SCALE_3D, FLOOR_HEIGHT_3D, create3DRoomGroup, createFloorSlabMesh, createSvgPathMesh } from "../src/map/map3DUtils";
 import { MAP_FLOORS } from "../src/map/mapData";
 
 describe("3D Map Geometry & Coordinate Conversion", () => {
@@ -86,5 +86,16 @@ describe("3D Map Geometry & Coordinate Conversion", () => {
     // Field is the furthest back (most negative Z)
     expect(fieldCenter.z).toBeLessThan(poolCenter.z);
     expect(fieldCenter.z).toBeLessThan(gymCenter.z);
+  });
+
+  it("correctly extrudes SVG path commands into 3D walkway mesh", () => {
+    const campus = MAP_FLOORS.campus;
+    const walkwayElement = campus.decorativeElements?.find(e => e.id === "campus_walkways");
+    expect(walkwayElement).toBeDefined();
+
+    const mesh = createSvgPathMesh(walkwayElement!.pathData!, campus.viewBox);
+    expect(mesh).toBeDefined();
+    expect(mesh!.geometry).toBeDefined();
+    expect(mesh!.geometry.attributes.position.count).toBeGreaterThan(100);
   });
 });
