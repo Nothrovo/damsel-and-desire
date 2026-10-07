@@ -18,16 +18,22 @@ Tidak memiliki koneksi internet saat sesi main?
 - **Offline HTML Generator**: Skrip `buildStandaloneHandbook.js` menggunakan Vite SSR akan otomatis menyatukan (*bundle*) seluruh Handbook menjadi satu fail `PLAYERS_HANDBOOK.html` mandiri ketika Anda menjalankan `npm run build`.
 - **A4 Print-to-PDF**: Dilengkapi aturan `@media print` CSS khusus yang membuang UI web dan mengubah struktur menjadi ukuran kertas A4 siap cetak dengan margin yang sempurna. 
 
-### 3. 🎒 Interactive Item Compendium (90+ Barang Khusus)
-Kompilasi barang bawaan (Inventory) interaktif.
-- **Mekanik Unik**: Lebih dari 90 barang (mulai dari Pocky, Smartphone, hingga Katana Kayu) memiliki deskripsi dan mekanik gameplay khusus.
+### 3. 🎒 Interactive Item Compendium & 16 Ekskul Classes
+Kompilasi ensiklopedia TRPG interaktif:
+- **16 Klub Ekskul (Classes) & 48 Club Moves**: Pilihan lengkap ekstrakurikuler mulai dari OSIS, Kendo, Beladiri, Musik, Painting, hingga Fotografi, Cooking, Okultisme, dan Gaming.
+- **Mekanik Unik 100+ Barang**: Lebih dari 100 barang (mulai dari Pocky, Smartphone, hingga Katana Kayu) memiliki deskripsi dan mekanik gameplay khusus.
 - **Sistem Interaktif**: Pemain dapat mengetuk (tap) barang di lembar karakter mereka untuk memunculkan penjelasan *tooltips* atau modal yang menjelaskan efek mekaniknya berdasarkan tingkat kelangkaan dan kesulitan.
 - **Custom Item Builder**: Fitur tambah barang kustom ke dalam tas karakter (*inventory*).
 
-### 4. 🛡️ Public-Facing Character Vault & Builder
+### 4. 🗺️ Interactive School Map (Peta Denah Sekolah 2D & 3D)
+Peta interaktif gedung dan kampus Seishun Academy di rute `/map`:
+- **5 Tingkat Denah**: Campus, 1F, 2F, 3F, dan Rooftop dengan 67 ruangan lengkap.
+- **Navigasi Cepat**: Pan, zoom, Level-of-Detail (LOD), pencarian autocomplete cepat (`/`), dan drawer detail ruangan yang terintegrasi dengan Compendium.
+
+### 5. 🛡️ Public-Facing Character Vault & Builder
 Sistem telah beralih dari aplikasi berbayar/restriktif menjadi *Shared Vault* untuk komunitas.
 - **Tanpa Login/Register**: Langsung masuk dan buat karakter. Sempurna untuk bermain bersama teman satu meja (*couch co-op/local session*).
-- **Builder Wizard (6 Steps)**: Pembuatan karakter terpandu (Standard Array atau Point Buy, Pemilihan Klub Ekskul, Archetype, dll.).
+- **Builder Wizard (6 Steps)**: Pembuatan karakter terpandu (Standard Array atau Point Buy, Pemilihan 16 Klub Ekskul, 8 Archetype, dll.).
 - **VibeCoded D&D Beyond Sheet**: Tampilan lembar karakter otentik dengan manajemen Vitals (HP, Composure), Finansial (Yen/Rupiah), Actions & Moves, serta Manajemen Dadu.
 
 ---

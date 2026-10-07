@@ -7,7 +7,7 @@ import { getCategoryColor, getCategoryLabel } from "../map/mapUtils";
 import { router } from "../router/router";
 
 let activeRenderer: Map2DRenderer | null = null;
-let currentFloorId: FloorId = "f1";
+let currentFloorId: FloorId = "campus";
 
 export async function renderMapView(params: Record<string, string>): Promise<void> {
   const appContainer = document.getElementById("appMain");
@@ -21,7 +21,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
 
   // Parse initial parameters from route
   currentFloorId =
-    params.floor && params.floor in MAP_FLOORS ? (params.floor as FloorId) : "f1";
+    params.floor && params.floor in MAP_FLOORS ? (params.floor as FloorId) : "campus";
   const initialRoomId = params.room || null;
 
   appContainer.innerHTML = `

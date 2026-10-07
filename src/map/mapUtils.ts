@@ -151,3 +151,19 @@ export function getCategoryColor(category: RoomCategory): {
       };
   }
 }
+
+export function calculateFocusTransform(
+  room: Room,
+  viewBox: string,
+  targetDimension: number = 400
+): { scale: number; panX: number; panY: number } {
+  const center = getRoomCenter(room);
+  const [, , vbW, vbH] = viewBox.split(" ").map(Number);
+  const targetScale = Math.min(
+    2.2,
+    Math.max(1.5, targetDimension / Math.max(room.rect.width, room.rect.height))
+  );
+  const panX = vbW / 2 - targetScale * center.x;
+  const panY = vbH / 2 - targetScale * center.y;
+  return { scale: targetScale, panX, panY };
+}

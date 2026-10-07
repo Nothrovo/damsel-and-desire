@@ -1,5 +1,5 @@
 import type { Floor, Room, Point } from "./types";
-import { getCategoryColor, getRoomCenter } from "./mapUtils";
+import { getCategoryColor, getRoomCenter, calculateFocusTransform } from "./mapUtils";
 
 export interface Map2DRendererOptions {
   container: HTMLElement;
@@ -24,6 +24,8 @@ export class Map2DRenderer {
   private isDragging: boolean = false;
   private dragStartX: number = 0;
   private dragStartY: number = 0;
+  private dragStartPanX: number = 0;
+  private dragStartPanY: number = 0;
   private touchStartDist: number = 0;
   private hasMoved: boolean = false;
 
@@ -57,6 +59,10 @@ export class Map2DRenderer {
     return this.selectedRoomId;
   }
 
+  public getViewportState(): { scale: number; panX: number; panY: number } {
+    return { scale: this.scale, panX: this.panX, panY: this.panY };
+  }
+
   public zoomIn() {
     this.applyZoom(1.25);
   }
@@ -82,16 +88,14 @@ export class Map2DRenderer {
     this.selectedRoomId = roomId;
     this.updateRoomHighlights();
 
-    const center = getRoomCenter(room);
-    const [, , vbW, vbH] = this.floor.viewBox.split(" ").map(Number);
-    const targetScale = Math.min(2.2, Math.max(1.5, 400 / Math.max(room.rect.width, room.rect.height)));
+    const { scale: targetScale, panX, panY } = calculateFocusTransform(room, this.floor.viewBox);
 
     if (this.viewportGroup && smooth) {
       this.viewportGroup.style.transition = "transform 350ms cubic-bezier(0.16, 1, 0.3, 1)";
     }
     this.scale = targetScale;
-    this.panX = (vbW / 2 - center.x) * targetScale;
-    this.panY = (vbH / 2 - center.y) * targetScale;
+    this.panX = panX;
+    this.panY = panY;
     this.updateTransform();
   }
 
@@ -99,11 +103,11 @@ export class Map2DRenderer {
     if (!this.svgElement) return;
     const oldScale = this.scale;
     const newScale = Math.max(0.6, Math.min(4.5, oldScale * factor));
+    const [, , vbW, vbH] = this.floor.viewBox.split(" ").map(Number);
 
     if (anchorX === undefined || anchorY === undefined) {
-      const rect = this.svgElement.getBoundingClientRect();
-      anchorX = rect.width / 2;
-      anchorY = rect.height / 2;
+      anchorX = vbW / 2;
+      anchorY = vbH / 2;
     }
 
     this.panX = anchorX - (anchorX - this.panX) * (newScale / oldScale);
@@ -424,10 +428,20 @@ export class Map2DRenderer {
         e.preventDefault();
         if (this.viewportGroup) this.viewportGroup.style.transition = "none";
         const factor = e.deltaY < 0 ? 1.15 : 0.87;
-        const rect = svg.getBoundingClientRect();
-        const anchorX = e.clientX - rect.left;
-        const anchorY = e.clientY - rect.top;
-        this.applyZoom(factor, anchorX, anchorY);
+        const pt = svg.createSVGPoint();
+        pt.x = e.clientX;
+        pt.y = e.clientY;
+        const ctm = svg.getScreenCTM();
+        if (ctm) {
+          const svgP = pt.matrixTransform(ctm.inverse());
+          this.applyZoom(factor, svgP.x, svgP.y);
+        } else {
+          const rect = svg.getBoundingClientRect();
+          const [, , vbW, vbH] = this.floor.viewBox.split(" ").map(Number);
+          const anchorX = ((e.clientX - rect.left) / rect.width) * vbW;
+          const anchorY = ((e.clientY - rect.top) / rect.height) * vbH;
+          this.applyZoom(factor, anchorX, anchorY);
+        }
       },
       { passive: false }
     );
@@ -439,17 +453,24 @@ export class Map2DRenderer {
       if (this.viewportGroup) this.viewportGroup.style.transition = "none";
       this.isDragging = true;
       this.hasMoved = false;
-      this.dragStartX = e.clientX - this.panX;
-      this.dragStartY = e.clientY - this.panY;
+      this.dragStartX = e.clientX;
+      this.dragStartY = e.clientY;
+      this.dragStartPanX = this.panX;
+      this.dragStartPanY = this.panY;
       svg.style.cursor = "grabbing";
     });
 
     window.addEventListener("mousemove", e => {
       if (!this.isDragging) return;
-      const newPanX = e.clientX - this.dragStartX;
-      const newPanY = e.clientY - this.dragStartY;
+      const ctm = svg.getScreenCTM();
+      const scaleFactor = ctm ? ctm.a : 1;
+      const dx = (e.clientX - this.dragStartX) / scaleFactor;
+      const dy = (e.clientY - this.dragStartY) / scaleFactor;
 
-      if (Math.hypot(newPanX - this.panX, newPanY - this.panY) > 3) {
+      const newPanX = this.dragStartPanX + dx;
+      const newPanY = this.dragStartPanY + dy;
+
+      if (Math.hypot(e.clientX - this.dragStartX, e.clientY - this.dragStartY) > 3) {
         this.hasMoved = true;
       }
 
@@ -473,8 +494,10 @@ export class Map2DRenderer {
         if (e.touches.length === 1) {
           this.isDragging = true;
           this.hasMoved = false;
-          this.dragStartX = e.touches[0].clientX - this.panX;
-          this.dragStartY = e.touches[0].clientY - this.panY;
+          this.dragStartX = e.touches[0].clientX;
+          this.dragStartY = e.touches[0].clientY;
+          this.dragStartPanX = this.panX;
+          this.dragStartPanY = this.panY;
         } else if (e.touches.length === 2) {
           this.isDragging = false;
           this.touchStartDist = Math.hypot(
@@ -491,9 +514,15 @@ export class Map2DRenderer {
       e => {
         e.preventDefault();
         if (e.touches.length === 1 && this.isDragging) {
-          const newPanX = e.touches[0].clientX - this.dragStartX;
-          const newPanY = e.touches[0].clientY - this.dragStartY;
-          if (Math.hypot(newPanX - this.panX, newPanY - this.panY) > 3) {
+          const ctm = svg.getScreenCTM();
+          const scaleFactor = ctm ? ctm.a : 1;
+          const dx = (e.touches[0].clientX - this.dragStartX) / scaleFactor;
+          const dy = (e.touches[0].clientY - this.dragStartY) / scaleFactor;
+
+          const newPanX = this.dragStartPanX + dx;
+          const newPanY = this.dragStartPanY + dy;
+
+          if (Math.hypot(e.touches[0].clientX - this.dragStartX, e.touches[0].clientY - this.dragStartY) > 3) {
             this.hasMoved = true;
           }
           this.panX = newPanX;
@@ -508,8 +537,22 @@ export class Map2DRenderer {
             const factor = dist / this.touchStartDist;
             const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
             const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-            const rect = svg.getBoundingClientRect();
-            this.applyZoom(factor, midX - rect.left, midY - rect.top);
+            const pt = svg.createSVGPoint();
+            pt.x = midX;
+            pt.y = midY;
+            const ctm = svg.getScreenCTM();
+            if (ctm) {
+              const svgP = pt.matrixTransform(ctm.inverse());
+              this.applyZoom(factor, svgP.x, svgP.y);
+            } else {
+              const rect = svg.getBoundingClientRect();
+              const [, , vbW, vbH] = this.floor.viewBox.split(" ").map(Number);
+              this.applyZoom(
+                factor,
+                ((midX - rect.left) / rect.width) * vbW,
+                ((midY - rect.top) / rect.height) * vbH
+              );
+            }
             this.touchStartDist = dist;
           }
         }

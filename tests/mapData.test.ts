@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { MAP_FLOORS } from "../src/map/mapData";
-import { doRectanglesOverlap } from "../src/map/mapUtils";
+import { doRectanglesOverlap, getRoomCenter, calculateFocusTransform } from "../src/map/mapUtils";
 import { FALLBACK_DD_DATA } from "../src/data/fallbackCompendium";
 
 describe("Map Data Validation & Geometry Integrity", () => {
@@ -142,5 +142,38 @@ describe("Map Data Validation & Geometry Integrity", () => {
     expect(walkwayElem?.type).toBe("path");
     expect(walkwayElem?.pathData).toBeDefined();
     expect(walkwayElem?.pathData?.length).toBeGreaterThan(100);
+  });
+
+  it("verifies calculateFocusTransform centers every room exactly at the center of the viewport", () => {
+    // Specific check for f1_faculty_room (reported by user)
+    const facultyRoom = MAP_FLOORS.f1.rooms.find(r => r.id === "f1_faculty_room")!;
+    expect(facultyRoom).toBeDefined();
+
+    const tf1 = calculateFocusTransform(facultyRoom, MAP_FLOORS.f1.viewBox);
+    const center1 = getRoomCenter(facultyRoom);
+    const [, , vbW1, vbH1] = MAP_FLOORS.f1.viewBox.split(" ").map(Number);
+
+    expect(tf1.panX + tf1.scale * center1.x).toBeCloseTo(vbW1 / 2, 4);
+    expect(tf1.panY + tf1.scale * center1.y).toBeCloseTo(vbH1 / 2, 4);
+
+    // Comprehensive check across all 67 rooms on all 5 levels
+    Object.values(MAP_FLOORS).forEach(floor => {
+      const [, , vbW, vbH] = floor.viewBox.split(" ").map(Number);
+      floor.rooms.forEach(room => {
+        const tf = calculateFocusTransform(room, floor.viewBox);
+        const c = getRoomCenter(room);
+        const actualX = tf.panX + tf.scale * c.x;
+        const actualY = tf.panY + tf.scale * c.y;
+
+        expect(
+          actualX,
+          `Room ${room.id} on floor ${floor.id} should center X at ${vbW / 2}`
+        ).toBeCloseTo(vbW / 2, 4);
+        expect(
+          actualY,
+          `Room ${room.id} on floor ${floor.id} should center Y at ${vbH / 2}`
+        ).toBeCloseTo(vbH / 2, 4);
+      });
+    });
   });
 });

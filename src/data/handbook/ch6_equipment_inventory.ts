@@ -38,7 +38,7 @@ export const CHAPTER_6_EQUIPMENT_INVENTORY: HandbookChapter = {
       <p>Setiap murid memulai permainan dengan paket standar ini: Buku Teks & Catatan (+1 check ujian), Kotak Pensil & Penghapus (Advantage interaksi pinjam alat tulis), Smartphone (komunikasi & info), Kartu Pelajar (akses diskon), dan Payung Lipat (bisa dipayungi berdua untuk Advantage asmara).</p>
 
       <h4>2. Paket Barang Ekstrakurikuler (Club Packs)</h4>
-      <p>Masing-masing dari 12 klub memberikan 3–4 perlengkapan unik:</p>
+      <p>Masing-masing dari 16 klub memberikan 3–4 perlengkapan unik:</p>
       <ul>
         <li><strong>OSIS:</strong> Kartu ID OSIS Resmi, Walkie-Talkie Koordinasi, Agenda & Stempel Proposal.</li>
         <li><strong>Kendo:</strong> Shinai Bambu Latihan, Seragam Kendogi & Hakama, Minyak Perawatan Bilah.</li>
@@ -52,6 +52,10 @@ export const CHAPTER_6_EQUIPMENT_INVENTORY: HandbookChapter = {
         <li><strong>Literatur:</strong> Kertas Surat Bermotif Bunga Sakura, Pena Tinta Emas, Buku Puisi Klasik.</li>
         <li><strong>Band:</strong> Pick Gitar Keberuntungan, Kabel Audio Jack 6.3mm, Tuner Gitar Digital.</li>
         <li><strong>Painting:</strong> Buku Sketsa Hardcover A4, Set Cat Air Pocket, Kuas Detil Nomor 2.</li>
+        <li><strong>Photography:</strong> Kamera Digital Lensa Telefoto, Lampu Kilat Flash Portable, Album Polaroid Mini.</li>
+        <li><strong>Cooking:</strong> Kotak Bento Bertingkat Cantik, Set Pisau Dapur & Celemek Khusus, Botol Bumbu Rahasia.</li>
+        <li><strong>Occult:</strong> Kartu Tarot Klasik Rider-Waite, Lilin Aromaterapi Hitam, Jimat Kertas Ofuda.</li>
+        <li><strong>Gaming:</strong> Handheld Gaming Console, Mechanical Arcade Stick Portabel, Minuman Kaleng Energi Tinggi.</li>
       </ul>
 
       <h4>3. Makanan & Minuman Pemulih Stamina (Snacks & Refreshment)</h4>

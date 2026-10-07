@@ -14,13 +14,13 @@ export async function renderCompendiumView(): Promise<void> {
       <div style="margin-bottom:2rem;">
         <h1 style="font-family:var(--font-heading);margin-bottom:0.35rem;">📚 Compendium Ensiklopedia TRPG</h1>
         <p style="color:var(--text-muted);font-size:0.9rem;">
-          Panduan resmi sistem Damsel & Desire: 12 Klub Ekskul, 8 Archetype, 36 Club Moves, dan Aksi Sekolah.
+          Panduan resmi sistem Damsel & Desire: 16 Klub Ekskul, 8 Archetype, 48 Club Moves, dan Aksi Sekolah.
         </p>
         <input type="text" id="compendiumSearchInput" class="input-text" placeholder="Cari nama klub, move, atau aksi..." style="max-width:380px;margin-top:1rem;">
       </div>
 
       <div style="display:flex;gap:8px;border-bottom:1px solid var(--border-card);margin-bottom:1.5rem;overflow-x:auto;">
-        <button class="sheet-tab-btn active" data-comp-tab="ekskul">12 Ekskul (Classes)</button>
+        <button class="sheet-tab-btn active" data-comp-tab="ekskul">16 Ekskul (Classes)</button>
         <button class="sheet-tab-btn" data-comp-tab="archetypes">8 Archetypes (Species)</button>
         <button class="sheet-tab-btn" data-comp-tab="actions">Aksi Dasar Sekolah</button>
         <button class="sheet-tab-btn" data-comp-tab="social">Latar Sosial</button>

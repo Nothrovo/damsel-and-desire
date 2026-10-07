@@ -53,6 +53,35 @@ export async function getCompendiumAbilities(): Promise<AbilityCompendium[]> {
 
 export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
   if (cacheEkskul) return cacheEkskul;
+
+  const fallbackList: EkskulCompendium[] = FALLBACK_DD_DATA.ekskul.map((e: any) => ({
+    id: e.id,
+    name: e.name,
+    tagline: e.tagline,
+    hit_die: e.hitDie,
+    primary_stat: e.primaryStat,
+    saving_throws: e.savingThrows,
+    perk_description: e.perkDesc,
+    subclasses: (e.subclasses || []).map((sc: any) => ({
+      id: sc.id,
+      ekskul_id: e.id,
+      name: sc.name,
+      description: sc.desc,
+      features: sc.features || []
+    })),
+    club_moves: (e.clubMoves || []).map((m: any, idx: number) => ({
+      id: `${e.id}_move_${idx + 1}`,
+      ekskul_id: e.id,
+      name: m.name,
+      move_type: m.type,
+      cost: m.cost,
+      range: m.range,
+      check_type: m.check,
+      effect: m.effect,
+      description: m.desc
+    }))
+  }));
+
   try {
     const { data, error } = await supabase
       .from("ekskul")
@@ -60,7 +89,7 @@ export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
       .order("name");
 
     if (!error && data && data.length > 0) {
-      cacheEkskul = (data as any[]).map(e => {
+      const mergedList: EkskulCompendium[] = (data as any[]).map(e => {
         const fallback = FALLBACK_DD_DATA.ekskul.find((fe: any) => fe.id === e.id);
         const moves = (e.club_moves && e.club_moves.length > 0)
           ? e.club_moves
@@ -79,7 +108,17 @@ export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
           ...e,
           club_moves: moves
         };
-      }) as EkskulCompendium[];
+      });
+
+      // Merge missing ekskuls from fallback (e.g. photography, cooking, occult, gaming)
+      const existingIds = new Set(mergedList.map(e => e.id));
+      for (const fe of fallbackList) {
+        if (!existingIds.has(fe.id)) {
+          mergedList.push(fe);
+        }
+      }
+      mergedList.sort((a, b) => a.name.localeCompare(b.name));
+      cacheEkskul = mergedList;
       return cacheEkskul;
     }
   } catch (err) {
@@ -87,32 +126,7 @@ export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
   }
 
   // Fallback
-  cacheEkskul = FALLBACK_DD_DATA.ekskul.map((e: any) => ({
-    id: e.id,
-    name: e.name,
-    tagline: e.tagline,
-    hit_die: e.hitDie,
-    primary_stat: e.primaryStat,
-    saving_throws: e.savingThrows,
-    perk_description: e.perkDesc,
-    subclasses: (e.subclasses || []).map((sc: any) => ({
-      id: sc.id,
-      ekskul_id: e.id,
-      name: sc.name,
-      description: sc.desc
-    })),
-    club_moves: (e.clubMoves || []).map((m: any, idx: number) => ({
-      id: `${e.id}_move_${idx + 1}`,
-      ekskul_id: e.id,
-      name: m.name,
-      move_type: m.type,
-      cost: m.cost,
-      range: m.range,
-      check_type: m.check,
-      effect: m.effect,
-      description: m.desc
-    }))
-  }));
+  cacheEkskul = fallbackList;
   return cacheEkskul;
 }
 
@@ -262,21 +276,7 @@ export async function getCompendiumCalendarEvents(): Promise<CalendarEventCompen
 
 export async function getCompendiumEquipmentPacks(): Promise<EquipmentPackCompendium[]> {
   if (cacheEquipmentPacks) return cacheEquipmentPacks;
-  try {
-    const { data, error } = await supabase
-      .from("equipment_packs")
-      .select("*")
-      .order("id");
 
-    if (!error && data && data.length > 0) {
-      cacheEquipmentPacks = data as EquipmentPackCompendium[];
-      return cacheEquipmentPacks;
-    }
-  } catch (err) {
-    console.warn("Koneksi Supabase equipment packs compendium gagal, beralih ke fallback lokal.");
-  }
-
-  // Fallback
   const packs: EquipmentPackCompendium[] = [];
   if (FALLBACK_DD_DATA.equipmentPacks) {
     if (FALLBACK_DD_DATA.equipmentPacks.student) {
@@ -308,6 +308,28 @@ export async function getCompendiumEquipmentPacks(): Promise<EquipmentPackCompen
       }
     }
   }
+
+  try {
+    const { data, error } = await supabase
+      .from("equipment_packs")
+      .select("*")
+      .order("id");
+
+    if (!error && data && data.length > 0) {
+      const dbPacks = data as EquipmentPackCompendium[];
+      const existingIds = new Set(dbPacks.map(p => p.id));
+      for (const fp of packs) {
+        if (!existingIds.has(fp.id)) {
+          dbPacks.push(fp);
+        }
+      }
+      cacheEquipmentPacks = dbPacks;
+      return cacheEquipmentPacks;
+    }
+  } catch (err) {
+    console.warn("Koneksi Supabase equipment packs compendium gagal, beralih ke fallback lokal.");
+  }
+
   cacheEquipmentPacks = packs;
   return cacheEquipmentPacks;
 }

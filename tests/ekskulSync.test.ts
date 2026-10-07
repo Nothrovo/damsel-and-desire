@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { FALLBACK_DD_DATA } from "../src/data/fallbackCompendium";
 import { MASTER_ITEM_REGISTRY } from "../src/data/itemCompendium";
+import { getCompendiumEkskul, getCompendiumEquipmentPacks } from "../src/api/compendium";
 import fs from "fs";
 import path from "path";
 
@@ -73,6 +74,29 @@ describe("Ekskul Synchronization & Regression Suite", () => {
 
     newIds.forEach(id => {
       expect(sqlContent).toContain(`'${id}'`);
+    });
+  });
+
+  it("verifies getCompendiumEkskul API returns all 16 ekskuls with 48 club moves", async () => {
+    const list = await getCompendiumEkskul();
+    expect(list).toHaveLength(16);
+    const returnedIds = list.map(e => e.id);
+    [...legacyIds, ...newIds].forEach(id => {
+      expect(returnedIds).toContain(id);
+    });
+
+    const totalMoves = list.reduce((acc, e) => acc + (e.club_moves?.length || 0), 0);
+    expect(totalMoves).toBe(48);
+  });
+
+  it("verifies getCompendiumEquipmentPacks API returns packs for all 16 clubs", async () => {
+    const packs = await getCompendiumEquipmentPacks();
+    const clubPacks = packs.filter(p => p.category === "club");
+    expect(clubPacks).toHaveLength(16);
+
+    const clubPackIds = clubPacks.map(p => p.id);
+    [...legacyIds, ...newIds].forEach(id => {
+      expect(clubPackIds).toContain(`club_${id}`);
     });
   });
 });
