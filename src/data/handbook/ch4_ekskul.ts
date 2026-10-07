@@ -23,7 +23,7 @@ export const CHAPTER_4_EKSKUL: HandbookChapter = {
       </ul>`,
       tables: [
         {
-          caption: "Ringkasan 12 Klub Ekstrakurikuler Seishun Academy",
+          caption: "Ringkasan 16 Klub Ekstrakurikuler Seishun Academy",
           headers: ["Klub (Club)", "Hit Die", "Atribut Primer", "Saving Throws", "Fokus Utama"],
           rows: [
             ["OSIS (Student Council)", "d8", "Looks / Intelligent", "INT, LOK", "Otoritas, kepemimpinan & izin sekolah"],
@@ -37,7 +37,11 @@ export const CHAPTER_4_EKSKUL: HandbookChapter = {
             ["Penyiaran (Radio Sekolah)", "d6", "Looks / Intelligent", "INT, LOK", "Pengumuman speaker, suara ASMR & scoop gosip"],
             ["Literatur (Klub Sastra)", "d6", "Intelligent / Mind", "INT, MND", "Surat cinta mematikan, empati & kutipan tajam"],
             ["Band Musik (Rock / Pop)", "d8", "Looks / Talent", "LOK, TLN", "Bardic riff, teriakan sonik & konser panggung"],
-            ["Painting (Seni Rupa)", "d6", "Talent / Intelligent", "INT, TLN", "Sketsa kilat, cipratan cat & karya sindiran"]
+            ["Painting (Seni Rupa)", "d6", "Talent / Intelligent", "INT, TLN", "Sketsa kilat, cipratan cat & karya sindiran"],
+            ["Photography (Klub Fotografi)", "d6", "Intelligent / Talent", "INT, TLN", "Lensa telefoto, flash stun & momen candid"],
+            ["Cooking (Klub Memasak)", "d8", "Intelligent / Looks", "INT, LOK", "Bento cinta, aroma penenang & camilan energi"],
+            ["Occult (Klub Okultisme)", "d6", "Mind / Luck", "MND, LCK", "Ramalan tarot, kutukan dingin & jimat ofuda"],
+            ["Gaming (Klub Video Game)", "d8", "Intelligent / Talent", "INT, TLN", "Frame parry, taunt provoke & speedrun rute"]
           ]
         }
       ]
@@ -578,6 +582,186 @@ export const CHAPTER_4_EKSKUL: HandbookChapter = {
           details: {
             "Check": "Talent / Creative vs Looks Save",
             "Efek": "Karya menjadi buah bibir; target kehilangan 1d4 Composure setiap kali murid lain menertawakan gambar tersebut selama 1 hari."
+          }
+        }
+      ]
+    },
+    {
+      id: "club-photography",
+      title: "13. Photography (Klub Fotografi)",
+      subtitle: "Lensa Telefoto, Sudut Pandang Rahasia & Momen Emas Tak Terlupakan",
+      leadParagraph: "Aroma kimia ruang gelap, bunyi klik shutter mekanik di balik pepohonan taman, dan lensa telefoto yang mampu membekukan emosi murni remaja.",
+      contentHtml: `<p><strong>Hit Die:</strong> d6 • <strong>Atribut Primer:</strong> Intelligent / Talent • <strong>Saving Throws:</strong> Intelligent, Talent.<br>
+      <strong>Hak Istimewa:</strong> Kunci akses ruang gelap cuci foto, kamera DSLR/mirrorless pinjaman sekolah, kartu pers fotografer sekolah, dan sudut pandang tajam menangkap momen rahasia murid lain.</p>
+      <h4>Pilihan Subclass</h4>
+      <ul>
+        <li><strong>Fotografer Investigasi / Paparazzi:</strong> Mengintai tanpa disadari. Advantage pada seluruh check saat mengambil foto atau mengamati target secara sembunyi-sembunyi.</li>
+        <li><strong>Fotografer Artistik / Potret:</strong> Menangkap estetika dan pesona. Foto potret yang kamu berikan ke teman memulihkan 1d4 Composure atau menambah +1 Heart Meter.</li>
+      </ul>`,
+      statBlocks: [
+        {
+          title: "Jepretan Kilat Flash (Flash Stun)",
+          subtitle: "Combat Control Move",
+          metaBadge: "1 Action • Jarak 15 ft",
+          description: "Menodongkan lampu kilat kamera tepat ke wajah lawan lalu menekan tombol shutter seketika.",
+          details: {
+            "Check": "Intelligent / Academic vs Target Mind Save",
+            "Efek": "Target mengalami 1d4 Composure damage dan terkena status Disadvantage pada aksi berikutnya karena silau."
+          }
+        },
+        {
+          title: "Bukti Foto Kompromatis (Compromising Photo)",
+          subtitle: "Social Leverage",
+          metaBadge: "1 Action • Jarak 30 ft",
+          description: "Memamerkan hasil jepretan candid di layar kamera yang membuat lawan gelagapan dan salah tingkah.",
+          details: {
+            "Check": "Intelligent / Street vs Target Mind Save",
+            "Efek": "Target kehilangan 1d8 Composure dan ragu melanjutkan perdebatan karena rahasianya terancam terekspos."
+          }
+        },
+        {
+          title: "Membekukan Momen (Candid Shutter)",
+          subtitle: "Romance & Tactical Shutter",
+          metaBadge: "1 Bonus Action • Jarak 30 ft",
+          description: "Membidik lensa telefoto secara tenang di waktu yang tepat saat target sedang melamun atau tidak waspada.",
+          details: {
+            "Check": "Talent / Creative",
+            "Efek": "Menangkap ekspresi jujur atau kelemahan target dari jauh; sekutu mendapat Advantage pada check sosial atau romansa berikutnya."
+          }
+        }
+      ]
+    },
+    {
+      id: "club-cooking",
+      title: "14. Cooking (Klub Memasak & Kuliner)",
+      subtitle: "Aroma Bento Hangat, Manisnya Cokelat Cinta & Rasa yang Memikat Hati",
+      leadParagraph: "Uap wangi mengepul dari panci saus, denting spatula beradu wajan teflon, dan aroma kue cokelat baru matang yang membuat seisi lorong menelan ludah.",
+      contentHtml: `<p><strong>Hit Die:</strong> d8 • <strong>Atribut Primer:</strong> Intelligent / Looks • <strong>Saving Throws:</strong> Intelligent, Looks.<br>
+      <strong>Hak Istimewa:</strong> Kunci akses ruang dapur sekolah (Home Ec) berfasilitas lengkap, celemek khusus, pisau dapur tajam, bumbu rempah rahasia, serta kemampuan membuat hidangan penakluk hati.</p>
+      <h4>Pilihan Subclass</h4>
+      <ul>
+        <li><strong>Pâtissier / Pembuat Manisan & Cokelat:</strong> Ahli pastry dan cokelat romantis. Makanan manis buatanmu memberikan bonus +2 pada Social Check romansa/Valentine.</li>
+        <li><strong>Koki Masakan Hangat / Bento Master:</strong> Ahli nutrisi dan masakan penambah energi. Masakanmu memulihkan ekstra HP saat istirahat dan menangkal kelelahan.</li>
+      </ul>`,
+      statBlocks: [
+        {
+          title: "Bento Kasih Sayang (Handmade Bento)",
+          subtitle: "Heartwarming Culinary",
+          metaBadge: "Dibuat saat Istirahat • Jarak Touch",
+          description: "Menyusun nasi kepal, tamagoyaki manis, dan sosis gurita lucu dengan sepenuh perasaan hati.",
+          details: {
+            "Check": "Intelligent / Academic atau Looks / Charm",
+            "Efek": "Target yang memakan bento memulihkan 1d8 HP fisik / Composure dan Heart Meter bertambah +1 ♥ jika diberikan kepada target gebetan."
+          }
+        },
+        {
+          title: "Aroma Penggugah Selera (Irresistible Aroma)",
+          subtitle: "Social Distraction",
+          metaBadge: "1 Action • Jarak 30 ft",
+          description: "Membuka tutup wadah makanan hangat yang aromanya langsung menguasai seluruh lorong kelas.",
+          details: {
+            "Check": "Looks / Charm vs Target Mind Save",
+            "Efek": "Mengalihkan perhatian semua target lapar di sekitar; target terdistraksi dan tidak bisa mengambil aksi agresif selama 1 giliran."
+          }
+        },
+        {
+          title: "Camilan Penambah Tenaga (Snack Energy Boost)",
+          subtitle: "Field Morale Boost",
+          metaBadge: "1 Bonus Action • Jarak Touch",
+          description: "Menyelipkan sepotong kue kering manis buatan sendiri saat teman sedang kehabisan energi atau putus asa.",
+          details: {
+            "Check": "Otomatis",
+            "Efek": "Menyuapkan kue kering darurat ke sekutu; sekutu memulihkan 1d4 Composure dan mendapat Advantage pada Saving Throw berikutnya."
+          }
+        }
+      ]
+    },
+    {
+      id: "club-occult",
+      title: "15. Occult (Klub Okultisme & Misteri Gaib)",
+      subtitle: "Kartu Tarot Takdir, Lilin Hitam Aromaterapi & Misteri Tujuh Keajaiban Sekolah",
+      leadParagraph: "Tirai beludru ungu tertutup rapat menghalangi sinar matahari, aroma dupa cendana membubung pelan, dan bisikan mantra kuno berbaur dengan kartu takdir yang terbuka.",
+      contentHtml: `<p><strong>Hit Die:</strong> d6 • <strong>Atribut Primer:</strong> Mind / Luck • <strong>Saving Throws:</strong> Mind, Luck.<br>
+      <strong>Hak Istimewa:</strong> Ruang klub temaram di lantai 1 dengan aroma dupa mistis, set kartu tarot kuno, bola kristal, papan ouija, dan kepekaan luar biasa membaca firasat takdir serta legenda urban sekolah.</p>
+      <h4>Pilihan Subclass</h4>
+      <ul>
+        <li><strong>Peramal Nasib / Tarot Diviner:</strong> Membaca kartu masa depan dan ramalan asmara. Sekali per istirahat, dapat meramal takdir seseorang untuk memberikan Advantage pada aksi penting.</li>
+        <li><strong>Peneliti Tujuh Misteri Sekolah:</strong> Ahli kutukan dan atmosfer horor. Kebal terhadap rasa takut/Intimidasi lawan dan peka terhadap rahasia masa lalu sekolah.</li>
+      </ul>`,
+      statBlocks: [
+        {
+          title: "Ramalan Kartu Tarot (Tarot Reading)",
+          subtitle: "Fate Divination",
+          metaBadge: "1 Action • Jarak 15 ft",
+          description: "Membuka kartu tarot bergambar Wheel of Fortune atau Lovers dengan tatapan mata misterius.",
+          details: {
+            "Check": "Mind / Awareness vs DC 12",
+            "Efek": "Hasil sukses memberikan 1d6 Fated Die yang dapat ditambahkan ke d20 roll apapun milik sekutu dalam sesi ini."
+          }
+        },
+        {
+          title: "Aura Kutukan Menyeramkan (Eerie Curse)",
+          subtitle: "Psychological Terror",
+          metaBadge: "1 Action • Jarak 30 ft",
+          description: "Mengarahkan jimat atau lilin menyala ke arah target sambil melafalkan bisikan misterius yang membuat bulu kuduk merinding.",
+          details: {
+            "Check": "Mind / Emotional vs Target Mind Save",
+            "Efek": "Target kehilangan 1d8 Composure dan merasa dihantui nasib buruk (Disadvantage pada 1 roll berikutnya)."
+          }
+        },
+        {
+          title: "Kertas Jimat Pengusir Kesialan (Purifying Ward)",
+          subtitle: "Warding Talisman",
+          metaBadge: "1 Reaction • Self / 15 ft",
+          description: "Mengibaskan kertas ofuda bertuliskan aksara kanji kuno tepat saat malapetaka hendak terjadi.",
+          details: {
+            "Check": "Luck / Situation Luck",
+            "Efek": "Membatalkan kegagalan kritis atau menyerap 1d6 damage mental/sosial yang menyerang kawan."
+          }
+        }
+      ]
+    },
+    {
+      id: "club-gaming",
+      title: "16. Gaming (Klub Video Game & Esports)",
+      subtitle: "Refleks Tombol Kilat, Analisis Frame Data & Strategi Kemenangan Tanpa Cela",
+      leadParagraph: "Kilauan monitor gaming 240Hz di ruang klub, bunyi klik switch mekanik mikro berirama cepat, dan aroma minuman kaleng dingin peneman begadang adu taktik.",
+      contentHtml: `<p><strong>Hit Die:</strong> d8 • <strong>Atribut Primer:</strong> Intelligent / Talent • <strong>Saving Throws:</strong> Intelligent, Talent.<br>
+      <strong>Hak Istimewa:</strong> Ruang klub penuh konsol retro dan monitor gaming refresh-rate tinggi, game portabel di saku, kelenturan refleks jari, dan ketajaman menganalisis pola perilaku lawan.</p>
+      <h4>Pilihan Subclass</h4>
+      <ul>
+        <li><strong>Master Game Pertarungan / FGC Pro:</strong> Spesialis refleks kilat dan combo. Mendapatkan Advantage pada check inisiatif reaksi cepat.</li>
+        <li><strong>Ahli Strategi & RPG / Theorycrafter:</strong> Spesialis kalkulasi pola dan resource. Bisa memprediksi pergerakan lawan 1 giliran ke depan.</li>
+      </ul>`,
+      statBlocks: [
+        {
+          title: "Tangkisan Frame Sempurna (Frame Perfect Parry)",
+          subtitle: "Just-Frame Reaction",
+          metaBadge: "1 Reaction • Diri Sendiri",
+          description: "Mengelak atau menepis serangan pada sepersekian detik terakhir layaknya mengeksekusi just-frame parry di turnamen.",
+          details: {
+            "Check": "Physique / Agility vs Attack",
+            "Efek": "Menghitung timing serangan lawan dengan presisi; mengurangi damage serangan fisik/sosial sebesar 1d8 + Mod Agility."
+          }
+        },
+        {
+          title: "Provokasi Tombol Taunt (Taunt to Tilt)",
+          subtitle: "Psychological Provocation",
+          metaBadge: "1 Bonus Action • Jarak 30 ft",
+          description: "Melakukan gerakan jempol ke bawah atau t-bag virtual yang langsung memancing emosi ('tilt') lawan.",
+          details: {
+            "Check": "Talent / Performance vs Target Mind Save",
+            "Efek": "Target mengalami 1d6 Composure damage dan terprovokasi (harus mengarahkan serangan ke dirimu di giliran berikutnya)."
+          }
+        },
+        {
+          title: "Rute Cepat Speedrun (Speedrun Routing)",
+          subtitle: "Optimization Routing",
+          metaBadge: "1 Action • Diri / Sekutu",
+          description: "Membedah denah dan aturan sekolah seperti mencari sequence break dan glitch jalur tercepat.",
+          details: {
+            "Check": "Intelligent / Academic",
+            "Efek": "Menemukan celah tercepat melewati rintangan / teka-teki sekolah dalam separuh waktu normal tanpa memicu jebakan."
           }
         }
       ]

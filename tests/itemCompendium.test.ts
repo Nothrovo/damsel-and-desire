@@ -51,6 +51,20 @@ describe("Item Compendium & Registry", () => {
     const kendoItem = getItemDetails("Shinai Bambu Latihan");
     expect(kendoItem.rarity).toBe("Uncommon");
     expect(kendoItem.origin).toContain("Kendo");
+
+    // New club items
+    const photoItem = getItemDetails("Kamera Digital Lensa Telefoto");
+    expect(photoItem.origin).toContain("Photography");
+    expect(photoItem.rollCheck?.stat).toBe("mind");
+
+    const cookItem = getItemDetails("Kotak Bento Bertingkat Cantik");
+    expect(cookItem.origin).toContain("Cooking");
+
+    const tarotItem = getItemDetails("Set Kartu Tarot Antik");
+    expect(tarotItem.origin).toContain("Occult");
+
+    const gameItem = getItemDetails("Konsol Game Portabel & Charger");
+    expect(gameItem.origin).toContain("Gaming");
   });
 
   it("retrieves archetype specific items", () => {

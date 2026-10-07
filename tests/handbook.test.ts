@@ -54,12 +54,28 @@ describe("Player's Handbook (PHB) Modular Architecture", () => {
     expect(totalMoves).toBe(24);
   });
 
-  it("should verify Chapter 4 contains all 12 clubs and 36 club moves", () => {
+  it("should verify Chapter 4 contains all 16 clubs and 48 club moves", () => {
     const ch4 = getHandbookChapterById("chapter-4-ekskul")!;
-    expect(ch4.sections.length).toBe(13); // 1 overview + 12 clubs
+    expect(ch4.sections.length).toBe(17); // 1 overview + 16 clubs
+
+    // Legacy clubs regression check
+    const legacyClubIds = [
+      "club-student-council", "club-kendo", "club-martial-arts", "club-sports",
+      "club-drama", "club-kir-osn", "club-pramuka", "club-pecinta-alam",
+      "club-penyiaran", "club-literatur", "club-band", "club-painting"
+    ];
+    legacyClubIds.forEach(id => {
+      expect(ch4.sections.some(s => s.id === id)).toBe(true);
+    });
+
+    // New clubs check
+    const newClubIds = ["club-photography", "club-cooking", "club-occult", "club-gaming"];
+    newClubIds.forEach(id => {
+      expect(ch4.sections.some(s => s.id === id)).toBe(true);
+    });
 
     const totalClubMoves = ch4.sections.reduce((acc, s) => acc + (s.statBlocks?.length || 0), 0);
-    expect(totalClubMoves).toBe(36);
+    expect(totalClubMoves).toBe(48);
   });
 
   it("should verify Chapter 7 contains Dual Vitals and Salting rules", () => {

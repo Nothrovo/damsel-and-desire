@@ -337,7 +337,7 @@ def build_charsheet():
         ("ARCHETYPE TRAITS (FITUR RAS: DELINQUENT / SPORTY / NERD / DLL)",
          "Pilihan Archetype: Delinquent, Sporty, Nerd, Class clown, Emo, Weeb, Populer kids, Normies.\nKeunggulan & kebiasaan unik tipe karaktermu:\n[                                                                                                                                                                          ]"),
         ("EKSKUL PERKS (FITUR KELAS: STUDENT COUNCIL / BAND / KENDO / DLL)",
-         "Pilihan Ekskul: Student Council, Kendo, Martial art, Olahraga, Drama, KIR/OSN, Pramuka/Paskin, Pecinta Alam, Penyiaran, Literatur, Band, Painting.\nKemampuan khusus, hak akses ruangan klub, fasilitas ekskul:\n[                                                                                                                                                                          ]"),
+         "Pilihan Ekskul: Student Council, Kendo, Martial art, Olahraga, Drama, KIR/OSN, Pramuka/Paskin, Pecinta Alam, Penyiaran, Literatur, Band, Painting, Photography, Cooking, Occult, Gaming.\nKemampuan khusus, hak akses ruangan klub, fasilitas ekskul:\n[                                                                                                                                                                          ]"),
         ("ORIGIN & SOCIAL CLASS PERKS (STATUS FINANSIAL / KELUARGA)",
          "Pilihan Social Class: Rich, Medium rich, Medium, Medium poor, Poor, Orphanage.\nPengaruh keluarga, fasilitas rumah, uang saku harian, dan koneksi orang tua:\n[                                                                                                                                                                          ]")
     ]

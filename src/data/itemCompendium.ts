@@ -651,6 +651,126 @@ export const MASTER_ITEM_REGISTRY: Record<string, ItemDefinition> = {
     actionType: "passive"
   },
 
+  // Photography
+  "Kamera Digital Lensa Telefoto": {
+    name: "Kamera Digital Lensa Telefoto",
+    category: "club",
+    origin: "Ekskul: Photography (Klub Fotografi)",
+    rarity: "Uncommon",
+    flavorText: "Kamera DSLR hitam dengan lensa telefoto panjang. Mampu menangkap ekspresi wajah murid dari seberang lapangan.",
+    mechanic: "Memberikan +1 pada check Mind (Awareness) untuk mengamati kejadian dari kejauhan dan memungkinkan mengambil foto bukti tanpa disadari lawan.",
+    actionType: "utility",
+    rollCheck: { stat: "mind", label: "Check Awareness (Bidik Lensa Telefoto)" }
+  },
+  "Lampu Kilat (Flash Portable)": {
+    name: "Lampu Kilat (Flash Portable)",
+    category: "club",
+    origin: "Ekskul: Photography (Klub Fotografi)",
+    rarity: "Common",
+    flavorText: "Speedlight flash eksternal yang dipasang di atas kamera. Cahaya putihnya menyilaukan mata bila ditembakkan dalam jarak dekat.",
+    mechanic: "Dapat dinyalakan untuk menyilaukan target dalam jarak 10 ft; target harus berhasil Physical Save DC 12 atau terkena status Disadvantage pada aksi berikutnya.",
+    actionType: "action"
+  },
+  "Album Foto Polaroid Mini": {
+    name: "Album Foto Polaroid Mini",
+    category: "club",
+    origin: "Ekskul: Photography (Klub Fotografi)",
+    rarity: "Common",
+    flavorText: "Album saku bercover pastel berisi jepretan foto polaroid candid kebersamaan teman sekolah sepulang belajar.",
+    mechanic: "Melihat album bersama kawan saat istirahat memulihkan 1d4 Composure bagi karakter dan satu teman yang diajak bernostalgia.",
+    actionType: "utility"
+  },
+
+  // Cooking
+  "Kotak Bento Bertingkat Cantik": {
+    name: "Kotak Bento Bertingkat Cantik",
+    category: "club",
+    origin: "Ekskul: Cooking (Klub Memasak & Kuliner)",
+    rarity: "Common",
+    flavorText: "Kotak bekal susun dua bermotif sakura dengan karet pengikat rapi. Menjaga aroma makanan tetap hangat dan menggiurkan.",
+    mechanic: "Menampung hidangan bekal istimewa; memberikan Advantage pada check interaksi romansa saat mengajak seseorang makan siang bersama.",
+    actionType: "utility",
+    rollCheck: { stat: "looks", label: "Check Charm (Ajak Makan Bento)" }
+  },
+  "Set Pisau Dapur & Celemek Khusus": {
+    name: "Set Pisau Dapur & Celemek Khusus",
+    category: "club",
+    origin: "Ekskul: Cooking (Klub Memasak & Kuliner)",
+    rarity: "Uncommon",
+    flavorText: "Pisau santoku tajam dalam sarung kayu aman dan celemek katun bersih berbordir nama anggota klub memasak.",
+    mechanic: "Memberikan +1 pada check Intelligent (Academic) atau Talent (Creative) saat memproses bahan makanan, memotong rapi, atau membuat garnish.",
+    actionType: "passive"
+  },
+  "Botol Bumbu Rahasia": {
+    name: "Botol Bumbu Rahasia",
+    category: "club",
+    origin: "Ekskul: Cooking (Klub Memasak & Kuliner)",
+    rarity: "Common",
+    flavorText: "Botol bumbu rempah racikan rahasia keluarga. Sedikit taburan cukup menyulap roti tawar atau kuah biasa menjadi selezat hidangan kafe bintang lima.",
+    mechanic: "Dapat ditaburkan ke makanan siapapun sekali per sesi; makanan tersebut memulihkan 2 poin Composure ekstra bagi yang memakannya.",
+    actionType: "consumable"
+  },
+
+  // Occult
+  "Set Kartu Tarot Antik": {
+    name: "Set Kartu Tarot Antik",
+    category: "club",
+    origin: "Ekskul: Occult (Klub Okultisme & Misteri)",
+    rarity: "Uncommon",
+    flavorText: "Set kartu 78 arkana bertepi emas kusam dalam kotak beludru ungu. Kartunya terasa dingin saat disentuh.",
+    mechanic: "Dapat digunakan untuk meramal asmara atau nasib seseorang sekali per hari; membuka pembicaraan mendalam dan mengungkap 1 rahasia kecil target.",
+    actionType: "utility",
+    rollCheck: { stat: "mind", label: "Check Awareness (Ramal Kartu Tarot)" }
+  },
+  "Lilin Ungu Mistis & Dupa Aromaterapi": {
+    name: "Lilin Ungu Mistis & Dupa Aromaterapi",
+    category: "club",
+    origin: "Ekskul: Occult (Klub Okultisme & Misteri)",
+    rarity: "Common",
+    flavorText: "Lilin aroma lavender gelap dan dupa cendana yang menciptakan asap tipis meliuk-liuk di udara temaram.",
+    mechanic: "Dinyalakan di dalam ruangan tertutup untuk menenangkan atmosfer tegang; semua orang di dalam ruangan memulihkan 1d4 Composure saat istirahat.",
+    actionType: "utility"
+  },
+  "Jimat Kertas Pelindung (Ofuda)": {
+    name: "Jimat Kertas Pelindung (Ofuda)",
+    category: "club",
+    origin: "Ekskul: Occult (Klub Okultisme & Misteri)",
+    rarity: "Common",
+    flavorText: "Kertas jimat tradisional bertuliskan kanji pelindung dengan tinta merah terang.",
+    mechanic: "Sebagai Reaction terhadap serangan mental, gosip, atau taktik menakut-nakuti lawan: robek jimat untuk mengurangi 1d6 Composure damage yang masuk.",
+    actionType: "reaction"
+  },
+
+  // Gaming
+  "Konsol Game Portabel & Charger": {
+    name: "Konsol Game Portabel & Charger",
+    category: "club",
+    origin: "Ekskul: Gaming (Klub Video Game & Esports)",
+    rarity: "Uncommon",
+    flavorText: "Konsol handheld layar OLED dengan stiker pixel art dan powerbank mini. Tempat pelarian dari kepenatan belajar.",
+    mechanic: "Mengajak teman bermain game co-op atau tanding saat istirahat; memulihkan 2 Composure bagi karakter dan teman serta mempererat relasi pertemanan.",
+    actionType: "utility",
+    rollCheck: { stat: "talent", label: "Check Adaptability (Mabar Game Handheld)" }
+  },
+  "Arcade Controller / Gamepad Khusus": {
+    name: "Arcade Controller / Gamepad Khusus",
+    category: "club",
+    origin: "Ekskul: Gaming (Klub Video Game & Esports)",
+    rarity: "Uncommon",
+    flavorText: "Gamepad kustom dengan switch mekanik mikro dan grip karet ergonomis untuk input combo secepat kilat.",
+    mechanic: "Memberikan +1 pada check Physique (Agility) atau Talent (Adaptability) yang menguji refleks ketangkasan jari tangan.",
+    actionType: "passive"
+  },
+  "Minuman Energi Kaleng": {
+    name: "Minuman Energi Kaleng",
+    category: "club",
+    origin: "Ekskul: Gaming (Klub Video Game & Esports)",
+    rarity: "Common",
+    flavorText: "Minuman soda asam manis bersoda dingin dengan kadar kafein dan taurin tinggi khas para gamer malam.",
+    mechanic: "Diminum saat mengantuk atau lelah; menghapus efek Exhaustion ringan selama 1 jam dan memulihkan 1d4 Composure.",
+    actionType: "consumable"
+  },
+
   // =========================================================================
   // 4. CIRI KHAS ARCHETYPE (ARCHETYPE EQUIPMENT)
   // =========================================================================
