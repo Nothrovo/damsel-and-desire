@@ -17,6 +17,7 @@ import { renderBuilderWizardView } from "./views/BuilderWizardView";
 import { renderCharacterSheetView } from "./views/CharacterSheetView";
 import { renderDmDashboardView } from "./views/DmDashboardView";
 import { renderCompendiumView } from "./views/CompendiumView";
+import { renderHandbookView } from "./views/HandbookView";
 import { renderSettingsView } from "./views/SettingsView";
 import { renderNotFoundView } from "./views/NotFoundView";
 
@@ -68,6 +69,7 @@ function initApp() {
     .register("/characters/new", renderBuilderWizardView)
     .register("/characters/:id", renderCharacterSheetView)
     .register("/compendium", renderCompendiumView)
+    .register("/handbook", renderHandbookView)
     .register("/login", renderLandingView)
     .register("/campaigns", renderLandingView)
     .register("/campaigns/:id", renderLandingView)
