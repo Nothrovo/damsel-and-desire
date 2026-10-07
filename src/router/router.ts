@@ -25,18 +25,25 @@ class Router {
 
   private normalizePath(fullPath: string): string {
     const base = this.getBasePath();
-    if (base && fullPath.startsWith(base)) {
-      const stripped = fullPath.slice(base.length);
-      return stripped ? (stripped.startsWith("/") ? stripped : `/${stripped}`) : "/";
+    const [pathPart, searchPart] = fullPath.split("?");
+    let stripped = pathPart;
+    if (base && pathPart.startsWith(base)) {
+      stripped = pathPart.slice(base.length);
+      stripped = stripped ? (stripped.startsWith("/") ? stripped : `/${stripped}`) : "/";
     }
-    return fullPath || "/";
+    if (!stripped) stripped = "/";
+    return searchPart !== undefined ? `${stripped}?${searchPart}` : stripped;
   }
 
   private formatFullPath(appPath: string): string {
     const base = this.getBasePath();
-    if (!base) return appPath;
-    if (appPath === "/") return `${base}/`;
-    return `${base}${appPath.startsWith("/") ? "" : "/"}${appPath}`;
+    const [pathPart, searchPart] = appPath.split("?");
+    let full = pathPart;
+    if (base) {
+      if (pathPart === "/") full = `${base}/`;
+      else full = `${base}${pathPart.startsWith("/") ? "" : "/"}${pathPart}`;
+    }
+    return searchPart !== undefined ? `${full}?${searchPart}` : full;
   }
 
   register(path: string, handler: RouteHandler, options: { requiresAuth?: boolean; requiresDm?: boolean } = {}) {
@@ -56,7 +63,7 @@ class Router {
 
   init() {
     window.addEventListener("popstate", () => {
-      this.resolve(window.location.pathname);
+      this.resolve(window.location.pathname + window.location.search);
     });
 
     // Intercept internal link clicks
@@ -77,7 +84,7 @@ class Router {
       }
     });
 
-    this.resolve(window.location.pathname);
+    this.resolve(window.location.pathname + window.location.search);
   }
 
   navigate(path: string, replace: boolean = false) {
@@ -104,14 +111,25 @@ class Router {
       });
     }
 
-    const normalizedPath = this.normalizePath(currentPath);
+    const [pathPart, searchPart] = currentPath.split("?");
+    const normalizedPath = this.normalizePath(pathPart);
     const pathSegments = normalizedPath.split("/").filter(Boolean);
+
+    // Extract query parameters from search string
+    const queryParams: Record<string, string> = {};
+    const searchToParse = searchPart !== undefined ? searchPart : window.location.search.replace(/^\?/, "");
+    if (searchToParse) {
+      const searchParams = new URLSearchParams(searchToParse);
+      searchParams.forEach((val, key) => {
+        queryParams[key] = val;
+      });
+    }
 
     for (const route of this.routes) {
       const routeSegments = route.path.split("/").filter(Boolean);
       if (routeSegments.length !== pathSegments.length) continue;
 
-      const params: Record<string, string> = {};
+      const params: Record<string, string> = { ...queryParams };
       let match = true;
 
       for (let i = 0; i < routeSegments.length; i++) {

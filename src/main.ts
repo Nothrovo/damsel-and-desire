@@ -19,6 +19,7 @@ import { renderDmDashboardView } from "./views/DmDashboardView";
 import { renderCompendiumView } from "./views/CompendiumView";
 import { renderHandbookView } from "./views/HandbookView";
 import { renderSettingsView } from "./views/SettingsView";
+import { renderMapView } from "./views/MapView";
 import { renderNotFoundView } from "./views/NotFoundView";
 
 function mountGlobalShell() {
@@ -70,6 +71,7 @@ function initApp() {
     .register("/characters/:id", renderCharacterSheetView)
     .register("/compendium", renderCompendiumView)
     .register("/handbook", renderHandbookView)
+    .register("/map", renderMapView)
     .register("/login", renderLandingView)
     .register("/campaigns", renderLandingView)
     .register("/campaigns/:id", renderLandingView)
