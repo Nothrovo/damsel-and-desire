@@ -2,12 +2,15 @@ import { MAP_FLOORS } from "../map/mapData";
 import { Map2DRenderer } from "../map/Map2DRenderer";
 import { searchSchoolMap, type SearchResult } from "../map/mapSearch";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
-import type { FloorId, Room } from "../map/types";
+import type { FloorId, Room, MapMode } from "../map/types";
 import { getCategoryColor, getCategoryLabel } from "../map/mapUtils";
 import { router } from "../router/router";
+import { Map3DRenderer } from "../map/Map3DRenderer";
 
-let activeRenderer: Map2DRenderer | null = null;
+type AnyMapRenderer = Map2DRenderer | Map3DRenderer;
+let activeRenderer: AnyMapRenderer | null = null;
 let currentFloorId: FloorId = "campus";
+let currentMode: MapMode = "2d";
 
 export async function renderMapView(params: Record<string, string>): Promise<void> {
   const appContainer = document.getElementById("appMain");
@@ -22,6 +25,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
   // Parse initial parameters from route
   currentFloorId =
     params.floor && params.floor in MAP_FLOORS ? (params.floor as FloorId) : "campus";
+  currentMode = params.mode === "3d" ? "3d" : "2d";
   const initialRoomId = params.room || null;
 
   appContainer.innerHTML = `
@@ -39,9 +43,9 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
           </div>
 
           <!-- Mode Toggle -->
-          <div class="map-mode-toggle">
-            <button class="map-mode-btn active" data-mode="2d">2D Vector</button>
-            <button class="map-mode-btn" data-mode="3d" title="Mode 3D Three.js akan aktif di Fase C" style="opacity:0.45;cursor:not-allowed;">3D (Fase C)</button>
+          <div class="map-mode-toggle" id="mapModeToggle">
+            <button class="map-mode-btn ${currentMode === '2d' ? 'active' : ''}" data-mode="2d">2D Vector</button>
+            <button class="map-mode-btn ${currentMode === '3d' ? 'active' : ''}" data-mode="3d">3D Isometric</button>
           </div>
         </div>
 
@@ -94,6 +98,9 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
 
   function updateUrl(roomId?: string | null, pushState: boolean = false) {
     const queryParts: string[] = [`floor=${currentFloorId}`];
+    if (currentMode === "3d") {
+      queryParts.push("mode=3d");
+    }
     const targetRoom = roomId !== undefined ? roomId : activeRenderer?.getSelectedRoomId();
     if (targetRoom) {
       queryParts.push(`room=${targetRoom}`);
@@ -236,31 +243,76 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     updateUrl(targetRoom.id, false);
   }
 
-  // Initialize Map2DRenderer
-  activeRenderer = new Map2DRenderer({
-    container: canvasContainer,
-    floor: MAP_FLOORS[currentFloorId],
-    selectedRoomId: initialRoomId,
-    onRoomSelect: (room: Room) => {
-      // Klik Main Building di peta Campus: arahkan ke 1F
-      if (room.id === "campus_main_building") {
-        switchToFloor("f1", true);
-        return;
-      }
-      activeRenderer?.focusRoom(room.id, true);
-      showRoomDetails(room);
-      updateUrl(room.id, false);
+  // Initialize Active Renderer (2D Vector or 3D Isometric)
+  function initRenderer(selectedRoomId: string | null = null) {
+    if (activeRenderer) {
+      activeRenderer.destroy();
+      activeRenderer = null;
     }
-  });
 
-  // Focus initial room if present in query parameters
-  if (initialRoomId) {
-    const room = MAP_FLOORS[currentFloorId].rooms.find(r => r.id === initialRoomId);
-    if (room) {
-      activeRenderer.focusRoom(initialRoomId, false);
-      showRoomDetails(room);
+    if (currentMode === "3d") {
+      activeRenderer = new Map3DRenderer({
+        container: canvasContainer!,
+        floorId: currentFloorId,
+        selectedRoomId,
+        onRoomSelect: (room: Room) => {
+          if (room.id === "campus_main_building") {
+            switchToFloor("f1", true);
+            return;
+          }
+          activeRenderer?.focusRoom(room.id, true);
+          showRoomDetails(room);
+          updateUrl(room.id, false);
+        }
+      });
+    } else {
+      activeRenderer = new Map2DRenderer({
+        container: canvasContainer!,
+        floor: MAP_FLOORS[currentFloorId],
+        selectedRoomId,
+        onRoomSelect: (room: Room) => {
+          if (room.id === "campus_main_building") {
+            switchToFloor("f1", true);
+            return;
+          }
+          activeRenderer?.focusRoom(room.id, true);
+          showRoomDetails(room);
+          updateUrl(room.id, false);
+        }
+      });
+    }
+
+    // Focus initial room if present
+    if (selectedRoomId) {
+      const room = MAP_FLOORS[currentFloorId].rooms.find(r => r.id === selectedRoomId);
+      if (room) {
+        activeRenderer.focusRoom(selectedRoomId, false);
+        showRoomDetails(room);
+      }
     }
   }
+
+  // Initial renderer launch
+  initRenderer(initialRoomId);
+
+  // Mode Toggle Events (2D Vector vs 3D Isometric)
+  document.getElementById("mapModeToggle")?.addEventListener("click", e => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(".map-mode-btn");
+    if (!btn) return;
+    const targetMode = btn.getAttribute("data-mode") as MapMode;
+    if (!targetMode || targetMode === currentMode) return;
+
+    currentMode = targetMode;
+
+    // Update active class on toggle buttons
+    document.querySelectorAll(".map-mode-btn").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-mode") === targetMode);
+    });
+
+    const currentSelected = activeRenderer?.getSelectedRoomId() || null;
+    initRenderer(currentSelected);
+    updateUrl(currentSelected, true);
+  });
 
   // Floor Selector Events
   document.getElementById("mapFloorSelector")?.addEventListener("click", e => {
