@@ -84,6 +84,10 @@ export interface Character {
   finances: CharacterFinances;
   inventory: CharacterInventory;
   backstory_fields: CharacterBackstory;
+  profUniform?: string;
+  profClubTools?: string;
+  profLanguages?: string;
+  targets?: TargetSecret[];
   version: number;
   created_at: string;
   updated_at: string;

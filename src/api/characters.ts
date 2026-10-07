@@ -70,6 +70,10 @@ function normalizeCharacter(item: any): Character {
       flaws: item.flaws || "",
       backstory: item.backstory || ""
     },
+    profUniform: item.profUniform || item.prof_uniform || "",
+    profClubTools: item.profClubTools || item.prof_club_tools || "",
+    profLanguages: item.profLanguages || item.prof_languages || "",
+    targets: item.targets || [],
     version: item.version || 1,
     created_at: item.created_at || new Date().toISOString(),
     updated_at: item.updated_at || new Date().toISOString()
