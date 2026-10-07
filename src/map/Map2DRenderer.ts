@@ -7,8 +7,6 @@ export interface Map2DRendererOptions {
   selectedRoomId?: string | null;
   onRoomSelect?: (room: Room) => void;
   onRoomHover?: (room: Room | null, clientX?: number, clientY?: number) => void;
-  debugOverlay?: boolean;
-  debugOpacity?: number;
 }
 
 export class Map2DRenderer {
@@ -29,14 +27,9 @@ export class Map2DRenderer {
   private touchStartDist: number = 0;
   private hasMoved: boolean = false;
 
-  // Debug overlay
-  private debugOverlay: boolean = false;
-  private debugOpacity: number = 0.45;
-
   // DOM elements
   private svgElement: SVGSVGElement | null = null;
   private viewportGroup: SVGGElement | null = null;
-  private debugImageElement: SVGImageElement | null = null;
 
   constructor(options: Map2DRendererOptions) {
     this.container = options.container;
@@ -44,8 +37,6 @@ export class Map2DRenderer {
     this.selectedRoomId = options.selectedRoomId || null;
     this.onRoomSelect = options.onRoomSelect;
     this.onRoomHover = options.onRoomHover;
-    this.debugOverlay = options.debugOverlay ?? false;
-    this.debugOpacity = options.debugOpacity ?? 0.45;
 
     this.render();
     this.attachEvents();
@@ -60,15 +51,6 @@ export class Map2DRenderer {
   public selectRoom(roomId: string | null) {
     this.selectedRoomId = roomId;
     this.updateRoomHighlights();
-  }
-
-  public setDebugOverlay(enabled: boolean, opacity?: number) {
-    this.debugOverlay = enabled;
-    if (opacity !== undefined) this.debugOpacity = opacity;
-    if (this.debugImageElement) {
-      this.debugImageElement.style.display = this.debugOverlay ? "block" : "none";
-      this.debugImageElement.setAttribute("opacity", String(this.debugOpacity));
-    }
   }
 
   public zoomIn() {
@@ -167,9 +149,9 @@ export class Map2DRenderer {
       ? import.meta.env.BASE_URL
       : `${import.meta.env.BASE_URL}/`;
 
-    // SVG container with pastel background
+    // SVG container with dark theme background
     this.container.innerHTML = `
-      <div class="map-viewport-wrapper" style="position:relative;width:100%;height:100%;overflow:hidden;background-color:#fff6f9;user-select:none;touch-action:none;">
+      <div class="map-viewport-wrapper" style="position:relative;width:100%;height:100%;overflow:hidden;background-color:#0b0f19;user-select:none;touch-action:none;">
         <svg
           class="map-svg ${this.scale < 1.15 ? 'lod-far' : ''}"
           viewBox="${floor.viewBox}"
@@ -178,10 +160,10 @@ export class Map2DRenderer {
         >
           <defs>
             <filter id="roomShadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#ffa8d8" flood-opacity="0.3"/>
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.6"/>
             </filter>
             <filter id="hoverGlow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#f43f5e" flood-opacity="0.6"/>
+              <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#e11d48" flood-opacity="0.8"/>
             </filter>
           </defs>
 
@@ -190,9 +172,9 @@ export class Map2DRenderer {
             <polygon
               class="map-outer-outline"
               points="${floor.outline.map(p => `${p.x},${p.y}`).join(' ')}"
-              fill="#fff0f8"
-              stroke="#ffa8d8"
-              stroke-width="4"
+              fill="#131b2a"
+              stroke="#2d3748"
+              stroke-width="3"
               stroke-linejoin="round"
             />
 
@@ -203,9 +185,9 @@ export class Map2DRenderer {
                 <polygon
                   class="map-courtyard-void"
                   points="${floor.courtyard.map(p => `${p.x},${p.y}`).join(' ')}"
-                  fill="#fff6f9"
-                  stroke="#ffa8d8"
-                  stroke-width="4"
+                  fill="#0b0f19"
+                  stroke="#2d3748"
+                  stroke-width="3"
                   stroke-linejoin="round"
                 />
                 <!-- Central Floor Label in Courtyard Void -->
@@ -222,9 +204,34 @@ export class Map2DRenderer {
                 : ""
             }
 
-            <!-- 3. Decorative Elements (Taman F1, South Gate Campus, Flagpole) -->
+            <!-- 3. Decorative Elements (Walkways, Taman F1, Flagpole, Courtyard) -->
             ${(floor.decorativeElements || [])
               .map(elem => {
+                if (elem.type === "path" && elem.pathData) {
+                  return `
+                    <path
+                      id="${elem.id}"
+                      d="${elem.pathData}"
+                      fill="${elem.fill || '#182335'}"
+                      fill-rule="evenodd"
+                      stroke="${elem.stroke || '#334155'}"
+                      stroke-width="${elem.strokeWidth || 2}"
+                      stroke-linejoin="round"
+                    />
+                  `;
+                }
+                if (elem.type === "polygon" && elem.points) {
+                  return `
+                    <polygon
+                      id="${elem.id}"
+                      points="${elem.points.map(p => `${p.x},${p.y}`).join(' ')}"
+                      fill="${elem.fill || '#182335'}"
+                      stroke="${elem.stroke || '#334155'}"
+                      stroke-width="${elem.strokeWidth || 2}"
+                      stroke-linejoin="round"
+                    />
+                  `;
+                }
                 if (elem.type === "rect") {
                   return `
                     <rect
@@ -233,9 +240,9 @@ export class Map2DRenderer {
                       y="${elem.y}"
                       width="${elem.width}"
                       height="${elem.height}"
-                      fill="${elem.fill || '#fff0f8'}"
-                      stroke="${elem.stroke || '#ffa8d8'}"
-                      stroke-width="${elem.strokeWidth || 3}"
+                      fill="${elem.fill || '#182335'}"
+                      stroke="${elem.stroke || '#334155'}"
+                      stroke-width="${elem.strokeWidth || 2}"
                       stroke-linejoin="round"
                     />
                   `;
@@ -247,9 +254,9 @@ export class Map2DRenderer {
                       cx="${elem.cx}"
                       cy="${elem.cy}"
                       r="${elem.r}"
-                      fill="${elem.fill || '#ffe0f1'}"
-                      stroke="${elem.stroke || '#ffa8d8'}"
-                      stroke-width="${elem.strokeWidth || 3}"
+                      fill="${elem.fill || '#064e3b'}"
+                      stroke="${elem.stroke || '#10b981'}"
+                      stroke-width="${elem.strokeWidth || 2.5}"
                     />
                   `;
                 }
@@ -261,18 +268,6 @@ export class Map2DRenderer {
             <g class="map-rooms-layer">
               ${floor.rooms.map(room => this.renderRoomSvg(room)).join("")}
             </g>
-
-            <!-- 5. Debug Reference Screenshot Overlay -->
-            <image
-              id="mapDebugImage"
-              href="${baseUrl}screenshots/map/${floor.id}.png"
-              x="0"
-              y="0"
-              width="${vbW}"
-              height="${vbH}"
-              opacity="${this.debugOpacity}"
-              style="display:${this.debugOverlay ? 'block' : 'none'};pointer-events:none;mix-blend-mode:multiply;"
-            />
           </g>
         </svg>
 
@@ -283,7 +278,6 @@ export class Map2DRenderer {
 
     this.svgElement = this.container.querySelector<SVGSVGElement>(".map-svg");
     this.viewportGroup = this.container.querySelector<SVGGElement>("#mapViewportGroup");
-    this.debugImageElement = this.container.querySelector<SVGImageElement>("#mapDebugImage");
 
     this.updateRoomHighlights();
   }
@@ -302,19 +296,34 @@ export class Map2DRenderer {
         data-room-id="${room.id}"
         style="cursor:pointer;"
       >
-        <!-- Room Base Shape -->
-        <rect
-          class="room-box"
-          x="${rect.x}"
-          y="${rect.y}"
-          width="${rect.width}"
-          height="${rect.height}"
-          fill="${colors.fill}"
-          stroke="${colors.stroke}"
-          stroke-width="3"
-          rx="2"
-          ry="2"
-        />
+        <!-- Room Base Shape (Polygon if defined, otherwise Rect) -->
+        ${
+          room.polygon && room.polygon.length > 0
+            ? `
+            <polygon
+              class="room-box"
+              points="${room.polygon.map(p => `${p.x},${p.y}`).join(' ')}"
+              fill="${colors.fill}"
+              stroke="${colors.stroke}"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+            `
+            : `
+            <rect
+              class="room-box"
+              x="${rect.x}"
+              y="${rect.y}"
+              width="${rect.width}"
+              height="${rect.height}"
+              fill="${colors.fill}"
+              stroke="${colors.stroke}"
+              stroke-width="2.5"
+              rx="3"
+              ry="3"
+            />
+            `
+        }
 
         <!-- Room Label Text -->
         ${

@@ -800,11 +800,12 @@
 }
 
 .map-courtyard-title {
-  fill: #ffacda;
+  fill: #334155;
+  font-family: var(--font-heading);
   font-size: 72px;
-  font-weight: 900;
-  opacity: 0.55;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  opacity: 0.35;
+  letter-spacing: 0.08em;
   text-anchor: middle;
 }
 
@@ -813,30 +814,32 @@
 }
 
 .map-room-node:hover .room-box {
-  fill: #ffb8dc !important;
-  stroke: #e11d48 !important;
-  stroke-width: 4.5px !important;
+  fill: #1e293b !important;
+  stroke: var(--rose-primary) !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 8px var(--rose-glow));
 }
 
 .map-room-node.selected .room-box {
-  fill: #ffa6d4 !important;
-  stroke: #be123c !important;
-  stroke-width: 5px !important;
+  fill: #221c2c !important;
+  stroke: var(--rose-light) !important;
+  stroke-width: 4.5px !important;
+  filter: drop-shadow(0 0 12px var(--rose-glow));
 }
 
 .map-room-node .room-label {
-  fill: #fff;
-  stroke: #ff94cf;
-  stroke-width: 2.5px;
+  fill: #ffffff;
+  stroke: #0b0f19;
+  stroke-width: 3.5px;
   paint-order: stroke fill;
-  font-weight: 800;
+  font-weight: 700;
   transition: opacity 200ms ease;
 }
 
 .map-room-node:hover .room-label,
 .map-room-node.selected .room-label {
-  fill: #fff;
-  stroke: #be123c;
+  fill: #ffffff;
+  stroke: var(--rose-primary);
   stroke-width: 3.5px;
 }
 
@@ -881,26 +884,6 @@
   border-color: var(--rose-primary);
   color: var(--rose-light);
   transform: translateY(-2px);
-}
-
-/* Debug Overlay Bar */
-.map-debug-bar {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  background: rgba(17, 24, 39, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid #ffacda;
-  border-radius: var(--radius-md);
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #fff;
-  font-size: 0.8rem;
-  z-index: 25;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Room Detail Panel / Card */

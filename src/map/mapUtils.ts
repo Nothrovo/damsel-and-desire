@@ -87,67 +87,67 @@ export function getCategoryColor(category: RoomCategory): {
   switch (category) {
     case "classroom":
       return {
-        fill: "#ffe0f1",
-        stroke: "#ffacda",
-        text: "#be185d",
-        badgeBg: "rgba(255, 224, 241, 0.35)",
-        badgeBorder: "#ffacda"
+        fill: "#131f33",
+        stroke: "#38bdf8",
+        text: "#bae6fd",
+        badgeBg: "rgba(56, 189, 248, 0.15)",
+        badgeBorder: "#38bdf8"
       };
     case "club":
       return {
-        fill: "#ffd7ec",
-        stroke: "#f472b6",
-        text: "#9d174d",
-        badgeBg: "rgba(244, 114, 182, 0.2)",
-        badgeBorder: "#f472b6"
+        fill: "#241321",
+        stroke: "#f43f5e",
+        text: "#fecdd3",
+        badgeBg: "rgba(244, 63, 94, 0.18)",
+        badgeBorder: "#f43f5e"
       };
     case "facility":
       return {
-        fill: "#fce7f3",
-        stroke: "#ec4899",
-        text: "#831843",
-        badgeBg: "rgba(236, 72, 153, 0.2)",
-        badgeBorder: "#ec4899"
+        fill: "#0c2321",
+        stroke: "#14b8a6",
+        text: "#99f6e4",
+        badgeBg: "rgba(20, 184, 166, 0.15)",
+        badgeBorder: "#14b8a6"
       };
     case "admin":
       return {
-        fill: "#fae8ff",
-        stroke: "#d946ef",
-        text: "#701a75",
-        badgeBg: "rgba(217, 70, 239, 0.2)",
-        badgeBorder: "#d946ef"
+        fill: "#261d12",
+        stroke: "#f59e0b",
+        text: "#fde68a",
+        badgeBg: "rgba(245, 158, 11, 0.15)",
+        badgeBorder: "#f59e0b"
       };
     case "utility":
       return {
-        fill: "#fdf2f8",
-        stroke: "#fbcfe8",
-        text: "#6b7280",
-        badgeBg: "rgba(251, 207, 232, 0.25)",
-        badgeBorder: "#fbcfe8"
+        fill: "#171e2c",
+        stroke: "#64748b",
+        text: "#cbd5e1",
+        badgeBg: "rgba(100, 116, 139, 0.15)",
+        badgeBorder: "#64748b"
       };
     case "common":
       return {
-        fill: "#fff1f2",
-        stroke: "#fb7185",
-        text: "#9f1239",
-        badgeBg: "rgba(251, 113, 133, 0.2)",
-        badgeBorder: "#fb7185"
+        fill: "#1b1933",
+        stroke: "#818cf8",
+        text: "#c7d2fe",
+        badgeBg: "rgba(129, 140, 248, 0.15)",
+        badgeBorder: "#818cf8"
       };
     case "outdoor":
       return {
-        fill: "#f0fdf4",
-        stroke: "#4ade80",
-        text: "#15803d",
-        badgeBg: "rgba(74, 222, 128, 0.2)",
-        badgeBorder: "#4ade80"
+        fill: "#09241b",
+        stroke: "#10b981",
+        text: "#a7f3d0",
+        badgeBg: "rgba(16, 185, 129, 0.15)",
+        badgeBorder: "#10b981"
       };
     case "access":
       return {
-        fill: "#f5f3ff",
-        stroke: "#c084fc",
-        text: "#581c87",
-        badgeBg: "rgba(192, 132, 252, 0.2)",
-        badgeBorder: "#c084fc"
+        fill: "#1c152d",
+        stroke: "#a855f7",
+        text: "#e9d5ff",
+        badgeBg: "rgba(168, 85, 247, 0.15)",
+        badgeBorder: "#a855f7"
       };
   }
 }

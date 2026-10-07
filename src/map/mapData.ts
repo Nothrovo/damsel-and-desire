@@ -594,9 +594,9 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         y: 326,
         width: 408,
         height: 44,
-        fill: "#fff0f8",
-        stroke: "#ffacda",
-        strokeWidth: 3
+        fill: "#1e293b",
+        stroke: "#334155",
+        strokeWidth: 2.5
       },
       {
         id: "f1_garden_path_v",
@@ -605,9 +605,9 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         y: 145,
         width: 44,
         height: 406,
-        fill: "#fff0f8",
-        stroke: "#ffacda",
-        strokeWidth: 3
+        fill: "#1e293b",
+        stroke: "#334155",
+        strokeWidth: 2.5
       },
       {
         id: "f1_garden_rotunda",
@@ -615,9 +615,9 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         cx: 350,
         cy: 348,
         r: 25,
-        fill: "#ffe0f1",
-        stroke: "#ffacda",
-        strokeWidth: 3
+        fill: "#064e3b",
+        stroke: "#10b981",
+        strokeWidth: 2.5
       }
     ]
   },
@@ -706,7 +706,15 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         name: "Athletic Field",
         category: "outdoor",
         floorId: "campus",
-        rect: { x: 82, y: 20, width: 520, height: 180 },
+        rect: { x: 82, y: 20, width: 518, height: 189 },
+        polygon: [
+          { x: 181, y: 20 },
+          { x: 500, y: 20 },
+          { x: 600, y: 114 },
+          { x: 600, y: 209 },
+          { x: 82, y: 209 },
+          { x: 82, y: 114 }
+        ],
         labelOrientation: "horizontal",
         description: "Lapangan atletik outdoor luas dengan lintasan lari tanah liat dan podium upacara."
       },
@@ -776,28 +784,49 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
       }
     ],
     decorativeElements: [
-      // Top circle above athletic field (Flagpole/Podium - decorative, no name)
+      // 1. Campus Walkway Network (Connecting all buildings, athletic field, and south gate)
+      {
+        id: "campus_walkways",
+        type: "path",
+        pathData: "M 103 143 L 580 143 L 580 173 L 350 174 L 352 193 L 541 193 L 540 208 L 351 207 L 349 209 L 349 267 L 351 269 L 407 269 L 407 286 L 352 286 L 350 288 L 350 344 L 352 346 L 540 346 L 539 363 L 351 363 L 350 439 L 369 441 L 371 439 L 370 425 L 388 425 L 388 440 L 390 441 L 561 442 L 561 497 L 577 498 L 578 516 L 560 518 L 560 574 L 523 574 L 523 727 L 540 727 L 540 745 L 523 745 L 523 822 L 561 823 L 570 814 L 587 832 L 570 852 L 559 840 L 409 840 L 407 859 L 371 859 L 369 861 L 369 961 L 313 961 L 313 861 L 311 859 L 274 859 L 274 840 L 123 840 L 112 850 L 94 832 L 112 813 L 120 822 L 160 821 L 160 747 L 158 745 L 142 746 L 142 727 L 160 726 L 160 574 L 122 573 L 122 517 L 104 516 L 103 496 L 122 496 L 122 439 L 294 439 L 293 425 L 312 424 L 313 441 L 333 439 L 333 174 L 102 174 Z M 200 458 L 197 460 L 197 476 L 194 477 L 159 477 L 159 459 L 141 459 L 141 497 L 158 497 L 158 515 L 141 515 L 141 554 L 178 554 L 178 822 L 310 823 L 312 806 L 370 806 L 372 823 L 503 823 L 505 821 L 505 555 L 542 555 L 543 517 L 523 516 L 521 535 L 488 535 L 488 477 L 484 458 L 447 458 L 446 476 L 429 476 L 429 459 L 371 459 L 370 476 L 314 476 L 312 458 L 256 458 L 254 460 L 255 475 L 238 476 L 236 458 Z M 524 458 L 522 460 L 522 497 L 542 498 L 542 458 Z",
+        fill: "#182335",
+        stroke: "#334155",
+        strokeWidth: 2
+      },
+      // 2. Athletic field bleachers / inner track box
+      {
+        id: "campus_athletic_track",
+        type: "rect",
+        x: 102,
+        y: 143,
+        width: 478,
+        height: 30,
+        fill: "#0c231b",
+        stroke: "#10b981",
+        strokeWidth: 2
+      },
+      // 3. Top circle above athletic field (Flagpole/Podium - decorative, no name)
       {
         id: "campus_flagpole_circle",
         type: "circle",
         cx: 343,
         cy: 64,
         r: 28,
-        fill: "#ffe0f1",
-        stroke: "#ffacda",
-        strokeWidth: 3
+        fill: "#064e3b",
+        stroke: "#10b981",
+        strokeWidth: 2.5
       },
-      // South gateway path
+      // 4. Main building inner courtyard
       {
-        id: "campus_south_path",
+        id: "campus_main_building_courtyard",
         type: "rect",
-        x: 310,
-        y: 810,
-        width: 64,
-        height: 162,
-        fill: "#fff0f8",
-        stroke: "#ffacda",
-        strokeWidth: 3
+        x: 253,
+        y: 533,
+        width: 175,
+        height: 174,
+        fill: "#0b0f19",
+        stroke: "#2d3748",
+        strokeWidth: 2
       }
     ]
   }

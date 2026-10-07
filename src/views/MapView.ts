@@ -20,8 +20,6 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
   let currentFloorId: FloorId =
     params.floor && params.floor in MAP_FLOORS ? (params.floor as FloorId) : "f1";
   const initialRoomId = params.room || null;
-  let debugOverlay = params.debugOverlay === "1" || params.debugOverlay === "true";
-  let debugOpacity = 0.45;
 
   appContainer.innerHTML = `
     <div class="map-view-container">
@@ -40,24 +38,6 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
             <button class="map-mode-btn active" data-mode="2d">2D Vector (SVG)</button>
             <button class="map-mode-btn" data-mode="3d" title="Mode 3D Three.js akan aktif di Fase C" style="opacity:0.5;cursor:not-allowed;">3D (Fase C)</button>
           </div>
-        </div>
-
-        <!-- Debug Overlay Controls -->
-        <div class="map-debug-bar-inline" style="display:flex;align-items:center;gap:10px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:0.8rem;color:var(--text-dim);cursor:pointer;user-select:none;">
-            <input type="checkbox" id="mapDebugToggle" ${debugOverlay ? 'checked' : ''} style="cursor:pointer;accent-color:var(--rose-primary);">
-            Overlay Referensi
-          </label>
-          <input
-            type="range"
-            id="mapDebugOpacitySlider"
-            min="0.1"
-            max="1"
-            step="0.05"
-            value="${debugOpacity}"
-            style="width:70px;accent-color:var(--rose-primary);display:${debugOverlay ? 'inline-block' : 'none'};"
-            title="Opasitas Overlay"
-          />
         </div>
       </header>
 
@@ -82,7 +62,6 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
 
   function updateUrl() {
     const queryParts: string[] = [`floor=${currentFloorId}`];
-    if (debugOverlay) queryParts.push("debugOverlay=1");
     if (activeRenderer && (activeRenderer as any).selectedRoomId) {
       queryParts.push(`room=${(activeRenderer as any).selectedRoomId}`);
     }
@@ -167,8 +146,6 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     container: canvasContainer,
     floor: MAP_FLOORS[currentFloorId],
     selectedRoomId: initialRoomId,
-    debugOverlay,
-    debugOpacity,
     onRoomSelect: (room: Room) => {
       // Requirement: Klik Main Building di peta Campus: arahkan ke 1F
       if (room.id === "campus_main_building") {
@@ -208,23 +185,5 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
   });
   document.getElementById("mapResetBtn")?.addEventListener("click", () => {
     activeRenderer?.resetView();
-  });
-
-  // Debug Overlay Controls
-  const debugToggle = document.getElementById("mapDebugToggle") as HTMLInputElement | null;
-  const opacitySlider = document.getElementById("mapDebugOpacitySlider") as HTMLInputElement | null;
-
-  debugToggle?.addEventListener("change", () => {
-    debugOverlay = !!debugToggle.checked;
-    if (opacitySlider) {
-      opacitySlider.style.display = debugOverlay ? "inline-block" : "none";
-    }
-    activeRenderer?.setDebugOverlay(debugOverlay, debugOpacity);
-    updateUrl();
-  });
-
-  opacitySlider?.addEventListener("input", () => {
-    debugOpacity = parseFloat(opacitySlider.value) || 0.45;
-    activeRenderer?.setDebugOverlay(debugOverlay, debugOpacity);
   });
 }

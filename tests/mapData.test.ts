@@ -120,15 +120,27 @@ describe("Map Data Validation & Geometry Integrity", () => {
     });
   });
 
-  it("verifies campus Athletic Field and decorative flagpole circle", () => {
+  it("verifies campus Athletic Field polygon and decorative flagpole circle", () => {
     const athleticField = MAP_FLOORS.campus.rooms.find(r => r.id === "campus_athletic_field");
     expect(athleticField).toBeDefined();
     expect(athleticField?.name).toBe("Athletic Field");
+    expect(athleticField?.polygon).toBeDefined();
+    expect(athleticField?.polygon).toHaveLength(6);
 
     const circleElem = MAP_FLOORS.campus.decorativeElements?.find(
       d => d.id === "campus_flagpole_circle"
     );
     expect(circleElem).toBeDefined();
     expect(circleElem?.type).toBe("circle");
+  });
+
+  it("verifies campus walkway path network exists in decorativeElements", () => {
+    const walkwayElem = MAP_FLOORS.campus.decorativeElements?.find(
+      d => d.id === "campus_walkways"
+    );
+    expect(walkwayElem).toBeDefined();
+    expect(walkwayElem?.type).toBe("path");
+    expect(walkwayElem?.pathData).toBeDefined();
+    expect(walkwayElem?.pathData?.length).toBeGreaterThan(100);
   });
 });
