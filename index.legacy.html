@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Damsel & Desire — Character Vault & Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Yuji+Mai&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="theme-dark">
+
+  <!-- Top Global Navigation Bar -->
+  <header class="global-navbar">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="app.showView('landing')">
+        <div class="brand-crest">
+          <svg viewBox="0 0 24 24" class="crest-icon" fill="currentColor">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <span class="brand-name">DAMSEL & DESIRE</span>
+          <span class="brand-sub">Japanese High School Romance TRPG</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-btn" id="btnNavRoster" onclick="app.showView('landing')">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+          Karakter Saya
+        </button>
+        <button class="nav-btn nav-btn-primary" id="btnNavNewChar" onclick="app.startNewCharacter()">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+          Buat Karakter
+        </button>
+        <button class="nav-btn nav-btn-cloud" id="btnNavCloud" onclick="app.openCloudModal()" title="Status Sinkronisasi Cloud Global (Supabase)">
+          <span class="cloud-status-dot" id="cloudStatusDot"></span>
+          <span id="navCloudLabel">Cloud: Online</span>
+        </button>
+        <button class="nav-btn nav-btn-dice" onclick="app.toggleDiceModal()">
+          <span class="dice-badge">d20</span>
+          Lempar Dadu
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="app-main">
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: LANDING & CHARACTER ROSTER                                   -->
+    <!-- ===================================================================== -->
+    <section id="viewLanding" class="view-section active">
+      <div class="landing-hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-badge">D&D 5e ALTERNATIVE SYSTEM</div>
+          <h1 class="hero-title">DAMSEL & DESIRE</h1>
+          <p class="hero-subtitle">Masa muda penuh drama, asmara malu-malu kucing, tanding ekskul sepulang sekolah, dan pencarian cinta sejati di SMA Jepang.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-large" onclick="app.startNewCharacter()">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+              + Buat Karakter Baru
+            </button>
+            <button class="btn btn-secondary btn-large" onclick="document.getElementById('importFileInput').click()">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+              📥 Import Karakter (JSON)
+            </button>
+            <input type="file" id="importFileInput" style="display:none" accept=".json" onchange="app.importCharacter(event)">
+          </div>
+        </div>
+      </div>
+
+      <div class="roster-section">
+        <div class="roster-header">
+          <div class="roster-title-group">
+            <h2>Karakter Saya</h2>
+            <span id="rosterCountBadge" class="roster-count">0 Karakter</span>
+          </div>
+          <div class="roster-filters">
+            <input type="text" id="searchRosterInput" class="input-search" placeholder="Cari nama atau ekskul..." oninput="app.renderRoster()">
+          </div>
+        </div>
+
+        <div id="rosterGrid" class="roster-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="rosterEmptyState" class="empty-state" style="display: none;">
+          <div class="empty-illustration">🌸</div>
+          <h3>Belum Ada Karakter</h3>
+          <p>Mulai perjalanan kisah asmara dan persahabatan SMA-mu dengan membuat karakter pertamamu sekarang!</p>
+          <button class="btn btn-primary" onclick="app.startNewCharacter()">+ Buat Karakter Sekarang</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: CHARACTER BUILDER WIZARD                                      -->
+    <!-- ===================================================================== -->
+    <section id="viewBuilder" class="view-section">
+      <div class="builder-container">
+
+        <!-- Builder Header Bar (D&D Beyond Style) -->
+        <div class="builder-header-bar">
+          <div class="builder-char-summary">
+            <div class="builder-avatar-preview" onclick="app.openAvatarPickerModal()">
+              <img id="builderAvatarImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=yuki" alt="Avatar">
+              <span class="avatar-edit-label">Ganti</span>
+            </div>
+            <div class="builder-name-wrap">
+              <label for="builderNameInput">Nama Karakter</label>
+              <input type="text" id="builderNameInput" class="builder-name-input" placeholder="Masukkan nama murid..." oninput="app.updateBuilderPreview()">
+            </div>
+            <div class="builder-level-wrap">
+              <label for="builderGradeSelect">Tingkat / Kelas</label>
+              <select id="builderGradeSelect" class="builder-select-compact" onchange="app.updateBuilderPreview()">
+                <option value="1">Kelas 10 (Tingkat 1 - Lvl 1)</option>
+                <option value="2">Kelas 10 (Semester 2 - Lvl 2)</option>
+                <option value="3">Kelas 11 (Tingkat 2 - Lvl 3)</option>
+                <option value="4">Kelas 11 (Semester 2 - Lvl 4)</option>
+                <option value="5">Kelas 12 (Tingkat 3 - Lvl 5)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="builder-quick-nav">
+            <button class="btn btn-secondary btn-sm" onclick="app.showView('landing')">Batal</button>
+            <button class="btn btn-primary btn-sm" onclick="app.finishBuilder()">Simpan & Selesai</button>
+          </div>
+        </div>
+
+        <!-- Wizard Step Tabs Navigation -->
+        <div class="wizard-steps-nav">
+          <button class="wizard-step-btn active" data-step="1" onclick="app.goToBuilderStep(1)">
+            <span class="step-num">1</span>
+            <span class="step-title">Ekskul (Class)</span>
+          </button>
+          <button class="wizard-step-btn" data-step="2" onclick="app.goToBuilderStep(2)">
+            <span class="step-num">2</span>
+            <span class="step-title">Social Class (Origin)</span>
+          </button>
+          <button class="wizard-step-btn" data-step="3" onclick="app.goToBuilderStep(3)">
+            <span class="step-num">3</span>
+            <span class="step-title">Archetype (Species)</span>
+          </button>
+          <button class="wizard-step-btn" data-step="4" onclick="app.goToBuilderStep(4)">
+            <span class="step-num">4</span>
+            <span class="step-title">Abilities & Skills</span>
+          </button>
+          <button class="wizard-step-btn" data-step="5" onclick="app.goToBuilderStep(5)">
+            <span class="step-num">5</span>
+            <span class="step-title">School Bag</span>
+          </button>
+          <button class="wizard-step-btn" data-step="6" onclick="app.goToBuilderStep(6)">
+            <span class="step-num">6</span>
+            <span class="step-title">Identitas & Romance</span>
+          </button>
+        </div>
+
+        <!-- STEP 1: EKSKUL (CLASS) -->
+        <div class="builder-step-content" id="stepContent1">
+          <div class="step-header-desc">
+            <h2>Pilih Klub Ekstrakurikuler (Ekskul)</h2>
+            <p>Ekskul adalah sumber utama kemampuan khusus (*Club Moves*), akses fasilitas sekolah, serta gaya aksimu sehari-hari.</p>
+          </div>
+          <div class="selection-grid" id="ekskulSelectionGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- STEP 2: SOCIAL CLASS (BACKGROUND) -->
+        <div class="builder-step-content" id="stepContent2" style="display:none;">
+          <div class="step-header-desc">
+            <h2>Pilih Status Sosial & Asal Usul (Social Class)</h2>
+            <p>Kondisi ekonomi keluarga menentukan uang saku harian, tabungan, kerja sampingan (*baito*), dan fasilitas hidupmu.</p>
+          </div>
+          <div class="selection-grid" id="socialClassSelectionGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- STEP 3: ARCHETYPE (SPECIES) -->
+        <div class="builder-step-content" id="stepContent3" style="display:none;">
+          <div class="step-header-desc">
+            <h2>Pilih Tipe / Stereotipe Siswa (Archetype)</h2>
+            <p>Kepribadian unik di lingkungan sekolah yang memberikan bonus stat bawaan serta trait khas.</p>
+          </div>
+          <div class="selection-grid" id="archetypeSelectionGrid">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- STEP 4: ABILITIES & SKILLS -->
+        <div class="builder-step-content" id="stepContent4" style="display:none;">
+          <div class="step-header-desc">
+            <h2>Alokasi 6 Ability Scores & 18 Sub-Skills</h2>
+            <p>Pilih metode alokasi kemampuan karaktermu dan tentukan profisiensi keahlian asmara serta kehidupan sekolah.</p>
+          </div>
+
+          <div class="ability-method-selector">
+            <label>Metode Penentuan Stat:</label>
+            <div class="btn-group">
+              <button class="btn btn-toggle active" id="btnMethodStandard" onclick="app.setAbilityMethod('standard')">Standard Array (15, 14, 13, 12, 10, 8)</button>
+              <button class="btn btn-toggle" id="btnMethodPointBuy" onclick="app.setAbilityMethod('pointbuy')">Point Buy (27 Poin)</button>
+            </div>
+            <div id="pointBuyRemainingWrap" class="point-buy-counter" style="display: none;">
+              Sisa Poin: <strong id="pointBuyRemaining">27</strong> / 27
+            </div>
+          </div>
+
+          <!-- 6 Stat Allocation Grid -->
+          <div class="stat-calc-grid" id="statCalcGrid">
+            <!-- Injected via JS -->
+          </div>
+
+          <!-- Sub-skills Section -->
+          <div class="subskills-picker-section">
+            <div class="subskills-header">
+              <h3>18 Sub-Skills (Turunan Stat)</h3>
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+                <p>Pilih <strong>maksimal 4 keahlian</strong> profisiensi yang dikuasai karaktermu.</p>
+                <span id="skillLimitBadge" style="background:var(--rose-dark);color:#fff;padding:0.25rem 0.75rem;border-radius:var(--radius-full);font-size:0.8rem;font-weight:700;white-space:nowrap;">0 / 4 dipilih</span>
+              </div>
+            </div>
+            <div class="subskills-grid" id="subskillsPickerGrid">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: SCHOOL BAG (3 Auto Packs) -->
+        <div class="builder-step-content" id="stepContent5" style="display:none;">
+          <div class="step-header-desc">
+            <h2>Isi Tas Sekolah (School Bag — 3 Paket Otomatis)</h2>
+            <p>Tas sekolahmu terdiri dari <strong>3 paket otomatis</strong>: Paket Murid Biasa + Paket Ekskul + Paket Archetype. Pilih 1 jimat keberuntungan pribadimu!</p>
+          </div>
+          <div id="step5PacksPreview" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-bottom:1rem;">
+            <!-- Injected via JS based on ekskul + archetype selections -->
+          </div>
+          <div class="card p-4">
+            <h3 class="card-title">Jimat Kuil &amp; Benda Kenangan (Pilih 1 Keepsake Pribadi)</h3>
+            <div class="checkbox-list" id="keepsakeDefaultsList">
+              <label class="check-item"><input type="radio" name="keepsake" value="Jimat Omamori Cinta (Kuil)" checked> Jimat Kuil Omamori (Keberuntungan Asmara)</label>
+              <label class="check-item"><input type="radio" name="keepsake" value="Surat Cinta Belum Terkirim"> Sepucuk Surat Cinta (Belum sempat dikasih ke doi)</label>
+              <label class="check-item"><input type="radio" name="keepsake" value="Foto Polaroid Sahabat"> Foto Polaroid Kenangan Bersama Teman SMP</label>
+              <label class="check-item"><input type="radio" name="keepsake" value="Gantungan Kunci Pasangan"> Gantungan Kunci Spesial / Pasangan</label>
+              <label class="check-item"><input type="radio" name="keepsake" value="Plester Luka Lucu"> Kotak Plester Luka Bergambar Lucu</label>
+              <label class="check-item"><input type="radio" name="keepsake" value="Buku Harian Rahasia"> Buku Harian Terkunci (Belum pernah dibuka siapapun)</label>
+            </div>
+          </div>
+          <div class="card p-4 mt-3">
+            <h3 class="card-title">Keuangan Siswa (Uang Saku &amp; Tabungan)</h3>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label>Uang Saku Harian:</label>
+                <input type="text" id="builderMoneyDaily" class="input-text" placeholder="¥1,000 / Rp 100,000">
+              </div>
+              <div class="form-group">
+                <label>Tabungan / Rekening:</label>
+                <input type="text" id="builderMoneySavings" class="input-text" placeholder="¥15,000 / Rp 1,500,000">
+              </div>
+              <div class="form-group">
+                <label>Pekerjaan Paruh Waktu (Baito):</label>
+                <input type="text" id="builderMoneyJob" class="input-text" placeholder="Kasir Minimarket / dll">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 6: IDENTITY (DM-only romance) -->
+        <div class="builder-step-content" id="stepContent6" style="display:none;">
+          <div class="step-header-desc">
+            <h2>Karakteristik Pribadi &amp; Identitas</h2>
+            <p>Lengkapi kepribadian, cita-cita masa muda, dan kelemahan unik karaktermu. Data hubungan &amp; romansa diatur oleh DM.</p>
+          </div>
+
+          <div class="identity-builder-grid">
+            <div class="card p-4">
+              <h3 class="card-title">Ciri Khas & Kepribadian (Roleplay Traits)</h3>
+              <div class="form-group">
+                <label>Personality Traits (Sifat & Gaya Bicara):</label>
+                <textarea id="builderPersonality" class="input-textarea" rows="3" placeholder="Sering salting kalau ditatap lama, suka pura-pura dingin, nada bicara lembut..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Ideals & Youth Dreams (Cita-cita Masa SMA):</label>
+                <textarea id="builderIdeals" class="input-textarea" rows="2" placeholder="Menang festival budaya bareng klub, menyatakan perasaan di atap sekolah..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Bonds (Ikatan Penting / Janji Masa Lalu):</label>
+                <textarea id="builderBonds" class="input-textarea" rows="2" placeholder="Janji masa kecil dengan sahabat yang terpisah, melindungi klub dari pembubaran..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Flaws & Insecurities (Kelemahan & Hal Bikin Salting):</label>
+                <textarea id="builderFlaws" class="input-textarea" rows="2" placeholder="Langsung gugup dan gagap di dekat doi, takut petir, gengsi minta maaf..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Backstory & Kisah Masa Lalu (Asal-usul & Rahasia Pribadi):</label>
+                <textarea id="builderBackstory" class="input-textarea" rows="4" placeholder="Kisah masa kecil, alasan pindah sekolah, rahasia keluarga yang belum diketahui orang lain..."></textarea>
+              </div>
+            </div>
+
+            <div class="card p-4">
+              <h3 class="card-title" style="color: var(--rose-primary);">🔒 Hubungan &amp; Romansa</h3>
+              <div style="text-align:center; padding: 2rem 1rem; color: var(--text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 0.75rem;">🔐</div>
+                <p style="font-weight: 600; color: var(--text-dim); margin-bottom: 0.5rem;">Dikelola oleh DM</p>
+                <p style="font-size: 0.85rem; line-height: 1.6;">Data target romansa, meteran hati ♥, dan rahasia afeksi hanya bisa dilihat &amp; diubah oleh <strong>Dungeon Master</strong> melalui tab <em>"Affection Tracker (DM Only)"</em> di Character Sheet, dilindungi PIN rahasia.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wizard Navigation Footer -->
+        <div class="wizard-footer-bar">
+          <button class="btn btn-secondary" id="btnWizardPrev" onclick="app.prevBuilderStep()" style="display:none;">&larr; Sebelumnya</button>
+          <div class="wizard-footer-spacer"></div>
+          <button class="btn btn-primary" id="btnWizardNext" onclick="app.nextBuilderStep()">Selanjutnya &rarr;</button>
+          <button class="btn btn-success" id="btnWizardFinish" onclick="app.finishBuilder()" style="display:none;">✓ Simpan & Buka Sheet</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: INTERACTIVE CHARACTER SHEET (D&D BEYOND CLONE)                -->
+    <!-- ===================================================================== -->
+    <section id="viewSheet" class="view-section">
+      <div class="sheet-container">
+
+        <!-- Sheet Top Control Toolbar -->
+        <div class="sheet-toolbar">
+          <div class="toolbar-left">
+            <button class="btn btn-secondary btn-sm" onclick="app.showView('landing')">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
+              Menu Utama
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="app.editCurrentInBuilder()">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+              Edit di Builder
+            </button>
+          </div>
+          <div class="toolbar-right">
+            <button class="btn btn-secondary btn-sm" onclick="app.exportCurrentJSON()">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+              Export JSON
+            </button>
+            <button class="btn btn-accent btn-sm" onclick="app.printOrExportPDF()">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/></svg>
+              🖨️ Cetak / Simpan PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Sheet Header Banner (D&D Beyond Style) -->
+        <div class="sheet-banner">
+          <div class="banner-char-identity">
+            <div class="banner-avatar-frame">
+              <img id="sheetAvatarImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=yuki" alt="Avatar">
+            </div>
+            <div class="banner-name-block">
+              <h1 id="sheetCharName" class="char-name">Nama Karakter</h1>
+              <div class="char-meta-tags">
+                <span id="sheetArchetypeBadge" class="meta-tag tag-species">Archetype</span>
+                <span id="sheetEkskulBadge" class="meta-tag tag-class">Ekskul</span>
+                <span id="sheetSocialBadge" class="meta-tag tag-bg">Social Class</span>
+                <span id="sheetGradeBadge" class="meta-tag tag-level">Kelas 10 / Lvl 1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="banner-rest-controls">
+            <button class="btn-rest btn-short-rest" onclick="app.triggerShortRest()" title="Pulihkan Composure & HP menggunakan Rest Dice">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="rest-icon"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+              Short Rest
+            </button>
+            <button class="btn-rest btn-long-rest" onclick="app.triggerLongRest()" title="Istirahat pulang sekolah penuh; pulihkan seluruh HP, Composure & Dice">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="rest-icon"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+              Long Rest
+            </button>
+            <div class="heart-inspiration-box" onclick="app.toggleHeartInspiration()" title="Klik untuk mengaktifkan / menggunakan Heart Token (Inspirasi Asmara)">
+              <div class="heart-icon" id="sheetHeartToken">♥</div>
+              <div class="heart-label">DESIRE INSPIRATION</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Ability Score Cards Row (Across Top) -->
+        <div class="ability-cards-row">
+          <div class="ability-card" onclick="app.rollAbilityCheck('physique')">
+            <span class="ability-card-label">PHYSIQUE</span>
+            <div class="ability-card-mod" id="sheetModPhysique">+0</div>
+            <div class="ability-card-score" id="sheetScorePhysique">10</div>
+          </div>
+          <div class="ability-card" onclick="app.rollAbilityCheck('intelligent')">
+            <span class="ability-card-label">INTELLIGENT</span>
+            <div class="ability-card-mod" id="sheetModIntelligent">+0</div>
+            <div class="ability-card-score" id="sheetScoreIntelligent">10</div>
+          </div>
+          <div class="ability-card" onclick="app.rollAbilityCheck('looks')">
+            <span class="ability-card-label">LOOKS</span>
+            <div class="ability-card-mod" id="sheetModLooks">+0</div>
+            <div class="ability-card-score" id="sheetScoreLooks">10</div>
+          </div>
+          <div class="ability-card" onclick="app.rollAbilityCheck('mind')">
+            <span class="ability-card-label">MIND</span>
+            <div class="ability-card-mod" id="sheetModMind">+0</div>
+            <div class="ability-card-score" id="sheetScoreMind">10</div>
+          </div>
+          <div class="ability-card" onclick="app.rollAbilityCheck('talent')">
+            <span class="ability-card-label">TALENT</span>
+            <div class="ability-card-mod" id="sheetModTalent">+0</div>
+            <div class="ability-card-score" id="sheetScoreTalent">10</div>
+          </div>
+          <div class="ability-card" onclick="app.rollAbilityCheck('luck')">
+            <span class="ability-card-label">LUCK</span>
+            <div class="ability-card-mod" id="sheetModLuck">+0</div>
+            <div class="ability-card-score" id="sheetScoreLuck">10</div>
+          </div>
+        </div>
+
+        <!-- 3-Column Sheet Layout (D&D Beyond Style) -->
+        <div class="sheet-main-grid">
+
+          <!-- COLUMN 1: PORTRAIT, SAVING THROWS & PASSIVES -->
+          <div class="sheet-col col-left">
+            <!-- Crest Card -->
+            <div class="card crest-card">
+              <div class="crest-frame">
+                <svg viewBox="0 0 100 100" class="crest-svg">
+                  <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="none" stroke="currentColor" stroke-width="3"/>
+                  <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4,3"/>
+                  <path d="M50,30 L62,42 L50,54 L38,42 Z" fill="currentColor"/>
+                  <circle cx="50" cy="65" r="5" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="prof-bonus-pill">
+                <span class="prof-title">PROFICIENCY</span>
+                <span class="prof-value" id="sheetProfBonus">+2</span>
+              </div>
+            </div>
+
+            <!-- Saving Throws Box (6 Stat Saves) -->
+            <div class="card p-3">
+              <div class="box-header-title">SAVING THROWS (STAT SAVES)</div>
+              <div class="saves-list" id="sheetSavesList">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Passive Senses Box -->
+            <div class="card p-3">
+              <div class="box-header-title">PASSIVE SENSES (KEPEKAAN PASIF)</div>
+              <div class="passive-item">
+                <span class="passive-val" id="sheetPassivePerception">10</span>
+                <div class="passive-meta">
+                  <span class="passive-name">Passive Perception</span>
+                  <span class="passive-hint">Lirik tatapan rahasia (10 + Mind / Awareness)</span>
+                </div>
+              </div>
+              <div class="passive-item">
+                <span class="passive-val" id="sheetPassiveInsight">10</span>
+                <div class="passive-meta">
+                  <span class="passive-name">Passive Insight</span>
+                  <span class="passive-hint">Peka salting & motif bohong (10 + Intel / People)</span>
+                </div>
+              </div>
+              <div class="passive-item">
+                <span class="passive-val" id="sheetPassiveInvestigation">10</span>
+                <div class="passive-meta">
+                  <span class="passive-name">Passive Investigation</span>
+                  <span class="passive-hint">Temu surat di loker (10 + Intel / Academic)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Proficiencies & Languages Box -->
+            <div class="card p-3">
+              <div class="box-header-title" style="display:flex;justify-content:space-between;align-items:center;">
+                <span>PROFISIENSI &amp; BAHASA</span>
+                <button class="btn btn-xs btn-secondary" onclick="app.editProficiencies()" title="Edit Profisiensi &amp; Bahasa" style="padding:0.15rem 0.4rem;font-size:0.7rem;">✏️ Edit</button>
+              </div>
+              <div class="prof-section-item">
+                <strong>Gaya Seragam:</strong>
+                <p id="sheetProfUniform">Standar Blazer Sekolah, Sepatu Loafers, Dasi Rapi</p>
+              </div>
+              <div class="prof-section-item">
+                <strong>Alat Ekskul:</strong>
+                <p id="sheetProfClubTools">Sesuai ekskul terdaftar</p>
+              </div>
+              <div class="prof-section-item">
+                <strong>Bahasa &amp; Dialek:</strong>
+                <p id="sheetProfLanguages">Bahasa Jepang Standar, Slang Remaja Tokyo, Bahasa Inggris Pelajaran</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 2: 18 SUB-SKILLS LIST -->
+          <div class="sheet-col col-center">
+            <div class="card p-3">
+              <div class="box-header-title">18 SUB-SKILLS (TURUNAN STAT)</div>
+              <p class="text-xs text-muted mb-2">Klik nama skill untuk langsung melempar dadu d20!</p>
+              <div class="skills-sheet-table" id="sheetSkillsTable">
+                <!-- Injected dynamically via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- COLUMN 3: DUAL VITALS & INTERACTIVE CONTENT TABS -->
+          <div class="sheet-col col-right">
+
+            <!-- DUAL VITALS CONTAINER (PHYSICAL & MENTAL) -->
+            <div class="vitals-dashboard">
+
+              <!-- Physical Combat Vitals Box -->
+              <div class="vitals-card vitals-physical">
+                <div class="vitals-card-title">
+                  <span class="badge-type-phys">FISIK / COMBAT</span>
+                  <span>Physical Vitals</span>
+                </div>
+                <div class="vitals-stats-row">
+                  <div class="vital-bubble">
+                    <span class="vital-bubble-label">PHYS AC</span>
+                    <span class="vital-bubble-val" id="sheetPhysAC">10</span>
+                    <span class="vital-bubble-sub">Armor Fisik</span>
+                  </div>
+                  <div class="vital-bubble">
+                    <span class="vital-bubble-label">INITIATIVE</span>
+                    <span class="vital-bubble-val" id="sheetInitiative">+0</span>
+                    <span class="vital-bubble-sub">Refleks</span>
+                  </div>
+                  <div class="vital-bubble">
+                    <span class="vital-bubble-label">SPEED</span>
+                    <span class="vital-bubble-val" id="sheetSpeed">30 ft</span>
+                    <span class="vital-bubble-sub">Lari</span>
+                  </div>
+                  <div class="vital-hp-block">
+                    <div class="hp-header">
+                      <span>PHYSICAL HP</span>
+                      <div class="hp-buttons">
+                        <button class="btn-micro" onclick="app.alterHealth('phys', -1)">-1</button>
+                        <button class="btn-micro btn-dmg" onclick="app.promptHpDamage('phys')">Dmg</button>
+                        <button class="btn-micro btn-heal" onclick="app.promptHpHeal('phys')">Heal</button>
+                      </div>
+                    </div>
+                    <div class="hp-numbers">
+                      <span class="hp-current" id="sheetPhysHpCurrent">10</span>
+                      <span class="hp-slash">/</span>
+                      <span class="hp-max" id="sheetPhysHpMax">10</span>
+                    </div>
+                    <div class="hp-bar-track">
+                      <div class="hp-bar-fill fill-phys" id="sheetPhysHpBar" style="width: 100%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Physical Death Saves -->
+                <div class="saves-tracker-row">
+                  <span class="tracker-title">Physical Death Saves:</span>
+                  <div class="tracker-group">
+                    <span class="lbl-succ">Sukses:</span>
+                    <input type="checkbox" id="physSaveSucc1" class="check-bubble">
+                    <input type="checkbox" id="physSaveSucc2" class="check-bubble">
+                    <input type="checkbox" id="physSaveSucc3" class="check-bubble">
+                  </div>
+                  <div class="tracker-group">
+                    <span class="lbl-fail">Gagal:</span>
+                    <input type="checkbox" id="physSaveFail1" class="check-bubble fail">
+                    <input type="checkbox" id="physSaveFail2" class="check-bubble fail">
+                    <input type="checkbox" id="physSaveFail3" class="check-bubble fail">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mental / Social Vitals Box -->
+              <div class="vitals-card vitals-mental">
+                <div class="vitals-card-title">
+                  <span class="badge-type-mental">MENTAL / SOSIAL</span>
+                  <span>Social & Composure Vitals</span>
+                </div>
+                <div class="vitals-stats-row">
+                  <div class="vital-bubble">
+                    <span class="vital-bubble-label">SOCIAL AC</span>
+                    <span class="vital-bubble-val" id="sheetSocialAC">10</span>
+                    <span class="vital-bubble-sub">Harga Diri</span>
+                  </div>
+                  <div class="vital-bubble">
+                    <span class="vital-bubble-label">REST DICE</span>
+                    <span class="vital-bubble-val" id="sheetRestDice">1d8</span>
+                    <span class="vital-bubble-sub" id="sheetRestDiceUsed">1/1</span>
+                  </div>
+                  <div class="vital-hp-block full-flex">
+                    <div class="hp-header">
+                      <span>COMPOSURE (MENTAL HP)</span>
+                      <div class="hp-buttons">
+                        <button class="btn-micro" onclick="app.alterHealth('mental', -1)">-1</button>
+                        <button class="btn-micro btn-dmg" onclick="app.promptHpDamage('mental')">Salting</button>
+                        <button class="btn-micro btn-heal" onclick="app.promptHpHeal('mental')">Tenang</button>
+                      </div>
+                    </div>
+                    <div class="hp-numbers">
+                      <span class="hp-current text-rose" id="sheetComposureCurrent">10</span>
+                      <span class="hp-slash">/</span>
+                      <span class="hp-max" id="sheetComposureMax">10</span>
+                    </div>
+                    <div class="hp-bar-track">
+                      <div class="hp-bar-fill fill-rose" id="sheetComposureBar" style="width: 100%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Social Meltdown Saves -->
+                <div class="saves-tracker-row">
+                  <span class="tracker-title">Social Meltdown Saves:</span>
+                  <div class="tracker-group">
+                    <span class="lbl-succ">Sukses:</span>
+                    <input type="checkbox" id="mentalSaveSucc1" class="check-bubble">
+                    <input type="checkbox" id="mentalSaveSucc2" class="check-bubble">
+                    <input type="checkbox" id="mentalSaveSucc3" class="check-bubble">
+                  </div>
+                  <div class="tracker-group">
+                    <span class="lbl-fail">Gagal:</span>
+                    <input type="checkbox" id="mentalSaveFail1" class="check-bubble fail">
+                    <input type="checkbox" id="mentalSaveFail2" class="check-bubble fail">
+                    <input type="checkbox" id="mentalSaveFail3" class="check-bubble fail">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- INTERACTIVE TABS (ACTIONS, INVENTORY, FEATURES, LOG, AFFECTION) -->
+            <div class="sheet-tabs-container">
+              <div class="sheet-tabs-nav">
+                <button class="tab-btn active" data-tab="actions" onclick="app.switchSheetTab('actions')">ACTIONS & MOVES</button>
+                <button class="tab-btn" data-tab="inventory" onclick="app.switchSheetTab('inventory')">INVENTORY</button>
+                <button class="tab-btn" data-tab="features" onclick="app.switchSheetTab('features')">FEATURES & TRAITS</button>
+                <button class="tab-btn" data-tab="roleplay" onclick="app.switchSheetTab('roleplay')">ROLEPLAY & LOG</button>
+                <button class="tab-btn tab-btn-dm" data-tab="affection" onclick="app.switchSheetTab('affection')">
+                  🔒 AFFECTION (DM ONLY)
+                </button>
+              </div>
+
+              <!-- TAB 1: ACTIONS & MOVES -->
+              <div class="tab-pane active" id="tabPaneActions">
+                <div class="moves-filter-bar">
+                  <button class="filter-pill active" onclick="app.filterMoves('all')">ALL</button>
+                  <button class="filter-pill" onclick="app.filterMoves('basic_combat')">BASIC COMBAT</button>
+                  <button class="filter-pill" onclick="app.filterMoves('basic_social')">BASIC SOCIAL</button>
+                  <button class="filter-pill" onclick="app.filterMoves('club_move')">CLUB MOVES</button>
+                  <button class="filter-pill" onclick="app.filterMoves('archetype_move')">ARCHETYPE MOVES</button>
+                </div>
+                <div class="moves-list" id="sheetMovesList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <!-- TAB 2: INVENTORY -->
+              <div class="tab-pane" id="tabPaneInventory" style="display: none;">
+                <div class="inventory-financial-bar">
+                  <div class="fin-item">
+                    <span class="fin-label">UANG SAKU HARIAN</span>
+                    <span class="fin-val" id="sheetDisplayMoneyDaily">¥1,000</span>
+                  </div>
+                  <div class="fin-item">
+                    <span class="fin-label">TABUNGAN / REKENING</span>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                      <span class="fin-val" id="sheetDisplayMoneySavings">¥15,000</span>
+                      <button class="btn btn-xs btn-secondary" onclick="app.openSavingsModal()" title="Kelola Tabungan (+/- Rupiah)" style="padding:0.18rem 0.5rem;font-size:0.75rem;font-weight:700;">💳 + / −</button>
+                    </div>
+                  </div>
+                  <div class="fin-item">
+                    <span class="fin-label">KERJA PARUH WAKTU (BAITO)</span>
+                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                      <span class="fin-val" id="sheetDisplayMoneyJob">-</span>
+                      <button class="btn btn-xs btn-secondary" onclick="app.openBaitoModal()" title="Mulai / Berhenti Kerja Paruh Waktu" style="padding:0.18rem 0.5rem;font-size:0.75rem;font-weight:700;">💼 Kelola</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="inventory-section-block">
+                  <div class="inv-head-title">Isi Tas Sekolah & Barang Bawaan</div>
+                  <ul class="inventory-item-list" id="sheetBagList">
+                    <!-- Injected via JS -->
+                  </ul>
+                </div>
+
+                <div class="inventory-section-block">
+                  <div class="inv-head-title">Benda Kenangan & Jimat Kuil (Keepsakes)</div>
+                  <ul class="inventory-item-list" id="sheetKeepsakeList">
+                    <!-- Injected via JS -->
+                  </ul>
+                </div>
+
+                <div class="add-custom-item-wrap">
+                  <input type="text" id="addCustomItemInput" class="input-text-sm" placeholder="Tambah barang baru ke tas...">
+                  <button class="btn btn-secondary btn-sm" onclick="app.addCustomInventoryItem()">+ Tambah</button>
+                </div>
+              </div>
+
+              <!-- TAB 3: FEATURES & TRAITS -->
+              <div class="tab-pane" id="tabPaneFeatures" style="display: none;">
+                <div class="features-section" id="sheetFeaturesList">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+
+              <!-- TAB 4: ROLEPLAY & LOG -->
+              <div class="tab-pane" id="tabPaneRoleplay" style="display: none;">
+                <!-- Backstory Card -->
+                <div class="backstory-card-box">
+                  <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h4 style="margin:0;color:var(--rose-primary);font-size:0.95rem;font-weight:800;">📖 BACKSTORY &amp; KISAH MASA LALU</h4>
+                    <button class="btn btn-xs btn-secondary" onclick="app.openBackstoryModal()" style="padding:0.18rem 0.5rem;font-size:0.75rem;">✏️ Edit Backstory</button>
+                  </div>
+                  <div class="backstory-text-content" id="sheetDisplayBackstory">Belum ada catatan kisah masa lalu.</div>
+                </div>
+
+                <div class="roleplay-cards-grid">
+                  <div class="rp-card">
+                    <h4>Personality Traits (Sifat & Kebiasaan)</h4>
+                    <p id="sheetDisplayPersonality">-</p>
+                  </div>
+                  <div class="rp-card">
+                    <h4>Ideals & Youth Dreams (Cita-cita SMA)</h4>
+                    <p id="sheetDisplayIdeals">-</p>
+                  </div>
+                  <div class="rp-card">
+                    <h4>Bonds (Ikatan Penting & Janji Masa Lalu)</h4>
+                    <p id="sheetDisplayBonds">-</p>
+                  </div>
+                  <div class="rp-card">
+                    <h4>Flaws & Insecurities (Kelemahan & Bikin Salting)</h4>
+                    <p id="sheetDisplayFlaws">-</p>
+                  </div>
+                </div>
+
+                <div class="school-calendar-box mt-4">
+                  <div class="inv-head-title">Kalender Acara SMA (Academic Flags)</div>
+                  <div class="calendar-list" id="sheetCalendarList">
+                    <!-- Injected via JS with checkbox state -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 5: AFFECTION TRACKER (DM ONLY) -->
+              <div class="tab-pane" id="tabPaneAffection" style="display: none;">
+                <div class="dm-gate-box" id="dmGateBox">
+                  <div class="dm-lock-icon">🔒</div>
+                  <h3>DM EYES ONLY</h3>
+                  <p>Meteran hati (♥ 1–10), status cinta/rivalitas, dan rahasia gebetan dirahasiakan agar pemain tidak metagaming.</p>
+                  <div class="dm-pin-form">
+                    <input type="password" id="dmPinInput" class="input-text dm-pin-input" placeholder="Masukkan PIN DM..." maxlength="10" onkeydown="if(event.key==='Enter')app.unlockDmMode()">
+                    <button class="btn btn-accent" onclick="app.unlockDmMode()">🔑 Buka Akses DM</button>
+                    <p class="dm-pin-error" id="dmPinError" style="display:none;color:#f43f5e;font-size:0.8rem;margin-top:0.5rem;">⚠ PIN salah. Akses ditolak.</p>
+                  </div>
+                </div>
+
+                <div class="dm-unlocked-content" id="dmUnlockedContent" style="display: none;">
+                  <div class="dm-status-bar">
+                    <span class="badge-dm-active">✓ DM MODE AKTIF</span>
+                    <button class="btn btn-secondary btn-xs" onclick="app.lockDmMode()">Kunci Kembali</button>
+                  </div>
+
+                  <div class="targets-list" id="sheetTargetsList">
+                    <!-- Injected via JS -->
+                  </div>
+
+                  <button class="btn btn-secondary btn-sm mt-3" onclick="app.addNewTargetDialog()">+ Tambah Target Romansa / Rival</button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: DICE ROLLER                                                    -->
+  <!-- ===================================================================== -->
+  <div id="diceModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'diceModal')">
+    <div class="modal-card dice-modal-card">
+      <div class="modal-header">
+        <h3>D&D Beyond Dice Roller</h3>
+        <button class="modal-close-btn" onclick="app.toggleDiceModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="dice-display-stage">
+          <div class="dice-circle-wrap">
+            <span class="dice-die-type" id="diceModalDieLabel">d20</span>
+            <span class="dice-result-number" id="diceModalResultNum">--</span>
+          </div>
+          <div class="dice-calc-details" id="diceModalDetails">Pilih dadu di bawah atau klik skill pada sheet</div>
+        </div>
+
+        <div class="dice-selector-row">
+          <button class="btn-die" onclick="app.rollDice(20)">d20</button>
+          <button class="btn-die" onclick="app.rollDice(12)">d12</button>
+          <button class="btn-die" onclick="app.rollDice(10)">d10</button>
+          <button class="btn-die" onclick="app.rollDice(8)">d8</button>
+          <button class="btn-die" onclick="app.rollDice(6)">d6</button>
+          <button class="btn-die" onclick="app.rollDice(4)">d4</button>
+        </div>
+
+        <div class="dice-modifier-row">
+          <label>Tambahan Modifier:</label>
+          <input type="number" id="diceCustomMod" value="0" class="input-number-sm">
+        </div>
+
+        <div class="dice-history-section">
+          <h4>Riwayat Lemparan Dadu</h4>
+          <div class="history-list" id="diceHistoryList">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: AVATAR PICKER                                                  -->
+  <!-- ===================================================================== -->
+  <div id="avatarModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'avatarModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Pilih Foto / Avatar Murid</h3>
+        <button class="modal-close-btn" onclick="app.closeAvatarPickerModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="avatar-preset-grid" id="avatarPresetGrid">
+          <!-- Injected via JS -->
+        </div>
+        <div class="form-group mt-3">
+          <label>Atau masukkan URL Foto Custom:</label>
+          <input type="text" id="avatarCustomUrlInput" class="input-text" placeholder="https://example.com/anime-pic.jpg">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="app.applyCustomAvatarUrl()">Gunakan Avatar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: CLOUD GLOBAL / SUPABASE SYNC STATUS                            -->
+  <!-- ===================================================================== -->
+  <div id="cloudModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'cloudModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🌐 Status Sinkronisasi Cloud (Supabase)</h3>
+        <button class="modal-close-btn" onclick="app.closeCloudModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">
+          Aplikasi berjalan dalam <strong>Mode Global Online Realtime</strong>. Seluruh karakter yang dibuat, diubah status HP/Composure, atau diperbarui tabungannya otomatis tersinkronisasi dan dapat dilihat oleh seluruh pemain &amp; DM.
+        </p>
+
+        <div class="cloud-status-box mb-3" id="cloudStatusBox">
+          <div style="display:flex;align-items:center;gap:0.6rem;">
+            <span class="cloud-status-dot large online" id="cloudModalStatusDot"></span>
+            <strong id="cloudStatusTitle" style="font-size:0.95rem;">🟢 Terhubung: Cloud Database Global</strong>
+          </div>
+          <p class="text-xs text-muted mt-1" id="cloudStatusDesc">Realtime channel aktif. Data karakter langsung terupdate otomatis saat ada perubahan.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem;">
+          <button class="btn btn-primary btn-sm" onclick="app.loadRosterFromSupabase(true)">🔄 Muat Ulang Roster dari Cloud</button>
+          <button class="btn btn-secondary btn-sm" onclick="app.syncCurrentRosterToCloud(true)">☁️ Paksa Sinkronisasi Ulang Karakter Lokal ke Cloud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: EDIT BACKSTORY                                                 -->
+  <!-- ===================================================================== -->
+  <div id="backstoryModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'backstoryModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📖 Edit Backstory &amp; Kisah Masa Lalu</h3>
+        <button class="modal-close-btn" onclick="app.closeBackstoryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-muted mb-2">Tuliskan kisah masa lalu, motivasi, rahasia kepribadian, atau alasan masuk SMA ini.</p>
+        <div class="form-group">
+          <textarea id="modalBackstoryInput" class="input-textarea" rows="8" placeholder="Tuliskan kisah masa lalu karaktermu..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeBackstoryModal()">Batal</button>
+        <button class="btn btn-primary" onclick="app.saveBackstoryFromModal()">Simpan Backstory</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: SAVINGS TRANSACTION (+ / - RUPIAH)                             -->
+  <!-- ===================================================================== -->
+  <div id="savingsModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'savingsModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>💳 Kelola Tabungan (+ / − Rupiah)</h3>
+        <button class="modal-close-btn" onclick="app.closeSavingsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:var(--bg-surface);padding:0.75rem 1rem;border-radius:var(--radius-sm);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.8rem;color:var(--text-muted);">Saldo Saat Ini:</span>
+          <strong style="color:var(--amber-gold);font-size:1rem;" id="modalSavingsCurrentDisplay">¥0 / Rp 0</strong>
+        </div>
+
+        <div class="tx-type-selector">
+          <button type="button" class="tx-type-btn active type-add" id="txBtnAdd" onclick="app.setSavingsTxType('add')">
+            <span style="font-size:1.1rem;font-weight:900;">+</span> Tambah Uang (Pemasukan)
+          </button>
+          <button type="button" class="tx-type-btn type-sub" id="txBtnSub" onclick="app.setSavingsTxType('sub')">
+            <span style="font-size:1.1rem;font-weight:900;">−</span> Kurang Uang (Pengeluaran)
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label><strong>Nominal Transaksi (dalam Rupiah / Rp):</strong></label>
+          <input type="number" id="inputSavingsRp" class="input-text" placeholder="Contoh: 50000" min="0" step="500" oninput="app.updateSavingsPreview()">
+        </div>
+
+        <div class="conversion-box">
+          <span class="conv-label">Konversi Yen (Rasio baku Rp 100 = ¥1):</span>
+          <span class="conv-value" id="savingsConversionPreview">≈ ¥0</span>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Keterangan Transaksi (Opsional):</label>
+          <input type="text" id="inputSavingsNote" class="input-text" placeholder="Contoh: Beli tiket bioskop bareng doi, Hadiah ultah...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeSavingsModal()">Batal</button>
+        <button class="btn btn-primary" onclick="app.applySavingsTransaction()">Terapkan Transaksi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MODAL: KELOLA KERJA PARUH WAKTU (BAITO)                              -->
+  <!-- ===================================================================== -->
+  <div id="baitoModal" class="modal-overlay" style="display:none;" onclick="app.handleModalBackdropClick(event, 'baitoModal')">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>💼 Kelola Kerja Paruh Waktu (Baito)</h3>
+        <button class="modal-close-btn" onclick="app.closeBaitoModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-xs text-muted mb-3">
+          Murid yang bekerja paruh waktu mendapatkan tambahan penghasilan harian yang otomatis masuk ke tabungan setiap kali melakukan <strong>Long Rest</strong>.
+        </p>
+
+        <div class="form-group mb-3">
+          <label><strong>Pekerjaan Paruh Waktu:</strong></label>
+          <input type="text" id="inputBaitoJob" class="input-text" placeholder="Contoh: Kasir Minimarket Lawson, Barista Cafe, Tutor Bimbel">
+        </div>
+
+        <div class="form-group mb-2">
+          <label><strong>Gaji Harian (dalam Rupiah / Rp per Hari):</strong></label>
+          <input type="number" id="inputBaitoWageRp" class="input-text" placeholder="Contoh: 50000" min="0" step="500" oninput="app.updateBaitoPreview()">
+        </div>
+
+        <div class="conversion-box mb-3">
+          <span class="conv-label">Gaji per Long Rest:</span>
+          <span class="conv-value" id="baitoWagePreview">¥0 / hari</span>
+        </div>
+
+        <div id="baitoActiveAlert" style="display:none;background:rgba(225,29,72,0.1);border:1px solid rgba(225,29,72,0.3);border-radius:var(--radius-sm);padding:0.75rem;margin-top:1rem;">
+          <p class="text-xs" style="color:#fda4af;margin-bottom:0.5rem;">Karakter saat ini sedang aktif bekerja. Kamu bisa berhenti bekerja (resign) kapan saja.</p>
+          <button type="button" class="btn btn-danger btn-sm" onclick="app.stopBaito()" style="width:100%;">🛑 Berhenti Kerja (Hapus Baito / Menganggur)</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="app.closeBaitoModal()">Batal</button>
+        <button class="btn btn-primary" onclick="app.saveBaitoFromModal()">Simpan Pekerjaan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- PRINT TEMPLATE (3-PAGE A4 FORMAT EQUIVALENT TO OFFICIAL SHEET)        -->
+  <!-- ===================================================================== -->
+  <div id="printSheetContainer" class="print-only">
+    <!-- Formatted dynamically before window.print() -->
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

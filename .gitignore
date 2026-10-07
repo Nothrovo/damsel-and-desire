@@ -2,3 +2,15 @@
 Thumbs.db
 *.tmp
 *.log
+
+# Node & Build Outputs
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+!.env.example
