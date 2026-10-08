@@ -25,7 +25,7 @@ INSERT INTO public.codex_categories (id, name, description, sort_order, show_tot
   ('class_3_1', 'Kelas 3-1', 'Siswa-siswi tahun ketiga kelas 3-1 (Grade 12 / Senior)', 5, false, 'placeholder'),
   ('class_3_2', 'Kelas 3-2', 'Siswa-siswi tahun ketiga kelas 3-2 (Grade 12 / Senior)', 6, false, 'placeholder'),
   ('faculty', 'Guru & Staf Sekolah', 'Pengajar, staf konseling, kepala sekolah, dan tenaga kesehatan', 7, false, 'placeholder'),
-  ('love_interest', 'Target Asmara (Love Interest)', 'Heroine & target asmara terdaftar di Housen Academy', 8, false, 'hidden'),
+  ('love_interest', 'Target Asmara (Love Interest)', 'Heroine & target asmara terdaftar di Housen Academy', 8, false, 'placeholder'),
   ('clubs', 'Klub Ekstrakurikuler', 'Tokoh penting dan faksi 16 klub ekskul', 9, false, 'placeholder'),
   ('outside_school', 'Di Luar Sekolah', 'Keluarga, alumni, pemilik toko, dan rival sekolah lain', 10, false, 'placeholder'),
   ('other', 'Lainnya', 'Karakter pendukung lainnya', 11, false, 'placeholder')
@@ -144,7 +144,7 @@ CREATE OR REPLACE FUNCTION public._validate_dm_session(p_token TEXT)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_token_hash TEXT;
@@ -175,7 +175,7 @@ CREATE OR REPLACE FUNCTION public.dm_login(p_password TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_config RECORD;
@@ -230,7 +230,7 @@ CREATE OR REPLACE FUNCTION public.dm_logout(p_session_token TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_token_hash TEXT;
@@ -251,7 +251,7 @@ CREATE OR REPLACE FUNCTION public.dm_verify_session(p_session_token TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_token_hash TEXT;
@@ -285,7 +285,7 @@ CREATE OR REPLACE FUNCTION public.dm_change_password(p_session_token TEXT, p_new
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   PERFORM public._validate_dm_session(p_session_token);
@@ -319,7 +319,7 @@ CREATE OR REPLACE FUNCTION public.list_codex(p_category_id TEXT DEFAULT NULL)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_chars JSONB := '[]'::jsonb;
@@ -332,7 +332,11 @@ BEGIN
   FOR v_char IN
     SELECT c.id, c.slug, c.category_id, c.sort_order, c.visibility_mode, c.home_room_id, c.is_love_interest
     FROM public.codex_characters c
-    WHERE (p_category_id IS NULL OR c.category_id = p_category_id)
+    WHERE (
+      p_category_id IS NULL
+      OR c.category_id = p_category_id
+      OR (p_category_id = 'love_interest' AND c.is_love_interest = true)
+    )
     ORDER BY c.sort_order ASC, c.created_at ASC
   LOOP
     -- Ambil daftar section yang SUDAH terbuka untuk karakter ini
@@ -407,7 +411,7 @@ CREATE OR REPLACE FUNCTION public.get_codex_character(p_id_or_slug TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_char RECORD;
@@ -513,7 +517,7 @@ CREATE OR REPLACE FUNCTION public.dm_list_all(p_session_token TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_chars JSONB := '[]'::jsonb;
@@ -572,7 +576,7 @@ CREATE OR REPLACE FUNCTION public.dm_get_character(p_session_token TEXT, p_chara
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_char RECORD;
@@ -630,7 +634,7 @@ CREATE OR REPLACE FUNCTION public.dm_set_reveal(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   PERFORM public._validate_dm_session(p_session_token);
@@ -664,7 +668,7 @@ CREATE OR REPLACE FUNCTION public.dm_set_tier_reveal(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_sec RECORD;
@@ -700,7 +704,7 @@ CREATE OR REPLACE FUNCTION public.dm_introduce(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   PERFORM public._validate_dm_session(p_session_token);
@@ -726,7 +730,7 @@ CREATE OR REPLACE FUNCTION public.dm_lock_all(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   PERFORM public._validate_dm_session(p_session_token);
@@ -748,7 +752,7 @@ CREATE OR REPLACE FUNCTION public.dm_get_log(p_session_token TEXT)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_logs JSONB;
@@ -776,7 +780,7 @@ CREATE OR REPLACE FUNCTION public.dm_upsert_character(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_char_id UUID;
@@ -793,8 +797,8 @@ DECLARE
   v_content JSONB;
   v_hint TEXT;
 BEGIN
-  -- Validasi sesi DM (Bisa dilewati bila dipanggil oleh internal migration / service role)
-  IF p_session_token <> 'SERVICE_ROLE_BYPASS' THEN
+  -- Validasi sesi DM (Wajib token sesi DM yang valid atau dipanggil via service_role)
+  IF COALESCE(auth.role(), '') <> 'service_role' THEN
     PERFORM public._validate_dm_session(p_session_token);
   END IF;
 
@@ -859,7 +863,7 @@ CREATE OR REPLACE FUNCTION public.dm_batch_introduce(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_id UUID;
@@ -895,7 +899,7 @@ CREATE OR REPLACE FUNCTION public.dm_batch_set_tier(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_id UUID;
@@ -947,7 +951,7 @@ CREATE OR REPLACE FUNCTION public.dm_batch_lock_all(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 DECLARE
   v_id UUID;
@@ -977,7 +981,7 @@ CREATE OR REPLACE FUNCTION public.dm_delete_character(
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   PERFORM public._validate_dm_session(p_session_token);
@@ -1023,4 +1027,29 @@ GRANT EXECUTE ON FUNCTION public.dm_batch_set_tier(TEXT, UUID[], INT, BOOLEAN) T
 GRANT EXECUTE ON FUNCTION public.dm_batch_lock_all(TEXT, UUID[]) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.dm_delete_character(TEXT, UUID) TO anon, authenticated;
 
+-- ============================================================================
+-- STORAGE BUCKET SETUP (codex-assets dengan nama berkas UUID teracak)
+-- ============================================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'buckets') THEN
+    INSERT INTO storage.buckets (id, name, public)
+    VALUES ('codex-assets', 'codex-assets', true)
+    ON CONFLICT (id) DO NOTHING;
+  END IF;
+END $$;
 
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'storage' AND table_name = 'objects') THEN
+    DROP POLICY IF EXISTS "codex_assets_public_read" ON storage.objects;
+    CREATE POLICY "codex_assets_public_read" ON storage.objects
+      FOR SELECT TO anon, authenticated
+      USING (bucket_id = 'codex-assets');
+
+    DROP POLICY IF EXISTS "codex_assets_upload" ON storage.objects;
+    CREATE POLICY "codex_assets_upload" ON storage.objects
+      FOR INSERT TO anon, authenticated
+      WITH CHECK (bucket_id = 'codex-assets');
+  END IF;
+END $$;

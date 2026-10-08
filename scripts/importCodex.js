@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { parseMarkdownCharacter } from "./validateCodex.js";
 
@@ -28,7 +29,7 @@ function loadEnv() {
 loadEnv();
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || "https://oavkhnjigdqacvqfkzpf.supabase.co";
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_M_ZCTbtu0UYlfiAyLON_2Q_jYWHAiPI";
 
 function mapClassRoomToCategory(meta) {
   const gradeStr = String(meta?.grade || "").toLowerCase();
@@ -45,7 +46,13 @@ function mapClassRoomToCategory(meta) {
   return "other";
 }
 
-function buildCharacterPayload(parsed, dirPath) {
+function getObfuscatedAssetPath(slug, fileName) {
+  const ext = (fileName.split(".").pop() || "png").toLowerCase();
+  const hash = crypto.createHash("sha256").update(`codex_asset:${slug}:${fileName}`).digest("hex").slice(0, 32);
+  return `portraits/asset_${hash}.${ext}`;
+}
+
+async function buildCharacterPayload(parsed, dirPath, supabase, isDryRun) {
   const meta = parsed.metadata;
   const sections = parsed.sections;
 
@@ -65,10 +72,33 @@ function buildCharacterPayload(parsed, dirPath) {
     const dirFiles = fs.readdirSync(dirPath);
     for (const f of dirFiles) {
       if (/\.(png|jpg|jpeg|webp)$/i.test(f)) {
+        const fullPath = path.join(dirPath, f);
+        const isPortrait = /portrait/i.test(f) || /id/i.test(f);
+        const storagePath = getObfuscatedAssetPath(meta.id, f);
+        let publicUrl = `${SUPABASE_URL}/storage/v1/object/public/codex-assets/${storagePath}`;
+
+        if (!isDryRun && supabase) {
+          try {
+            const fileBuffer = fs.readFileSync(fullPath);
+            const ext = (f.split(".").pop() || "png").toLowerCase();
+            const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png";
+            const { error: upErr } = await supabase.storage
+              .from("codex-assets")
+              .upload(storagePath, fileBuffer, { contentType, upsert: true });
+            if (!upErr) {
+              const { data: urlData } = supabase.storage.from("codex-assets").getPublicUrl(storagePath);
+              if (urlData?.publicUrl) publicUrl = urlData.publicUrl;
+            }
+          } catch (e) {
+            // Keep deterministic storage URL fallback
+          }
+        }
+
         images.push({
-          fileName: f,
-          fullPath: path.join(dirPath, f),
-          isPortrait: /portrait/i.test(f) || /id/i.test(f)
+          fileName: storagePath.split("/").pop(),
+          fullPath,
+          url: publicUrl,
+          isPortrait
         });
       }
     }
@@ -78,7 +108,7 @@ function buildCharacterPayload(parsed, dirPath) {
   let avatarUrl = "";
   const portraitImg = images.find(img => img.isPortrait) || images[0];
   if (portraitImg) {
-    avatarUrl = `images/${meta.id}/${portraitImg.fileName}`;
+    avatarUrl = portraitImg.url;
   }
 
   // 1. Identity Section (Tier 1)
@@ -109,7 +139,8 @@ function buildCharacterPayload(parsed, dirPath) {
     avatar_url: avatarUrl,
     images: images.map(img => ({
       fileName: img.fileName,
-      path: `images/${meta.id}/${img.fileName}`,
+      url: img.url,
+      path: img.url,
       type: img.isPortrait ? "portrait" : "cg_scene"
     })),
     raw_markdown: sections["🎀 Penampilan Fisik & Gaya Visual"] || sections["🖼️ Galeri Visual Karakter"] || ""
@@ -129,19 +160,18 @@ function buildCharacterPayload(parsed, dirPath) {
 
   // 5. Relationships Section (Tier 2)
   const relationshipsContent = {
-    raw_markdown: sections["👥 Jaringan Relasi (Relationships)"] || ""
+    raw_markdown: sections["👥 Jaringan Relasi (Relationships)"] || sections["💬 Gaya Bicara & Interaksi dengan Pemain"] || ""
   };
 
   // 6. Mind Section (Tier 3)
   const mindContent = {
-    heart_meter_base: meta.heart_meter?.base || 1,
-    confession_dc: meta.heart_meter?.confession_target_dc || 17,
-    raw_markdown: sections["💖 Panduan Mekanik & Romansa (Heart System)"] || ""
+    heart_meter: meta.heart_meter || {},
+    raw_markdown: sections["💘 Mekanika Romansa (Damsel & Desire Engine)"] || ""
   };
 
   // 7. Secrets Section (Tier 3)
   const secretsContent = {
-    raw_markdown: sections["Celah Emosional & Kelemahan Batin"] || "Rahasia belum terungkap."
+    raw_markdown: sections["🔒 Rahasia Terdalam"] || sections["📖 Latar Belakang (Backstory)"] || ""
   };
 
   // 8. DM Notes (Tier 99)
@@ -170,8 +200,11 @@ function buildCharacterPayload(parsed, dirPath) {
 }
 
 async function main() {
-  const targetDir = process.argv[2] || "Characters/Love Interests";
+  const customDirArg = process.argv.slice(2).find(a => !a.startsWith("--"));
+  const targetDir = customDirArg || "Characters/Love Interests";
   const isDryRun = process.argv.includes("--dry-run");
+  const passArg = process.argv.find(a => a.startsWith("--password="))?.split("=")[1];
+  const dmPassword = passArg || process.env.DM_PASSWORD || "";
 
   console.log(`\n======================================================`);
   console.log(`📦 Damsel & Desire — Character Codex Importer`);
@@ -185,7 +218,24 @@ async function main() {
     process.exit(1);
   }
 
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let sessionToken = "";
+  if (!isDryRun && !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    if (!dmPassword) {
+      console.error("Error: Sertakan --password=<kata_sandi_dm> atau set DM_PASSWORD / SUPABASE_SERVICE_ROLE_KEY di .env.local");
+      process.exit(1);
+    }
+    const { data: loginData, error: loginErr } = await supabase.rpc("dm_login", {
+      p_password: dmPassword
+    });
+    if (loginErr || !loginData?.success) {
+      console.error("Gagal autentikasi DM ke Supabase:", loginErr?.message || loginData?.error || "Unknown error");
+      process.exit(1);
+    }
+    sessionToken = loginData.session_token;
+    console.log("✓ Autentikasi sesi DM berhasil.");
+  }
 
   const characterFiles = [];
   function scan(dir) {
@@ -211,7 +261,7 @@ async function main() {
       continue;
     }
 
-    const payload = buildCharacterPayload(parsed, item.dirPath);
+    const payload = await buildCharacterPayload(parsed, item.dirPath, supabase, isDryRun);
 
     if (isDryRun) {
       console.log(`  [DRY-RUN] Siap import: ${payload.slug} (${payload.categoryId}) - ${payload.sections.length} sections`);
@@ -219,14 +269,14 @@ async function main() {
     } else {
       try {
         const { data, error } = await supabase.rpc("dm_upsert_character", {
-          p_session_token: "SERVICE_ROLE_BYPASS",
+          p_session_token: sessionToken,
           p_payload: payload
         });
 
         if (error) {
           console.error(`  ✗ Gagal upsert ${payload.slug}:`, error.message);
         } else {
-          console.log(`  ✓ Berhasil upsert: ${payload.slug} (ID: ${data.id})`);
+          console.log(`  ✓ Berhasil upsert: ${payload.slug} -> Kategori: ${payload.categoryId} (ID: ${data.id})`);
           successCount++;
         }
       } catch (err) {

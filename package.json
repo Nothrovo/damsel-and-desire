@@ -9,7 +9,9 @@
     "build:handbook": "node scripts/buildStandaloneHandbook.js",
     "build": "tsc && vite build && cp dist/index.html dist/404.html && node scripts/buildStandaloneHandbook.js",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "codex:validate": "node scripts/validateCodex.js",
+    "codex:import": "node scripts/importCodex.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",

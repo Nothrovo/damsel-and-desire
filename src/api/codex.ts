@@ -15,7 +15,7 @@ export const DEFAULT_CODEX_CATEGORIES: CodexCategory[] = [
   { id: "class_3_1", name: "Kelas 3-1", description: "Siswa-siswi tahun ketiga kelas 3-1 (Grade 12 / Senior)", sort_order: 5, show_totals: false, default_visibility_mode: "placeholder" },
   { id: "class_3_2", name: "Kelas 3-2", description: "Siswa-siswi tahun ketiga kelas 3-2 (Grade 12 / Senior)", sort_order: 6, show_totals: false, default_visibility_mode: "placeholder" },
   { id: "faculty", name: "Guru & Staf Sekolah", description: "Pengajar, staf konseling, kepala sekolah, dan tenaga kesehatan", sort_order: 7, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "love_interest", name: "Target Asmara (Love Interest)", description: "Heroine & target asmara terdaftar di Housen Academy", sort_order: 8, show_totals: false, default_visibility_mode: "hidden" },
+  { id: "love_interest", name: "Target Asmara (Love Interest)", description: "Heroine & target asmara terdaftar di Housen Academy", sort_order: 8, show_totals: false, default_visibility_mode: "placeholder" },
   { id: "clubs", name: "Klub Ekstrakurikuler", description: "Tokoh penting dan faksi 16 klub ekskul", sort_order: 9, show_totals: false, default_visibility_mode: "placeholder" },
   { id: "outside_school", name: "Di Luar Sekolah", description: "Keluarga, alumni, pemilik toko, dan rival sekolah lain", sort_order: 10, show_totals: false, default_visibility_mode: "placeholder" },
   { id: "other", name: "Lainnya", description: "Karakter pendukung lainnya", sort_order: 11, show_totals: false, default_visibility_mode: "placeholder" }
