@@ -52,6 +52,29 @@ function getObfuscatedAssetPath(slug, fileName) {
   return `portraits/asset_${hash}.${ext}`;
 }
 
+function findSectionsByKeyword(sections, keywords) {
+  const results = [];
+  for (const [title, body] of Object.entries(sections)) {
+    if (title === "tagline" || !body) continue;
+    const lower = title.toLowerCase();
+    if (keywords.some(kw => lower.includes(kw.toLowerCase()))) {
+      results.push({ title, body: String(body).trim() });
+    }
+  }
+  return results;
+}
+
+function extractH3Subsections(markdownText) {
+  const subs = {};
+  if (!markdownText) return subs;
+  const regex = /(?:^|\r?\n)###(?!#)\s+([^\n\r]+)\r?\n([\s\S]*?)(?=(?:\r?\n###(?!#)\s+|$))/g;
+  let m;
+  while ((m = regex.exec(markdownText)) !== null) {
+    subs[m[1].trim()] = m[2].trim();
+  }
+  return subs;
+}
+
 async function buildCharacterPayload(parsed, dirPath, supabase, isDryRun) {
   const meta = parsed.metadata;
   const sections = parsed.sections;
@@ -66,50 +89,59 @@ async function buildCharacterPayload(parsed, dirPath, supabase, isDryRun) {
 
   const categoryId = mapClassRoomToCategory(meta);
 
-  // Look for image files in the character folder
+  // Look for ONLY the ID Portrait image in the character folder (exclude CG scenes!)
   const images = [];
   if (fs.existsSync(dirPath)) {
     const dirFiles = fs.readdirSync(dirPath);
-    for (const f of dirFiles) {
-      if (/\.(png|jpg|jpeg|webp)$/i.test(f)) {
-        const fullPath = path.join(dirPath, f);
-        const isPortrait = /portrait/i.test(f) || /id/i.test(f);
-        const storagePath = getObfuscatedAssetPath(meta.id, f);
-        let publicUrl = `${SUPABASE_URL}/storage/v1/object/public/codex-assets/${storagePath}`;
+    // Filter out CG / Scene / Ceremony / Reverie images, keep only ID Portrait / Avatar / Uniform
+    const candidateFiles = dirFiles.filter(f => {
+      if (!/\.(png|jpg|jpeg|webp)$/i.test(f)) return false;
+      if (/reverie|ceremony|speech|scene|\bcg\b/i.test(f)) return false;
+      return true;
+    });
 
-        if (!isDryRun && supabase) {
-          try {
-            const fileBuffer = fs.readFileSync(fullPath);
-            const ext = (f.split(".").pop() || "png").toLowerCase();
-            const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png";
-            const { error: upErr } = await supabase.storage
-              .from("codex-assets")
-              .upload(storagePath, fileBuffer, { contentType, upsert: true });
-            if (!upErr) {
-              const { data: urlData } = supabase.storage.from("codex-assets").getPublicUrl(storagePath);
-              if (urlData?.publicUrl) publicUrl = urlData.publicUrl;
-            }
-          } catch (e) {
-            // Keep deterministic storage URL fallback
+    // Sort so explicit "Portrait" or "Avatar" or "Uniform" comes first, then take ONLY 1 ID photo
+    candidateFiles.sort((a, b) => {
+      const aScore = /portrait|avatar|id/i.test(a) ? 1 : 0;
+      const bScore = /portrait|avatar|id/i.test(b) ? 1 : 0;
+      return bScore - aScore;
+    });
+
+    const idPhotoFile = candidateFiles[0];
+    if (idPhotoFile) {
+      const fullPath = path.join(dirPath, idPhotoFile);
+      const storagePath = getObfuscatedAssetPath(meta.id, idPhotoFile);
+      let publicUrl = `${SUPABASE_URL}/storage/v1/object/public/codex-assets/${storagePath}`;
+
+      if (!isDryRun && supabase) {
+        try {
+          const fileBuffer = fs.readFileSync(fullPath);
+          const ext = (idPhotoFile.split(".").pop() || "png").toLowerCase();
+          const contentType = ext === "jpg" || ext === "jpeg" ? "image/jpeg" : ext === "webp" ? "image/webp" : "image/png";
+          const { error: upErr } = await supabase.storage
+            .from("codex-assets")
+            .upload(storagePath, fileBuffer, { contentType, upsert: true });
+          if (upErr) {
+            console.warn(`  ⚠️ Gagal upload foto ${meta.id}: ${upErr.message}`);
+          } else {
+            const { data: urlData } = supabase.storage.from("codex-assets").getPublicUrl(storagePath);
+            if (urlData?.publicUrl) publicUrl = urlData.publicUrl;
           }
+        } catch (e) {
+          console.warn(`  ⚠️ Exception upload foto ${meta.id}: ${e.message}`);
         }
-
-        images.push({
-          fileName: storagePath.split("/").pop(),
-          fullPath,
-          url: publicUrl,
-          isPortrait
-        });
       }
+
+      images.push({
+        fileName: storagePath.split("/").pop(),
+        url: publicUrl,
+        path: publicUrl,
+        type: "portrait"
+      });
     }
   }
 
-  // Find primary avatar if any
-  let avatarUrl = "";
-  const portraitImg = images.find(img => img.isPortrait) || images[0];
-  if (portraitImg) {
-    avatarUrl = portraitImg.url;
-  }
+  const avatarUrl = images[0]?.url || "";
 
   // 1. Identity Section (Tier 1)
   const identityContent = {
@@ -135,55 +167,100 @@ async function buildCharacterPayload(parsed, dirPath, supabase, isDryRun) {
   };
 
   // 2. Appearance Section (Tier 1)
+  const appSecs = findSectionsByKeyword(sections, ["Penampilan Fisik"]);
+  const appearanceMarkdown = appSecs.map(s => s.body).join("\n\n");
   const appearanceContent = {
     avatar_url: avatarUrl,
-    images: images.map(img => ({
-      fileName: img.fileName,
-      url: img.url,
-      path: img.url,
-      type: img.isPortrait ? "portrait" : "cg_scene"
-    })),
-    raw_markdown: sections["🎀 Penampilan Fisik & Gaya Visual"] || sections["🖼️ Galeri Visual Karakter"] || ""
+    images,
+    raw_markdown: appearanceMarkdown
   };
+
+  // Parse Personality H2 & its H3 subsections
+  const persSecs = findSectionsByKeyword(sections, ["Kepribadian"]);
+  const fullPersonalityMd = persSecs.map(s => s.body).join("\n\n");
+  const persH3 = extractH3Subsections(fullPersonalityMd);
 
   // 3. Personality Section (Tier 2)
   const personalityContent = {
     likes: meta.likes || [],
     dislikes: meta.dislikes || [],
-    raw_markdown: sections["🧠 Kepribadian & Pola Emosional"] || sections["🔍 Trivia & Fakta Unik"] || ""
+    raw_markdown: fullPersonalityMd
   };
 
-  // 4. Background Section (Tier 2)
+  // 4. Background Section (Tier 2): Backstory + Kehidupan Klub / Sekolah / Wilayah Kekuasaan
+  const bgSecs = findSectionsByKeyword(sections, ["Latar Belakang", "Backstory", "Kehidupan Klub", "Kehidupan Sekolah", "Wilayah Kekuasaan"]);
+  const backgroundMarkdown = bgSecs
+    .map((s, idx) => (idx === 0 ? s.body : `### ${s.title}\n\n${s.body}`))
+    .join("\n\n");
   const backgroundContent = {
-    raw_markdown: sections["📖 Latar Belakang (Backstory)"] || sections["🏫 Kehidupan Klub & Posisi Sekolah (Bukatsu)"] || ""
+    raw_markdown: backgroundMarkdown
   };
 
-  // 5. Relationships Section (Tier 2)
+  // 5. Relationships Section (Tier 2): Jaringan Relasi + Dialog Khas + Lokasi Kencan + Preferensi Hadiah
+  const relSecs = findSectionsByKeyword(sections, ["Jaringan Relasi", "Relationships", "Dialog Khas", "Lokasi Kencan", "Preferensi Hadiah"]);
+  let relationshipsMarkdown = relSecs
+    .map((s, idx) => (idx === 0 && s.title.includes("Relasi") ? s.body : `### ${s.title}\n\n${s.body}`))
+    .join("\n\n");
+
   const relationshipsContent = {
-    raw_markdown: sections["👥 Jaringan Relasi (Relationships)"] || sections["💬 Gaya Bicara & Interaksi dengan Pemain"] || ""
+    raw_markdown: relationshipsMarkdown
   };
 
-  // 6. Mind Section (Tier 3)
+  // 6. Mind Section (Tier 3): Celah Emosional / Sisi Tersembunyi + Pola Kasmaran + Sistem/Panduan Romansa
+  const mindParts = [];
+  for (const [h3Title, h3Body] of Object.entries(persH3)) {
+    if (/celah|kelemahan|sisi tersembunyi|kasmaran|love language/i.test(h3Title)) {
+      mindParts.push(`### ${h3Title}\n\n${h3Body}`);
+    }
+  }
+  const romanceSecs = findSectionsByKeyword(sections, ["Sistem Romansa", "Panduan Mekanik & Romansa"]);
+  for (const rSec of romanceSecs) {
+    mindParts.push(`### ${rSec.title}\n\n${rSec.body}`);
+  }
   const mindContent = {
     heart_meter: meta.heart_meter || {},
-    raw_markdown: sections["💘 Mekanika Romansa (Damsel & Desire Engine)"] || ""
+    confession_dc: meta.heart_meter?.confession_target_dc || 17,
+    heart_meter_base: meta.heart_meter?.base || 1,
+    raw_markdown: mindParts.join("\n\n") || fullPersonalityMd
   };
 
-  // 7. Secrets Section (Tier 3)
+  // 7. Secrets Section (Tier 3): Rahasia Terdalam + Trivia & Fakta Unik/Menarik + Celah Emosional
+  const secretParts = [];
+  const explicitSecretSecs = findSectionsByKeyword(sections, ["Rahasia"]);
+  for (const sSec of explicitSecretSecs) {
+    secretParts.push(sSec.body);
+  }
+  for (const [h3Title, h3Body] of Object.entries(persH3)) {
+    if (/celah|kelemahan|sisi tersembunyi/i.test(h3Title)) {
+      secretParts.push(`### ${h3Title}\n\n${h3Body}`);
+    }
+  }
+  const triviaSecs = findSectionsByKeyword(sections, ["Trivia"]);
+  for (const tSec of triviaSecs) {
+    secretParts.push(`### ${tSec.title}\n\n${tSec.body}`);
+  }
   const secretsContent = {
-    raw_markdown: sections["🔒 Rahasia Terdalam"] || sections["📖 Latar Belakang (Backstory)"] || ""
+    raw_markdown: secretParts.join("\n\n")
   };
 
   // 8. DM Notes (Tier 99)
+  const dmNotesParts = [
+    `Pola & Tag Karakter: ${(meta.tags || []).join(", ") || "-"}`,
+    `Confession Target DC: ${meta.heart_meter?.confession_target_dc || 17} (Base Heart: ${meta.heart_meter?.base || 1} ♥)`,
+    `Primary Stats: ${(meta.primary_stats || []).join(", ")} | Hit Die: ${meta.hit_die || "d6"}`
+  ];
+  if (romanceSecs.length > 0) {
+    dmNotesParts.push(`\n--- PANDUAN ROMANSA & EVENT ---\n${romanceSecs.map(s => s.body).join("\n\n")}`);
+  }
   const dmNotesContent = {
-    notes: `Pola Asmara: ${meta.tags?.join(", ") || "-"}\nConfession Target DC: ${meta.heart_meter?.confession_target_dc || 17}\nLikes: ${(meta.likes || []).join(", ")}`
+    notes: dmNotesParts.join("\n")
   };
 
   return {
     slug: meta.id,
     categoryId: categoryId,
     sortOrder: meta.sort_order || 10,
-    visibilityMode: "placeholder", // default placeholder silhouette
+    visibilityMode: "placeholder",
     homeRoomId: meta.home_room_id || null,
     isLoveInterest: true,
     sections: [
@@ -191,7 +268,7 @@ async function buildCharacterPayload(parsed, dirPath, supabase, isDryRun) {
       { sectionKey: "appearance", tier: 1, content: appearanceContent, lockedHint: "Penampilan visual belum terungkap." },
       { sectionKey: "personality", tier: 2, content: personalityContent, lockedHint: "Kenali dia lebih dekat dalam kehidupan sekolah untuk membuka informasi ini." },
       { sectionKey: "background", tier: 2, content: backgroundContent, lockedHint: "Bicaralah dengannya sepulang sekolah untuk mendengar masa lalunya." },
-      { sectionKey: "relationships", tier: 2, content: relationshipsContent, lockedHint: "Hubungan sosial akan terbuka saat lingkaran pertemanannya dikenali." },
+      { sectionKey: "relationships", tier: 2, content: relationshipsContent, lockedHint: "Hubungan sosial dan interaksinya akan terbuka saat lingkaran pertemanannya dikenali." },
       { sectionKey: "mind", tier: 3, content: mindContent, lockedHint: "Hanya terbuka bagi mereka yang telah meraih ikatan hati terdalam." },
       { sectionKey: "secrets", tier: 3, content: secretsContent, lockedHint: "Hanya terbuka saat kepercayaan mutlak telah terbentuk." },
       { sectionKey: "dm_notes", tier: 99, content: dmNotesContent, lockedHint: "Hanya untuk Game Master." }
@@ -264,7 +341,7 @@ async function main() {
     const payload = await buildCharacterPayload(parsed, item.dirPath, supabase, isDryRun);
 
     if (isDryRun) {
-      console.log(`  [DRY-RUN] Siap import: ${payload.slug} (${payload.categoryId}) - ${payload.sections.length} sections`);
+      console.log(`  [DRY-RUN] Siap import: ${payload.slug} (${payload.categoryId}) | Foto: ${payload.sections[1].content.avatar_url ? "ADA" : "KOSONG"}`);
       successCount++;
     } else {
       try {
@@ -276,7 +353,7 @@ async function main() {
         if (error) {
           console.error(`  ✗ Gagal upsert ${payload.slug}:`, error.message);
         } else {
-          console.log(`  ✓ Berhasil upsert: ${payload.slug} -> Kategori: ${payload.categoryId} (ID: ${data.id})`);
+          console.log(`  ✓ Berhasil upsert: ${payload.slug} -> Kategori: ${payload.categoryId} | Foto ID: ${payload.sections[1].content.avatar_url ? " Uploaded" : "None"}`);
           successCount++;
         }
       } catch (err) {

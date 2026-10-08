@@ -169,7 +169,6 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
   const furigana = identity.furigana || char.furigana || "";
   const tagline = identity.tagline || char.tagline || "";
   const avatar = appearance.avatar_url || char.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.slug || char.id}`;
-  const images: any[] = appearance.images || [];
 
   container.innerHTML = `
     <!-- Top Back Link & Category -->
@@ -229,20 +228,6 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
               🔍 Ketuk untuk Perbesar
             </div>
           </div>
-
-          <!-- Gallery Thumbnails (if available) -->
-          ${images.length > 1 ? `
-            <div style="display:flex;gap:8px;margin-top:1rem;overflow-x:auto;max-width:260px;padding:4px 0;">
-              ${images.map((img, i) => `
-                <img
-                  src="${img.path || avatar}"
-                  alt="Thumb ${i}"
-                  class="codex-thumb-img"
-                  style="width:48px;height:48px;border-radius:var(--radius-xs);object-fit:cover;cursor:pointer;border:1.5px solid var(--border-card);"
-                />
-              `).join("")}
-            </div>
-          ` : ""}
         </div>
 
         <!-- Character Identity Details Column -->
@@ -347,8 +332,8 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <!-- 2. PENAMPILAN (TIER 1) -->
       <div class="codex-panel" id="panel_appearance" style="display:none;">
         ${renderSectionCard("appearance", appearanceSec, isDmActive, `
-          <div style="line-height:1.7;font-size:0.9rem;color:var(--text-dim);white-space:pre-wrap;">
-            ${appearance.raw_markdown || "Deskripsi penampilan fisik belum dicatat."}
+          <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+            ${formatCodexMarkdown(appearance.raw_markdown, "Deskripsi penampilan fisik belum dicatat.")}
           </div>
         `)}
       </div>
@@ -357,26 +342,30 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <div class="codex-panel" id="panel_personality" style="display:none;">
         ${renderSectionCard("personality", personalitySec, isDmActive, `
           <div>
-            ${(personality.likes || []).length > 0 ? `
-              <div style="margin-bottom:1.5rem;">
-                <h4 style="color:var(--green-health);margin:0 0 0.5rem 0;font-size:0.9rem;">💚 Hal yang Disukai (Likes)</h4>
-                <ul style="margin:0;padding-left:1.25rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;">
-                  ${(personality.likes || []).map((l: string) => `<li>${l}</li>`).join("")}
-                </ul>
+            ${(personality.likes || []).length > 0 || (personality.dislikes || []).length > 0 ? `
+              <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:1.25rem;margin-bottom:1.75rem;">
+                ${(personality.likes || []).length > 0 ? `
+                  <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-md);padding:1rem 1.25rem;">
+                    <h4 style="color:var(--green-health);margin:0 0 0.6rem 0;font-size:0.9rem;">💚 Hal yang Disukai (Likes)</h4>
+                    <ul style="margin:0;padding-left:1.2rem;color:var(--text-dim);font-size:0.86rem;line-height:1.65;">
+                      ${(personality.likes || []).map((l: string) => `<li>${formatInlineMarkdown(l)}</li>`).join("")}
+                    </ul>
+                  </div>
+                ` : ""}
+
+                ${(personality.dislikes || []).length > 0 ? `
+                  <div style="background:rgba(225,29,72,0.06);border:1px solid rgba(225,29,72,0.25);border-radius:var(--radius-md);padding:1rem 1.25rem;">
+                    <h4 style="color:var(--rose-primary);margin:0 0 0.6rem 0;font-size:0.9rem;">💔 Hal yang Dibenci (Dislikes)</h4>
+                    <ul style="margin:0;padding-left:1.2rem;color:var(--text-dim);font-size:0.86rem;line-height:1.65;">
+                      ${(personality.dislikes || []).map((d: string) => `<li>${formatInlineMarkdown(d)}</li>`).join("")}
+                    </ul>
+                  </div>
+                ` : ""}
               </div>
             ` : ""}
 
-            ${(personality.dislikes || []).length > 0 ? `
-              <div style="margin-bottom:1.5rem;">
-                <h4 style="color:var(--rose-primary);margin:0 0 0.5rem 0;font-size:0.9rem;">💔 Hal yang Dibenci (Dislikes)</h4>
-                <ul style="margin:0;padding-left:1.25rem;color:var(--text-dim);font-size:0.85rem;line-height:1.6;">
-                  ${(personality.dislikes || []).map((d: string) => `<li>${d}</li>`).join("")}
-                </ul>
-              </div>
-            ` : ""}
-
-            <div style="line-height:1.7;font-size:0.9rem;color:var(--text-dim);white-space:pre-wrap;">
-              ${personality.raw_markdown || "Catatan kepribadian belum dicatat."}
+            <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+              ${formatCodexMarkdown(personality.raw_markdown, "Catatan kepribadian belum dicatat.")}
             </div>
           </div>
         `)}
@@ -385,8 +374,8 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <!-- 4. LATAR BELAKANG (TIER 2) -->
       <div class="codex-panel" id="panel_background" style="display:none;">
         ${renderSectionCard("background", backgroundSec, isDmActive, `
-          <div style="line-height:1.7;font-size:0.9rem;color:var(--text-dim);white-space:pre-wrap;">
-            ${background.raw_markdown || "Latar belakang karakter belum dicatat."}
+          <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+            ${formatCodexMarkdown(background.raw_markdown, "Latar belakang karakter belum dicatat.")}
           </div>
         `)}
       </div>
@@ -394,8 +383,8 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <!-- 5. RELASI (TIER 2) -->
       <div class="codex-panel" id="panel_relationships" style="display:none;">
         ${renderSectionCard("relationships", relationshipsSec, isDmActive, `
-          <div style="line-height:1.7;font-size:0.9rem;color:var(--text-dim);white-space:pre-wrap;">
-            ${relationships.raw_markdown || "Jaringan relasi karakter belum dicatat."}
+          <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+            ${formatCodexMarkdown(relationships.raw_markdown, "Jaringan relasi karakter belum dicatat.")}
           </div>
         `)}
       </div>
@@ -404,7 +393,7 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <div class="codex-panel" id="panel_mind" style="display:none;">
         ${renderSectionCard("mind", mindSec, isDmActive, `
           <div>
-            ${mind.heart_meter_base ? `
+            ${mind.heart_meter_base || mind.confession_dc ? `
               <div style="background:rgba(225,29,72,0.1);border:1px solid var(--rose-primary);padding:1rem;border-radius:var(--radius-md);margin-bottom:1.5rem;">
                 <div style="font-family:var(--font-heading);color:var(--rose-light);font-size:0.95rem;margin-bottom:4px;">
                   💖 Target Deklarasi Cinta (The Confession Event)
@@ -414,8 +403,8 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
                 </div>
               </div>
             ` : ""}
-            <div style="line-height:1.7;font-size:0.9rem;color:var(--text-dim);white-space:pre-wrap;">
-              ${mind.raw_markdown || "Pikiran terdalam karakter belum dicatat."}
+            <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+              ${formatCodexMarkdown(mind.raw_markdown, "Pikiran terdalam karakter belum dicatat.")}
             </div>
           </div>
         `)}
@@ -424,8 +413,8 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       <!-- 7. RAHASIA BESAR (TIER 3) -->
       <div class="codex-panel" id="panel_secrets" style="display:none;">
         ${renderSectionCard("secrets", secretsSec, isDmActive, `
-          <div style="line-height:1.7;font-size:0.9rem;color:var(--rose-light);white-space:pre-wrap;">
-            ${secrets.raw_markdown || "Rahasia besar karakter belum terungkap."}
+          <div class="codex-formatted-markdown" style="line-height:1.75;font-size:0.92rem;color:var(--text-dim);">
+            ${formatCodexMarkdown(secrets.raw_markdown, "Rahasia besar karakter belum terungkap.")}
           </div>
         `)}
       </div>
@@ -715,3 +704,189 @@ function renderSectionCard(sectionKey: string, sectionObj: any, isDmActive: bool
     </div>
   `;
 }
+
+function escapeHtml(text: string): string {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function formatInlineMarkdown(text: string): string {
+  let out = escapeHtml(text);
+  // Inline code `code`
+  out = out.replace(/`([^`]+)`/g, `<code style="background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;font-size:0.86em;color:var(--amber-gold);">$1</code>`);
+  // Bold + Italic ***text***
+  out = out.replace(/\*\*\*([^*]+)\*\*\*/g, `<strong style="color:var(--text-main);"><em>$1</em></strong>`);
+  // Bold **text**
+  out = out.replace(/\*\*([^*]+)\*\*/g, `<strong style="color:var(--text-main);font-weight:600;">$1</strong>`);
+  // Italic *text*
+  out = out.replace(/\*([^*\n]+)\*/g, `<em style="color:var(--rose-light);">$1</em>`);
+  return out;
+}
+
+function formatCodexMarkdown(rawText: string | undefined, fallbackText: string): string {
+  if (!rawText || !rawText.trim()) {
+    return `<p style="color:var(--text-muted);font-style:italic;margin:0;">${fallbackText}</p>`;
+  }
+
+  // Strip stray trailing # or leading/trailing ---
+  const cleaned = rawText
+    .replace(/(?:\r?\n)+\s*#+\s*$/g, "")
+    .replace(/(?:\r?\n)+\s*---\s*$/g, "")
+    .replace(/^\s*---\s*(?:\r?\n)+/g, "")
+    .trim();
+
+  const lines = cleaned.split(/\r?\n/);
+  const htmlBlocks: string[] = [];
+  let inUl = false;
+  let inOl = false;
+  let tableRows: string[][] = [];
+
+  const closeLists = () => {
+    if (inUl) {
+      htmlBlocks.push("</ul>");
+      inUl = false;
+    }
+    if (inOl) {
+      htmlBlocks.push("</ol>");
+      inOl = false;
+    }
+  };
+
+  const flushTable = () => {
+    if (tableRows.length === 0) return;
+    const headerRow = tableRows[0];
+    // Filter out markdown separator row like | :--- | :---: |
+    const bodyRows = tableRows.slice(1).filter(row => !row.every(cell => /^[:\-\s]+$/.test(cell)));
+    let tbl = `<div style="overflow-x:auto;margin:1rem 0 1.5rem 0;"><table style="width:100%;border-collapse:collapse;font-size:0.86rem;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);overflow:hidden;">`;
+    tbl += `<thead><tr style="background:rgba(245,158,11,0.1);border-bottom:1px solid var(--border-card);">`;
+    for (const h of headerRow) {
+      tbl += `<th style="padding:0.65rem 0.85rem;text-align:left;color:var(--amber-gold);font-weight:700;">${formatInlineMarkdown(h)}</th>`;
+    }
+    tbl += `</tr></thead><tbody>`;
+    for (const r of bodyRows) {
+      tbl += `<tr style="border-bottom:1px solid var(--border-subtle);">`;
+      for (const c of r) {
+        tbl += `<td style="padding:0.6rem 0.85rem;color:var(--text-dim);vertical-align:top;">${formatInlineMarkdown(c)}</td>`;
+      }
+      tbl += `</tr>`;
+    }
+    tbl += `</tbody></table></div>`;
+    htmlBlocks.push(tbl);
+    tableRows = [];
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed = rawLine.trim();
+
+    // Table row detection: | col1 | col2 |
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      closeLists();
+      const cells = trimmed
+        .slice(1, -1)
+        .split("|")
+        .map(c => c.trim());
+      tableRows.push(cells);
+      continue;
+    } else if (tableRows.length > 0) {
+      flushTable();
+    }
+
+    // Empty line
+    if (!trimmed) {
+      closeLists();
+      continue;
+    }
+
+    // Horizontal rule ---
+    if (/^-{3,}$/.test(trimmed)) {
+      closeLists();
+      htmlBlocks.push(`<hr style="border:none;border-top:1px solid var(--border-subtle);margin:1.25rem 0;" />`);
+      continue;
+    }
+
+    // Stray lone # line
+    if (/^#+$/.test(trimmed)) {
+      continue;
+    }
+
+    // Headings: ####, ###, ##
+    const h4Match = trimmed.match(/^####\s+(.+)$/);
+    if (h4Match) {
+      closeLists();
+      htmlBlocks.push(`<h5 style="color:var(--rose-light);font-family:var(--font-heading);font-size:0.95rem;margin:1.1rem 0 0.4rem 0;">${formatInlineMarkdown(h4Match[1])}</h5>`);
+      continue;
+    }
+
+    const h3Match = trimmed.match(/^###\s+(.+)$/);
+    if (h3Match) {
+      closeLists();
+      htmlBlocks.push(`<h4 style="color:var(--amber-gold);font-family:var(--font-heading);font-size:1.05rem;margin:1.4rem 0 0.5rem 0;display:flex;align-items:center;gap:6px;">${formatInlineMarkdown(h3Match[1])}</h4>`);
+      continue;
+    }
+
+    const h2Match = trimmed.match(/^##\s+(.+)$/);
+    if (h2Match) {
+      closeLists();
+      htmlBlocks.push(`<h3 style="color:var(--rose-light);font-family:var(--font-heading);font-size:1.15rem;margin:1.6rem 0 0.65rem 0;border-bottom:1px solid var(--border-subtle);padding-bottom:6px;">${formatInlineMarkdown(h2Match[1])}</h3>`);
+      continue;
+    }
+
+    // Indented sub-bullet: "  * item" or "  - item"
+    const subBulletMatch = rawLine.match(/^\s{2,}[*-]\s+(.+)$/);
+    if (subBulletMatch) {
+      if (!inUl) {
+        closeLists();
+        htmlBlocks.push(`<ul style="margin:0.4rem 0 1rem 0;padding-left:1.35rem;display:flex;flex-direction:column;gap:0.45rem;">`);
+        inUl = true;
+      }
+      htmlBlocks.push(`<li style="margin-left:1.25rem;list-style-type:circle;color:var(--text-dim);">${formatInlineMarkdown(subBulletMatch[1])}</li>`);
+      continue;
+    }
+
+    // Top-level bullet: "* item" or "- item"
+    const bulletMatch = trimmed.match(/^[*-]\s+(.+)$/);
+    if (bulletMatch) {
+      if (!inUl) {
+        closeLists();
+        htmlBlocks.push(`<ul style="margin:0.4rem 0 1rem 0;padding-left:1.35rem;display:flex;flex-direction:column;gap:0.45rem;">`);
+        inUl = true;
+      }
+      htmlBlocks.push(`<li style="color:var(--text-dim);">${formatInlineMarkdown(bulletMatch[1])}</li>`);
+      continue;
+    }
+
+    // Numbered list: "1. item"
+    const numMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (numMatch) {
+      if (!inOl) {
+        closeLists();
+        htmlBlocks.push(`<ol style="margin:0.4rem 0 1rem 0;padding-left:1.35rem;display:flex;flex-direction:column;gap:0.5rem;">`);
+        inOl = true;
+      }
+      htmlBlocks.push(`<li style="color:var(--text-dim);">${formatInlineMarkdown(numMatch[1])}</li>`);
+      continue;
+    }
+
+    // Blockquote: "> quote"
+    const quoteMatch = trimmed.match(/^>\s*(.+)$/);
+    if (quoteMatch) {
+      closeLists();
+      htmlBlocks.push(`<blockquote style="margin:0.75rem 0;padding:0.65rem 1rem;border-left:3px solid var(--rose-primary);background:rgba(225,29,72,0.05);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-style:italic;color:var(--text-dim);">${formatInlineMarkdown(quoteMatch[1])}</blockquote>`);
+      continue;
+    }
+
+    // Regular paragraph
+    closeLists();
+    htmlBlocks.push(`<p style="margin:0 0 0.85rem 0;color:var(--text-dim);">${formatInlineMarkdown(trimmed)}</p>`);
+  }
+
+  closeLists();
+  flushTable();
+
+  return htmlBlocks.join("\n");
+}
+

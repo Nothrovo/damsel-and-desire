@@ -103,12 +103,16 @@ export function parseMarkdownCharacter(filePath) {
     sections.tagline = quoteMatch[1].trim();
   }
 
-  // Extract major markdown headings (## Heading)
-  const headingRegex = /##\s+([^\n\r]+)\r?\n([\s\S]*?)(?=(?:##\s+|$))/g;
+  // Extract major markdown headings (ONLY level-2 headings: ^## Title, NOT ### Subheading)
+  const headingRegex = /(?:^|\r?\n)##(?!#)\s+([^\n\r]+)\r?\n([\s\S]*?)(?=(?:\r?\n##(?!#)\s+|$))/g;
   let match;
   while ((match = headingRegex.exec(body)) !== null) {
     const title = match[1].trim();
-    const sectionBody = match[2].trim();
+    // Clean trailing horizontal rules (---) and whitespace
+    const sectionBody = match[2]
+      .replace(/(?:\r?\n)+\s*---\s*$/g, "")
+      .replace(/^\s*---\s*(?:\r?\n)+/g, "")
+      .trim();
     sections[title] = sectionBody;
   }
 

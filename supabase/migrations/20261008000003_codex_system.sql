@@ -1051,5 +1051,11 @@ BEGIN
     CREATE POLICY "codex_assets_upload" ON storage.objects
       FOR INSERT TO anon, authenticated
       WITH CHECK (bucket_id = 'codex-assets');
+
+    DROP POLICY IF EXISTS "codex_assets_update" ON storage.objects;
+    CREATE POLICY "codex_assets_update" ON storage.objects
+      FOR UPDATE TO anon, authenticated
+      USING (bucket_id = 'codex-assets')
+      WITH CHECK (bucket_id = 'codex-assets');
   END IF;
 END $$;
