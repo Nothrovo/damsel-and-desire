@@ -8,7 +8,8 @@ async function main() {
   // Use Vite SSR to load TypeScript module directly
   const server = await createServer({
     server: { middlewareMode: true },
-    appType: "custom"
+    appType: "custom",
+    optimizeDeps: { noDiscovery: true }
   });
 
   const { compileFullHandbookHtml } = await server.ssrLoadModule("./src/data/handbook/index.ts");

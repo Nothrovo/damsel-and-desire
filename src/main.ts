@@ -21,6 +21,13 @@ import { renderHandbookView } from "./views/HandbookView";
 import { renderSettingsView } from "./views/SettingsView";
 import { renderMapView } from "./views/MapView";
 import { renderNotFoundView } from "./views/NotFoundView";
+import { renderCodexCatalogView } from "./views/CodexCatalogView";
+import { renderCodexCategoryView } from "./views/CodexCategoryView";
+import { renderCodexDetailView } from "./views/CodexDetailView";
+import { dmAuthModal } from "./components/DmAuthModal";
+import { dmRevealHistoryModal } from "./components/DmRevealHistoryModal";
+import { codexCharacterEditorModal } from "./components/CodexCharacterEditorModal";
+import { dmAuthStore } from "./store/dmAuthStore";
 
 function mountGlobalShell() {
   // 1. Mount or update Navbar
@@ -46,6 +53,9 @@ function mountGlobalShell() {
       ${backstoryModal.render()}
       ${itemDetailModal.render()}
       ${addItemModal.render()}
+      ${dmAuthModal.render()}
+      ${dmRevealHistoryModal.render()}
+      ${codexCharacterEditorModal.render()}
     `;
     diceRollerModal.attachEvents();
     savingsModal.attachEvents();
@@ -53,6 +63,9 @@ function mountGlobalShell() {
     backstoryModal.attachEvents();
     itemDetailModal.attachEvents();
     addItemModal.attachEvents();
+    dmAuthModal.attachEvents();
+    dmRevealHistoryModal.attachEvents();
+    codexCharacterEditorModal.attachEvents();
   }
 }
 
@@ -63,12 +76,18 @@ function initApp() {
   authStore.subscribe(() => {
     mountGlobalShell();
   });
+  dmAuthStore.subscribe(() => {
+    mountGlobalShell();
+  });
 
   // Register All Routes
   router
     .register("/", renderLandingView)
     .register("/characters/new", renderBuilderWizardView)
     .register("/characters/:id", renderCharacterSheetView)
+    .register("/codex", renderCodexCatalogView)
+    .register("/codex/:category", renderCodexCategoryView)
+    .register("/codex/c/:id", renderCodexDetailView)
     .register("/compendium", renderCompendiumView)
     .register("/handbook", renderHandbookView)
     .register("/map", renderMapView)

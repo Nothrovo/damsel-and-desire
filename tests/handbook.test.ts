@@ -95,8 +95,9 @@ describe("Player's Handbook (PHB) Modular Architecture", () => {
     const content = ch10.sections.map(s => s.contentHtml).join(" ");
     expect(content).toContain("Heart Token");
     expect(content).toContain("Confession Event");
-    expect(content).toContain("6969");
+    expect(content).toContain("Game Master");
   });
+
 
   it("should support real-time search across chapters and sections", () => {
     const searchDelinquent = searchHandbook("Delinquent");

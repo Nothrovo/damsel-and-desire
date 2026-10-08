@@ -14,3 +14,9 @@ dist-ssr/
 .env.local
 .env.*.local
 !.env.example
+
+# Secret / Local Game Master Data (Codex & Character Seeds)
+Characters/
+*.docx
+*.pdf
+

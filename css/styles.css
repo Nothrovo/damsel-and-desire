@@ -4235,4 +4235,141 @@ h1, h2, h3, h4, h5 {
   }
 }
 
+/* ==========================================================================
+   CHARACTER CODEX (KAMUS KARAKTER) STYLING
+   ========================================================================== */
+.codex-tab-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  color: var(--text-dim);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+
+.codex-tab-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-main);
+  border-color: var(--amber-gold);
+}
+
+.codex-tab-btn.active {
+  background: var(--rose-primary);
+  color: #fff;
+  border-color: var(--rose-primary);
+  box-shadow: 0 0 12px var(--rose-glow);
+}
+
+.codex-character-card:hover .card-portrait {
+  transform: scale(1.05);
+}
+
+.codex-character-card.locked:hover {
+  border-color: var(--amber-gold);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+}
+
+.codex-locked-seal-panel {
+  background: radial-gradient(circle at center, rgba(31, 27, 41, 0.6) 0%, rgba(13, 17, 26, 0.9) 100%) !important;
+  border: 1.5px dashed var(--amber-gold) !important;
+}
+
+@media (max-width: 768px) {
+  .profile-header-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .profile-info-col {
+    padding: 1.5rem !important;
+  }
+}
+
+/* ==========================================================================
+   CODEX BATCH CONTROLS & SAKURA REALTIME UNLOCK ANIMATIONS
+   ========================================================================== */
+.codex-batch-bar {
+  background: rgba(24, 34, 52, 0.95);
+  border: 1.5px solid var(--amber-gold);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 12px rgba(245, 158, 11, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.codex-card-selected {
+  border-color: var(--amber-gold) !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.45) !important;
+  outline: 2px solid var(--amber-gold);
+}
+
+.dm-card-checkbox-wrapper {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 15;
+  background: rgba(13, 17, 26, 0.88);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.dm-card-checkbox-wrapper:hover {
+  border-color: var(--amber-gold);
+}
+
+.dm-card-checkbox-wrapper input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--amber-gold);
+  width: 15px;
+  height: 15px;
+}
+
+@keyframes sakuraRevealPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.8), 0 0 10px rgba(245, 158, 11, 0.5);
+    transform: scale(1);
+  }
+  40% {
+    box-shadow: 0 0 40px 10px rgba(225, 29, 72, 0.9), 0 0 50px 18px rgba(245, 158, 11, 0.7);
+    transform: scale(1.03);
+  }
+  70% {
+    box-shadow: 0 0 25px 5px rgba(225, 29, 72, 0.5);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 10px 2px rgba(225, 29, 72, 0.2);
+    transform: scale(1);
+  }
+}
+
+.sakura-unlock-glow {
+  animation: sakuraRevealPulse 2.8s ease-out forwards;
+  border-color: var(--rose-primary) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura-unlock-glow {
+    animation: none !important;
+    border-color: var(--amber-gold) !important;
+  }
+}
+
+
 

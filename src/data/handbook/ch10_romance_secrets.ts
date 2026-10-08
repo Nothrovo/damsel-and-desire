@@ -5,7 +5,7 @@ export const CHAPTER_10_ROMANCE_SECRETS: HandbookChapter = {
   number: 10,
   japaneseTitle: "第十章：恋愛システムと秘密 (Asmara & Rahasia Hati)",
   title: "Sistem Asmara, Heart Meter & Rahasia Hati",
-  subtitle: "Heart Token (Desire Inspiration), Meteran Hati (1–10 ♥), Event Nembak (Confession) & Panel Rahasia DM PIN 6969",
+  subtitle: "Heart Token (Desire Inspiration), Meteran Hati (1–10 ♥), Event Nembak (Confession) & Panel Rahasia Game Master (DM)",
   summary: "Sistem mekanik romansa otentik: bagaimana cinta bersemi, token inspirasi asmara, langkah menyatakan cinta di bawah pohon sakura, serta perlindungan privasi DM.",
   leadParagraph: "Romansa adalah inti jiwa dari Damsel & Desire. Di sini, cinta bukan sekadar pemanis cerita naratif tanpa aturan, melainkan sistem mekanik yang terintegrasi penuh ke dalam statistik lembar karaktermu. Setiap debar jantung, tatapan curi-curi di sela jam pelajaran, dan payung yang dibagi berdua di kala hujan lebat dicatat dalam Heart Meter dan diabadikan sebagai Heart Token.",
   sections: [
@@ -77,13 +77,13 @@ export const CHAPTER_10_ROMANCE_SECRETS: HandbookChapter = {
     },
     {
       id: "dm-privacy-system",
-      title: "Sistem Privasi & Panel Rahasia DM (PIN 6969)",
+      title: "Sistem Privasi & Panel Rahasia Game Master (DM)",
       leadParagraph: "Menjaga misteri plot rahasia dan perasaan cinta terpendam tetap aman.",
       contentHtml: `<p>Dalam kampanye TRPG sekolah, intrik rahasia adalah kunci keseruan: siapa yang diam-diam menyukai siapa, siapa yang menyebarkan surat kaleng, atau apa masa lalu kelam dari guru BP baru.</p>
       <p>Agar pemain tidak saling mengintip rahasia NPC atau catatan gebetan orang lain:</p>
       <ul>
-        <li><strong>Panel Catatan Rahasia:</strong> Di lembar karakter dan manajemen campaign, tersedia tab <em>Catatan Rahasia & Plot DM</em> yang terlindungi enkripsi.</li>
-        <li><strong>Master PIN Pengawas (PIN 6969):</strong> Hanya Dungeon Master yang memegang kode PIN akses <code>6969</code> untuk membuka catatan rahasia di lembar karakter mana pun secara instan selama sesi berjalan.</li>
+        <li><strong>Panel Catatan Rahasia:</strong> Di lembar karakter dan manajemen campaign, tersedia tab <em>Catatan Rahasia & Plot DM</em> yang terlindungi otentikasi server.</li>
+        <li><strong>Otoritas Game Master (DM Mode):</strong> Hanya Dungeon Master yang memiliki akses terverifikasi untuk membuka catatan rahasia di lembar karakter mana pun secara aman selama sesi berjalan.</li>
         <li><strong>Kerahasiaan Pemain:</strong> Pemain lain tidak dapat melihat target gebetan rahasiamu kecuali karaktermu sendiri yang mengungkapkannya secara sukarela dalam gameplay naratif!</li>
       </ul>`
     }
