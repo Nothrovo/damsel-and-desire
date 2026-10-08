@@ -25,7 +25,7 @@ export async function renderLandingView(): Promise<void> {
           <div class="hero-actions">
             <a href="/characters/new" class="btn btn-primary btn-large">
               <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-              + Buat Karakter Baru
+              Buat Karakter Baru
             </a>
             <button class="btn btn-secondary btn-large" id="btnImportJson">
               📥 Import Karakter (JSON)
