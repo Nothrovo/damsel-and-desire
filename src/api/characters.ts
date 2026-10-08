@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 import type { Character, CharacterSecret, CalendarProgress } from "../types";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
-import { migrateCharacter } from "../rules/migration";
+import { migrateCharacter, migrateCharacterToV3, ensureGradeFeatGrants } from "../rules/migration";
 import { calculateMaxHp, calculateMaxComposure } from "../rules/progression";
 
 const LOCAL_STORAGE_KEY = "damsel_and_desire_roster_v1";
@@ -28,7 +28,7 @@ function saveLocalRoster(roster: Character[]) {
 }
 
 function normalizeCharacter(item: any): Character {
-  return migrateCharacter(item).character;
+  return migrateCharacterToV3(item).character;
 }
 
 export async function listAllCharacters(): Promise<Character[]> {
@@ -134,12 +134,18 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     archetype_id: payload.archetypeId,
     level: charLevel,
     grade: 10,
-    schemaVersion: 2,
+    schemaVersion: 3,
     changelog: [],
     avatar_path: payload.avatar,
     abilities: payload.baseAbilities,
     proficient_skills: payload.proficientSkills || [],
     proficient_saves: payload.proficientSaves || [],
+    feats: payload.feats || [],
+    featGrants: payload.featGrants || ensureGradeFeatGrants(10, []),
+    feat_grants: payload.featGrants || ensureGradeFeatGrants(10, []),
+    achievements: payload.achievements || [],
+    featUsage: payload.featUsage || {},
+    feat_usage: payload.featUsage || {},
     vitals: {
       physicalHpCurrent: baseHp,
       physicalHpMax: baseHp,

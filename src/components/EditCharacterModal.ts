@@ -5,6 +5,9 @@ import {
   getCompendiumArchetypes,
   getCompendiumSocialClasses
 } from "../api/compendium";
+import { ALL_FEATS } from "../data/featCompendium";
+import { isDmPinValid } from "../types";
+import { featPickerModal } from "./FeatPickerModal";
 import type {
   Character,
   ArchetypeCompendium,
@@ -171,6 +174,38 @@ export class EditCharacterModal {
           </div>
         </div>
 
+        <!-- Feats & Retraining Section -->
+        <div class="card p-3" style="background:rgba(255,255,255,0.02);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+            <h4 style="margin:0;font-size:0.95rem;color:var(--text-primary);">🎯 Feats &amp; Retraining</h4>
+            <span class="badge" style="background:rgba(225,29,72,0.15);color:#fb7185;font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:4px;font-weight:700;">Wajib Izin DM (PIN)</span>
+          </div>
+          <p class="text-xs text-muted" style="margin-bottom:0.75rem;line-height:1.4;">
+            Penggantian (retrain) feat dapat dilakukan atas izin Dungeon Master dengan verifikasi PIN DM resmi.
+          </p>
+          ${(char.feats || []).length === 0 ? `
+            <p class="text-xs text-muted">Karakter belum memiliki feat yang dapat di-retrain.</p>
+          ` : `
+            <div style="display:flex;flex-direction:column;gap:0.5rem;">
+              ${(char.feats || []).map(f => {
+                const featDef = ALL_FEATS.find(fd => fd.id === f.featId);
+                const grant = (char.featGrants || []).find(g => g.id === f.grantId);
+                return `
+                  <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-surface);padding:0.5rem 0.75rem;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);flex-wrap:wrap;gap:0.5rem;">
+                    <div>
+                      <strong style="color:var(--text-main);font-size:0.85rem;">${featDef?.name || f.featId}</strong>
+                      <span class="text-xs text-muted" style="margin-left:6px;">(${featDef?.category || 'feat'})</span>
+                    </div>
+                    <button type="button" class="btn btn-xs btn-secondary btn-retrain-feat" data-grant-id="${f.grantId}" data-category="${grant?.category || featDef?.category || 'general'}" data-grade="${grant?.grade || ''}">
+                      🔄 Retrain Feat
+                    </button>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          `}
+        </div>
+
       </div>
     `;
 
@@ -178,6 +213,37 @@ export class EditCharacterModal {
     bodyEl.querySelectorAll("input, select, textarea").forEach(el => {
       el.addEventListener("input", () => this.markDirty());
       el.addEventListener("change", () => this.markDirty());
+    });
+
+    // Retrain button click handlers
+    bodyEl.querySelectorAll(".btn-retrain-feat").forEach((btn: any) => {
+      btn.addEventListener("click", () => {
+        const pin = prompt("Masukkan PIN DM untuk mengizinkan Retrain Feat:");
+        if (!pin) return;
+        if (!isDmPinValid(pin)) {
+          showToast("PIN DM salah. Retrain Feat dibatalkan.", "error");
+          return;
+        }
+
+        const grantId = btn.getAttribute("data-grant-id");
+        const category = btn.getAttribute("data-category");
+        const gradeStr = btn.getAttribute("data-grade");
+        const grade = gradeStr ? parseInt(gradeStr, 10) : undefined;
+
+        this.hide();
+        featPickerModal.show({
+          grantId,
+          allowedCategory: category,
+          grade,
+          isRetrain: true,
+          onSelect: () => {
+            const cur = characterStore.currentCharacter;
+            if (cur) {
+              window.dispatchEvent(new CustomEvent("characterUpdated", { detail: cur }));
+            }
+          }
+        });
+      });
     });
   }
 

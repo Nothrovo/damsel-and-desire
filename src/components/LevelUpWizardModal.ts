@@ -126,6 +126,23 @@ export class LevelUpWizardModal {
         </div>
       ` : ''}
 
+      <!-- Feat Unlock Notification (if crossing into a new school grade: Kelas 11 or Kelas 12) -->
+      ${preview.isNewGrade ? `
+        <div class="feat-unlock-banner card p-3" style="background:linear-gradient(135deg, rgba(244,63,94,0.08), rgba(217,70,239,0.08));border:1px solid rgba(244,63,94,0.3);border-radius:var(--radius-md);margin-bottom:1.25rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1.6rem;">✨</span>
+            <div>
+              <div style="font-weight:700;color:var(--rose-light);font-size:0.95rem;">
+                Slot General Feat Baru Terbuka (Kelas ${preview.nextGrade})
+              </div>
+              <div style="font-size:0.825rem;color:var(--text-muted);margin-top:0.25rem;line-height:1.4;">
+                Selamat! Kenaikan ke jenjang Kelas ${preview.nextGrade} membuka 1 slot General Feat baru (maksimal stat 20). Setelah konfirmasi naik kelas, buka tab <strong>FEATS &amp; ACHIEVEMENTS</strong> pada lembar karakter untuk memilih feat baru kamu.
+              </div>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
       <!-- Newly Unlocked Moves Preview -->
       <div class="unlocked-moves-section">
         <h4 style="font-size:0.9rem;text-transform:uppercase;color:var(--text-muted);margin:0 0 0.5rem 0;letter-spacing:0.5px;">
@@ -209,6 +226,9 @@ export class LevelUpWizardModal {
           draft.grade = updatedChar.grade;
           draft.subclass_id = updatedChar.subclass_id;
           draft.vitals = updatedChar.vitals;
+          draft.feats = updatedChar.feats;
+          draft.featGrants = updatedChar.featGrants;
+          draft.feat_grants = updatedChar.feat_grants;
           draft.schemaVersion = updatedChar.schemaVersion;
           draft.version = updatedChar.version;
           draft.changelog = updatedChar.changelog;
@@ -219,6 +239,9 @@ export class LevelUpWizardModal {
           grade: updatedChar.grade,
           subclass_id: updatedChar.subclass_id,
           vitals: updatedChar.vitals,
+          feats: updatedChar.feats,
+          featGrants: updatedChar.featGrants,
+          feat_grants: updatedChar.feat_grants,
           schemaVersion: updatedChar.schemaVersion,
           changelog: updatedChar.changelog
         }, char.version)

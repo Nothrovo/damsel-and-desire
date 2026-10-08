@@ -35,27 +35,33 @@ import { addItemModal } from "../components/AddItemModal";
 import { levelUpWizardModal } from "../components/LevelUpWizardModal";
 import { subclassSelectModal } from "../components/SubclassSelectModal";
 import { editCharacterModal } from "../components/EditCharacterModal";
+import { featPickerModal } from "../components/FeatPickerModal";
+import { achievementAwardModal } from "../components/AchievementAwardModal";
+import { ALL_FEATS } from "../data/featCompendium";
+import { ALL_ACHIEVEMENTS } from "../data/achievementCompendium";
 import {
   getLevelLabel,
   getGradeForLevel,
   getPendingChoices,
-  getAllMovesSummary
+  getAllMovesSummary,
+  calculateEffectiveStats,
+  useFeatAction
 } from "../rules/progression";
 import { renderSheetSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
-import type {
-  Character,
-  CalendarEventCompendium,
-  AbilityCompendium,
-  EkskulCompendium,
-  ArchetypeCompendium,
-  SocialClassCompendium,
-  BasicActionCompendium,
-  TargetSecret,
-  CharacterAbilities
+import {
+  type Character,
+  type CalendarEventCompendium,
+  type AbilityCompendium,
+  type EkskulCompendium,
+  type ArchetypeCompendium,
+  type SocialClassCompendium,
+  type BasicActionCompendium,
+  type TargetSecret,
+  type CharacterAbilities,
+  type FeatCategory,
+  isDmPinValid
 } from "../types";
-
-const DM_PIN = "6969";
 
 interface MoveItem {
   name: string;
@@ -71,7 +77,7 @@ interface MoveItem {
 }
 
 // Module-level state for the active sheet session
-let activeTab: "actions" | "inventory" | "features" | "roleplay" | "affection" = "actions";
+let activeTab: "actions" | "inventory" | "features" | "feats" | "roleplay" | "affection" = "actions";
 let activeMoveFilter: string = "all";
 let isDmUnlocked = false;
 
@@ -180,8 +186,9 @@ export async function renderCharacterSheetView(params: Record<string, string>): 
 }
 
 function renderDndBeyondSheet(container: HTMLElement, char: Character) {
+  const effective = calculateEffectiveStats(char);
   const avatar = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
-  const profBonus = calculateProficiencyBonus(char.level);
+  const profBonus = effective.proficiencyBonus;
   const abilities = char.abilities;
   const vitals = char.vitals;
   const finances = char.finances;
@@ -199,28 +206,21 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
 
   // Ability Modifiers
   const statKeys: Array<keyof CharacterAbilities> = ["physique", "intelligent", "looks", "mind", "talent", "luck"];
-  const mods: Record<string, number> = {};
-  statKeys.forEach(k => {
-    mods[k] = calculateAbilityModifier(abilities[k] || 10);
-  });
+  const mods: Record<string, number> = effective.modifiers;
 
   // Dual Vitals Calculations
   const physAC = 10 + mods.physique;
   const initiative = formatModifier(mods.physique);
-  const speed = char.archetype_id === "jock" ? "35 ft" : "30 ft";
+  const speed = effective.speed;
   const hpPercent = Math.max(0, Math.min(100, Math.round((vitals.physicalHpCurrent / Math.max(1, vitals.physicalHpMax)) * 100)));
 
   const socialAC = 10 + mods.mind + Math.max(0, mods.looks);
   const compPercent = Math.max(0, Math.min(100, Math.round((vitals.composureCurrent / Math.max(1, vitals.composureMax)) * 100)));
 
   // Passive Senses Calculations
-  const hasAwareness = (char.proficient_skills || []).includes("awareness");
-  const hasPeople = (char.proficient_skills || []).includes("people") || (char.proficient_skills || []).includes("interpersonal");
-  const hasAcademic = (char.proficient_skills || []).includes("academic");
-
-  const passivePerception = 10 + mods.mind + (hasAwareness ? profBonus : 0);
-  const passiveInsight = 10 + mods.intelligent + (hasPeople ? profBonus : 0);
-  const passiveInvestigation = 10 + mods.intelligent + (hasAcademic ? profBonus : 0);
+  const passivePerception = effective.passivePerception;
+  const passiveInsight = effective.passiveInsight;
+  const passiveInvestigation = effective.passiveInvestigation;
 
   // Load death & meltdown saves from localStorage
   const savedSaves = getStoredSaves(char.id);
@@ -566,12 +566,13 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
 
           </div>
 
-          <!-- INTERACTIVE TABS CONTAINER (ACTIONS, INVENTORY, FEATURES, ROLEPLAY, AFFECTION) -->
+          <!-- INTERACTIVE TABS CONTAINER (ACTIONS, INVENTORY, FEATURES, FEATS, ROLEPLAY, AFFECTION) -->
           <div class="sheet-tabs-container">
             <div class="sheet-tabs-nav">
               <button class="tab-btn ${activeTab === 'actions' ? 'active' : ''}" data-tab="actions">ACTIONS &amp; MOVES</button>
               <button class="tab-btn ${activeTab === 'inventory' ? 'active' : ''}" data-tab="inventory">INVENTORY</button>
               <button class="tab-btn ${activeTab === 'features' ? 'active' : ''}" data-tab="features">FEATURES &amp; TRAITS</button>
+              <button class="tab-btn ${activeTab === 'feats' ? 'active' : ''}" data-tab="feats">FEATS &amp; ACHIEVEMENTS</button>
               <button class="tab-btn ${activeTab === 'roleplay' ? 'active' : ''}" data-tab="roleplay">ROLEPLAY &amp; LOG</button>
               <button class="tab-btn tab-btn-dm ${activeTab === 'affection' ? 'active' : ''}" data-tab="affection">
                 🔒 AFFECTION (DM ONLY)
@@ -652,6 +653,11 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
               <div class="features-section" id="sheetFeaturesList">
                 ${renderFeaturesContent(char)}
               </div>
+            </div>
+
+            <!-- TAB: FEATS & ACHIEVEMENTS -->
+            <div class="tab-pane" id="tabPaneFeats" style="${activeTab === 'feats' ? 'display:block;' : 'display:none;'}">
+              ${renderFeatsTabContent(char, isDmUnlocked)}
             </div>
 
             <!-- TAB 4: ROLEPLAY & LOG -->
@@ -744,19 +750,23 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
       ${subclassSelectModal.render()}
       ${levelUpWizardModal.render()}
       ${editCharacterModal.render()}
+      ${featPickerModal.render()}
+      ${achievementAwardModal.render()}
 
     </div>
   `;
 }
 
 function renderSkillsRows(char: Character, mods: Record<string, number>, profBonus: number): string {
+  const effective = calculateEffectiveStats(char);
   let html = "";
   compAbilities.forEach(ab => {
     const statKey = ab.id as keyof CharacterAbilities;
     const mod = mods[statKey] || 0;
     (ab.skills || []).forEach(sk => {
       const isProf = (char.proficient_skills || []).includes(sk.id);
-      const skillTotal = mod + (isProf ? profBonus : 0);
+      const untrainedBonus = (!isProf && effective.jackOfAllTrades) ? 1 : 0;
+      const skillTotal = mod + (isProf ? profBonus : untrainedBonus);
       const skillSign = formatModifier(skillTotal);
       html += `
         <div class="skill-row" data-stat-name="${ab.name}" data-skill-name="${sk.name}" data-mod="${skillTotal}" title="Lempar d20 untuk ${sk.name} (${ab.name})">
@@ -993,6 +1003,210 @@ function renderTargetsList(char: Character): string {
   }).join("");
 }
 
+function renderFeatsTabContent(char: Character, isDmUnlocked: boolean): string {
+  const grants = char.featGrants || char.feat_grants || [];
+  const pendingGrants = grants.filter(g => g.status === "pending");
+  const takenFeats = char.feats || [];
+  const featMap = new Map<string, any>(ALL_FEATS.map(f => [f.id, f]));
+  const usageTracker = char.featUsage || char.feat_usage || {};
+  const achievements = char.achievements || [];
+  const achMap = new Map<string, any>(ALL_ACHIEVEMENTS.map(a => [a.id, a]));
+
+  let html = "";
+
+  // 1. Pending Grants Banner
+  if (pendingGrants.length > 0) {
+    html += `
+      <div class="pending-feats-banner" style="background:linear-gradient(90deg, rgba(234,179,8,0.15), rgba(245,158,11,0.08));border:1px solid #f59e0b;border-radius:var(--radius-md);padding:1rem 1.25rem;margin-bottom:1.25rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+          <div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-weight:800;color:#facc15;font-size:0.95rem;">
+              <span style="font-size:1.2rem;">⚠️</span> Slot Feat Belum Dipilih (${pendingGrants.length} Pending)
+            </div>
+            <p style="margin:0.25rem 0 0 0;font-size:0.85rem;color:var(--text-secondary);">
+              Karaktermu berhak mengambil Feat baru. Klik tombol di bawah untuk memilih feat:
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            ${pendingGrants.map(pg => {
+              const label = pg.category === 'origin' ? 'Origin Feat (K10)' : `General Feat (K${pg.grade || '11/12'})`;
+              return `
+                <button class="btn btn-primary btn-sm btn-pick-pending-feat" 
+                        data-grant-id="${pg.id}" 
+                        data-category="${pg.category}" 
+                        data-grade="${pg.grade || ''}">
+                  ✨ Pilih ${label}
+                </button>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. DM Mode Controls (Only if DM Pin unlocked)
+  if (isDmUnlocked) {
+    html += `
+      <div class="dm-feat-controls-box" style="background:rgba(225,29,72,0.08);border:1px solid rgba(225,29,72,0.3);border-radius:var(--radius-md);padding:0.75rem 1.25rem;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <span class="badge" style="background:#e11d48;color:#fff;font-weight:800;font-size:0.7rem;padding:0.2rem 0.5rem;border-radius:4px;">👑 DM MODE AKTIF</span>
+          <span style="font-size:0.85rem;color:var(--text-main);font-weight:600;">Otoritas Penganugerahan Feat &amp; Achievement</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-xs" id="btnDmAwardFeat" style="font-weight:700;">👑 + Anugerahi Feat Bebas</button>
+          <button class="btn btn-accent btn-xs" id="btnDmUnlockAchievement" style="font-weight:700;">🏆 Buka Achievement</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // 3. Active Feats Header
+  html += `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h4 style="margin:0;font-size:1.1rem;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:0.5rem;">
+        <span>🎯</span> Feat Karakter Aktif (${takenFeats.length})
+      </h4>
+      <div style="font-size:0.8rem;color:var(--text-muted);">
+        Origin (Cap 20) • General (Cap 20) • Achievement (Cap 30)
+      </div>
+    </div>
+  `;
+
+  if (takenFeats.length === 0) {
+    html += `
+      <div class="card p-4 text-center" style="color:var(--text-muted);background:rgba(255,255,255,0.02);border:1px dashed var(--border-subtle);border-radius:var(--radius-md);margin-bottom:1.5rem;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🌟</div>
+        <p style="margin:0 0 0.5rem 0;font-weight:600;">Belum ada Feat yang diambil.</p>
+        <p class="text-xs" style="margin:0;">Pilih Feat dari banner di atas atau anugerahi melalui sesi permainan.</p>
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));gap:1rem;margin-bottom:2rem;">
+        ${takenFeats.map(taken => {
+          const feat = featMap.get(taken.featId);
+          if (!feat) return '';
+
+          const catBadgeColor = feat.category === "origin"
+            ? "background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);"
+            : feat.category === "achievement"
+            ? "background:rgba(234,179,8,0.15);color:#facc15;border:1px solid rgba(234,179,8,0.3);"
+            : "background:rgba(225,29,72,0.15);color:#fb7185;border:1px solid rgba(225,29,72,0.3);";
+
+          const catLabel = feat.category === "origin"
+            ? "ORIGIN FEAT"
+            : feat.category === "achievement"
+            ? "ACHIEVEMENT FEAT"
+            : `GENERAL FEAT (${(feat.subcategory || "").toUpperCase()})`;
+
+          const usage = usageTracker[feat.id];
+
+          return `
+            <div class="card" style="padding:1.15rem;border-radius:var(--radius-md);border:1px solid var(--border-card);background:var(--bg-card);display:flex;flex-direction:column;justify-content:space-between;">
+              <div>
+                <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.35rem;">
+                  <span class="badge" style="font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:4px;font-weight:800;${catBadgeColor}">${catLabel}</span>
+                  ${feat.bonusAbility ? `
+                    <span class="badge" style="background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.3);font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:4px;font-weight:700;">
+                      +${feat.bonusAbility.value} ${feat.bonusAbility.ability.toUpperCase()} (Cap ${feat.bonusAbility.cap})
+                    </span>
+                  ` : ''}
+                </div>
+
+                <h4 style="margin:0 0 0.4rem 0;color:var(--text-primary);font-size:1.1rem;font-weight:800;">${escapeHtml(feat.name)}</h4>
+                
+                <p style="font-size:0.85rem;color:var(--text-secondary);margin:0 0 0.6rem 0;line-height:1.45;">
+                  ${escapeHtml(feat.description)}
+                </p>
+
+                ${feat.manualEffectText ? `
+                  <div style="background:var(--bg-surface);padding:0.5rem 0.75rem;border-radius:var(--radius-xs);font-size:0.8rem;color:var(--text-muted);border-left:3px solid var(--rose-primary);margin-bottom:0.6rem;line-height:1.4;">
+                    ${escapeHtml(feat.manualEffectText)}
+                  </div>
+                ` : ''}
+
+                ${taken.choices ? `
+                  <div style="font-size:0.75rem;color:var(--rose-light);background:rgba(225,29,72,0.06);padding:0.3rem 0.6rem;border-radius:4px;margin-bottom:0.6rem;">
+                    ${taken.choices.skills ? `<div><strong>Skill Terpilih:</strong> ${taken.choices.skills.join(", ").toUpperCase()}</div>` : ''}
+                    ${taken.choices.saves ? `<div><strong>Save Terpilih:</strong> ${taken.choices.saves.join(", ").toUpperCase()}</div>` : ''}
+                    ${taken.choices.language ? `<div><strong>Bahasa:</strong> ${escapeHtml(taken.choices.language)}</div>` : ''}
+                  </div>
+                ` : ''}
+
+                <!-- Mandatory Penalty / Drawback Display -->
+                ${feat.drawbackText ? `
+                  <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:var(--radius-xs);padding:0.5rem 0.75rem;font-size:0.78rem;color:#fca5a5;margin-bottom:0.6rem;line-height:1.35;">
+                    <strong>⚠️ PENALTI / KONSEKUENSI:</strong> ${escapeHtml(feat.drawbackText)}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Action Usage Tracker & Button -->
+              ${usage ? `
+                <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-surface);padding:0.5rem 0.75rem;border-radius:var(--radius-xs);margin-top:0.6rem;border:1px solid var(--border-subtle);flex-wrap:wrap;gap:0.5rem;">
+                  <div style="font-size:0.8rem;color:var(--text-main);">
+                    <strong>Penggunaan:</strong> 
+                    <span class="badge" style="background:${usage.used >= usage.max ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'};color:${usage.used >= usage.max ? '#f87171' : '#34d399'};margin:0 4px;font-weight:700;">
+                      ${usage.used} / ${usage.max}
+                    </span>
+                    <span class="text-xs text-muted">(${usage.resetType.replace('_', ' ')})</span>
+                  </div>
+                  <button class="btn btn-xs btn-primary btn-use-feat" data-feat-id="${feat.id}" ${usage.used >= usage.max ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>
+                    ${usage.used >= usage.max ? 'Habis' : '⚡ Gunakan'}
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  // 4. Earned Achievements Section
+  html += `
+    <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border-subtle);">
+      <h4 style="margin:0 0 1rem 0;font-size:1.1rem;font-weight:800;color:var(--text-primary);display:flex;align-items:center;gap:0.5rem;">
+        <span>🏆</span> Pencapaian Naratif Terbuka (${achievements.length}/8)
+      </h4>
+  `;
+
+  if (achievements.length === 0) {
+    html += `
+      <div class="card p-3 text-center" style="color:var(--text-muted);background:rgba(255,255,255,0.02);border:1px dashed var(--border-subtle);border-radius:var(--radius-md);">
+        <p style="margin:0;font-size:0.85rem;">Belum ada pencapaian naratif yang dibuka oleh DM.</p>
+      </div>
+    `;
+  } else {
+    html += `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:0.75rem;">
+        ${achievements.map(achItem => {
+          const ach = achMap.get(achItem.achievementId);
+          if (!ach) return '';
+          return `
+            <div class="card p-3" style="background:rgba(234,179,8,0.05);border:1px solid rgba(234,179,8,0.25);border-radius:var(--radius-md);">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                <span style="font-size:1.3rem;">${ach.badge_icon || '🏆'}</span>
+                <strong style="color:#fde047;font-size:0.95rem;">${escapeHtml(ach.title)}</strong>
+              </div>
+              <p style="font-size:0.8rem;color:var(--text-secondary);margin:0 0 0.35rem 0;line-height:1.4;">
+                ${escapeHtml(ach.description)}
+              </p>
+              <div class="text-xs" style="color:var(--rose-light);">
+                <strong>📜 Kisah:</strong> ${escapeHtml(ach.requirement)}
+              </div>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
 function attachSheetEvents(container: HTMLElement, char: Character) {
   // 1. Toolbar Actions
   document.getElementById("btnExportCharJson")?.addEventListener("click", () => exportCharacterJson(char));
@@ -1212,7 +1426,7 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
 
   document.getElementById("btnUnlockDm")?.addEventListener("click", () => {
     const pin = pinInput ? pinInput.value.trim() : "";
-    if (pin !== DM_PIN) {
+    if (!isDmPinValid(pin)) {
       if (pinErr) {
         pinErr.style.display = "block";
         pinErr.classList.add("shake");
@@ -1224,8 +1438,9 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     if (pinErr) pinErr.style.display = "none";
     if (pinInput) pinInput.value = "";
     isDmUnlocked = true;
-    document.getElementById("dmGateBox")!.style.display = "none";
-    document.getElementById("dmUnlockedContent")!.style.display = "block";
+    renderDndBeyondSheet(container, char);
+    attachSheetEvents(container, char);
+    showToast("🔑 Mode DM diaktifkan! Akses cinta dan fitur DM terbuka.", "success");
   });
 
   pinInput?.addEventListener("keydown", (e) => {
@@ -1236,8 +1451,9 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
 
   document.getElementById("btnLockDm")?.addEventListener("click", () => {
     isDmUnlocked = false;
-    document.getElementById("dmGateBox")!.style.display = "block";
-    document.getElementById("dmUnlockedContent")!.style.display = "none";
+    renderDndBeyondSheet(container, char);
+    attachSheetEvents(container, char);
+    showToast("🔒 Mode DM dikunci kembali.", "info");
   });
 
   document.getElementById("btnAddTarget")?.addEventListener("click", async () => {
@@ -1267,10 +1483,89 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     }
   });
 
-  // 17. Progression & Edit Modals
+  // 17. Progression, Feat & DM Modals
   subclassSelectModal.attachEvents();
   levelUpWizardModal.attachEvents();
   editCharacterModal.attachEvents();
+  featPickerModal.attachEvents();
+  achievementAwardModal.attachEvents();
+
+  // Pending feat selection buttons
+  container.querySelectorAll(".btn-pick-pending-feat").forEach((btn: any) => {
+    btn.addEventListener("click", () => {
+      const grantId = btn.getAttribute("data-grant-id");
+      const cat = btn.getAttribute("data-category") as FeatCategory;
+      const gradeStr = btn.getAttribute("data-grade");
+      const grade = gradeStr ? parseInt(gradeStr, 10) : undefined;
+      featPickerModal.show({
+        grantId,
+        allowedCategory: cat,
+        grade,
+        onSelect: () => {
+          const cur = characterStore.currentCharacter;
+          if (cur) {
+            renderDndBeyondSheet(container, cur);
+            attachSheetEvents(container, cur);
+          }
+        }
+      });
+    });
+  });
+
+  // DM Award Feat
+  document.getElementById("btnDmAwardFeat")?.addEventListener("click", () => {
+    featPickerModal.show({
+      isDmMode: true,
+      allowedCategory: "any",
+      onSelect: () => {
+        const cur = characterStore.currentCharacter;
+        if (cur) {
+          renderDndBeyondSheet(container, cur);
+          attachSheetEvents(container, cur);
+        }
+      }
+    });
+  });
+
+  // DM Unlock Achievement
+  document.getElementById("btnDmUnlockAchievement")?.addEventListener("click", () => {
+    achievementAwardModal.show();
+  });
+
+  // Feat Action [Gunakan] Button
+  container.querySelectorAll(".btn-use-feat").forEach((btn: any) => {
+    btn.addEventListener("click", async () => {
+      const featId = btn.getAttribute("data-feat-id");
+      if (!featId) return;
+      try {
+        const res = useFeatAction(char, featId);
+        const featDef = ALL_FEATS.find(f => f.id === featId);
+        showToast(`⚡ Aksi '${featDef?.name || featId}' digunakan! (${res.used}/${res.max})`, "info");
+        char.featUsage = res.character.featUsage;
+        char.feat_usage = res.character.feat_usage;
+        await updateCharacterDirect(char.id, {
+          feat_usage: char.featUsage
+        }, char.version);
+        characterStore.setCurrentCharacter(char);
+        renderDndBeyondSheet(container, char);
+        attachSheetEvents(container, char);
+      } catch (err: any) {
+        showToast(`Gagal menggunakan aksi: ${err.message}`, "error");
+      }
+    });
+  });
+
+  // Character updated event listener
+  const onCharUpdated = (e: any) => {
+    const updated = e.detail as Character;
+    if (updated && updated.id === char.id) {
+      renderDndBeyondSheet(container, updated);
+      attachSheetEvents(container, updated);
+    }
+  };
+  window.removeEventListener("characterUpdated", (container as any)._charUpdatedHandler);
+  (container as any)._charUpdatedHandler = onCharUpdated;
+  window.addEventListener("characterUpdated", onCharUpdated);
 
   document.getElementById("btnEditCharacter")?.addEventListener("click", () => {
     editCharacterModal.show();

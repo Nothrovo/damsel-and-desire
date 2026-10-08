@@ -7,7 +7,9 @@ import type {
   SocialClassCompendium,
   BasicActionCompendium,
   CalendarEventCompendium,
-  EquipmentPackCompendium
+  EquipmentPackCompendium,
+  FeatDefinition,
+  AchievementCompendium
 } from "../types";
 
 let cacheAbilities: AbilityCompendium[] | null = null;
@@ -17,6 +19,8 @@ let cacheSocialClasses: SocialClassCompendium[] | null = null;
 let cacheBasicActions: BasicActionCompendium[] | null = null;
 let cacheCalendarEvents: CalendarEventCompendium[] | null = null;
 let cacheEquipmentPacks: EquipmentPackCompendium[] | null = null;
+let cacheFeats: FeatDefinition[] | null = null;
+let cacheAchievements: AchievementCompendium[] | null = null;
 
 export async function getCompendiumAbilities(): Promise<AbilityCompendium[]> {
   if (cacheAbilities) return cacheAbilities;
@@ -359,3 +363,45 @@ export async function getCompendiumEquipmentPacks(): Promise<EquipmentPackCompen
   cacheEquipmentPacks = packs;
   return cacheEquipmentPacks;
 }
+
+export async function getCompendiumFeats(): Promise<FeatDefinition[]> {
+  if (cacheFeats) return cacheFeats;
+  try {
+    const { data, error } = await supabase
+      .from("compendium_feats")
+      .select("*")
+      .order("category")
+      .order("name");
+
+    if (!error && data && data.length > 0) {
+      cacheFeats = data as FeatDefinition[];
+      return cacheFeats;
+    }
+  } catch (err) {
+    console.warn("Koneksi Supabase feats compendium gagal, beralih ke fallback lokal.");
+  }
+
+  cacheFeats = (FALLBACK_DD_DATA as any).feats || [];
+  return cacheFeats || [];
+}
+
+export async function getCompendiumAchievements(): Promise<AchievementCompendium[]> {
+  if (cacheAchievements) return cacheAchievements;
+  try {
+    const { data, error } = await supabase
+      .from("compendium_achievements")
+      .select("*")
+      .order("name");
+
+    if (!error && data && data.length > 0) {
+      cacheAchievements = data as AchievementCompendium[];
+      return cacheAchievements;
+    }
+  } catch (err) {
+    console.warn("Koneksi Supabase achievements compendium gagal, beralih ke fallback lokal.");
+  }
+
+  cacheAchievements = (FALLBACK_DD_DATA as any).achievements || [];
+  return cacheAchievements || [];
+}
+

@@ -106,8 +106,14 @@ export interface Character {
   targets?: TargetSecret[];
   version: number;
   grade?: number; // 10 | 11 | 12
-  schemaVersion?: number; // schema version (e.g. 2)
+  schemaVersion?: number; // schema version (e.g. 2, 3)
   changelog?: CharacterChangeLogEntry[];
+  feats?: CharacterFeatTaken[];
+  featGrants?: FeatGrant[];
+  feat_grants?: FeatGrant[];
+  achievements?: CharacterAchievement[];
+  featUsage?: FeatUsageTracker;
+  feat_usage?: FeatUsageTracker;
   created_at: string;
   updated_at: string;
   owner_profile?: Profile;
@@ -288,3 +294,132 @@ export interface CalendarEventCompendium {
   event_type: string;
   description: string;
 }
+
+// ==========================================
+// FEATS & ACHIEVEMENTS SYSTEM (PROMPT 2)
+// ==========================================
+
+export type FeatCategory = "origin" | "general" | "achievement";
+export type AbilityKey = "physique" | "intelligent" | "looks" | "mind" | "talent" | "luck";
+
+export interface FeatChoiceDefinition {
+  type: "skill" | "save" | "language" | "free_text";
+  count: number;
+  pool?: string[];
+  description: string;
+}
+
+export interface FeatEffects {
+  skillsGranted?: string[];
+  savesGranted?: string[];
+  flatSpeed?: number;
+  hpPerLevelBonus?: number;         // e.g. Built Different (+2)
+  composurePerLevelBonus?: number;  // e.g. Who's Gonna Carry the Boats (+2)
+  flatPassivePerception?: number;   // e.g. Overthinker (+2)
+  flatPassiveInvestigation?: number;// e.g. Amatuer Detective (+3), Overthinker (+2)
+  jackOfAllTrades?: boolean;        // e.g. Jack of All Trades (+1 to non-proficient skills)
+  clumsyLuckBonus?: number;         // e.g. Clumsy (+2 to luck skills)
+  meleeToHitBonus?: number;         // e.g. Straight Hitter (+2)
+  unarmedDamageBonus?: number;      // e.g. One-Man Army (+2)
+}
+
+export interface FeatDrawbacks {
+  disadvantageSkills?: string[];
+  disadvantageSaves?: string[] | "all";
+  penaltyText: string;
+}
+
+export interface FeatUsageDefinition {
+  type: "short_rest" | "long_rest" | "combat" | "session" | "weekly" | "per_target" | "passive";
+  countFormula: "fixed" | "pb" | "ability_mod" | "level";
+  fixedCount?: number;
+  abilityKey?: AbilityKey;
+  description: string;
+}
+
+export interface FeatPrerequisites {
+  minGrade?: number; // 10, 11, 12
+  minLevel?: number; // 1..6
+  minAbility?: Partial<Record<AbilityKey, number>>;
+  requiresEkskul?: string;
+  requiresSubclass?: string;
+  requiresFeat?: string;
+}
+
+export interface FeatDefinition {
+  id: string;
+  name: string;
+  category: FeatCategory;
+  subcategory?: AbilityKey; // For general feats: physique, intelligent, looks, mind, talent, luck
+  description: string;
+  bonusAbility?: {
+    ability: AbilityKey;
+    value: number;
+    cap: number; // 20 for general, 30 for achievement
+  };
+  prerequisites?: FeatPrerequisites;
+  effects?: FeatEffects;
+  manualEffectText?: string;
+  drawbacks?: FeatDrawbacks;
+  usage?: FeatUsageDefinition;
+  choices?: FeatChoiceDefinition;
+  repeatable: boolean; // false
+  tags: string[];
+  requirementText?: string; // Story requirement for achievement feats
+  drawbackText?: string;    // Direct penalty/drawback summary
+}
+
+export interface FeatGrant {
+  id: string;
+  source: "grade" | "achievement" | "dm";
+  sourceRef?: string; // e.g. "grade_10", "ach_valedictorian", "dm_award"
+  grade?: number;     // 10 | 11 | 12
+  category?: FeatCategory | "any"; // "origin" for K10, "general" for K11/K12, "any" for DM
+  featId: string | null;          // null = pending choice
+  status: "pending" | "taken";
+  takenAt?: string;
+}
+
+export interface CharacterFeatTaken {
+  featId: string;
+  grantId: string;
+  choices?: {
+    skills?: string[];
+    saves?: string[];
+    language?: string;
+    text?: string;
+  };
+  takenAt: string;
+  notes?: string;
+}
+
+export interface AchievementCompendium {
+  id: string;
+  name: string;
+  title?: string;
+  requirement: string;
+  feat_id: string;
+  description?: string;
+  badge_icon?: string;
+}
+
+export interface CharacterAchievement {
+  achievementId: string;
+  earnedAt: string;
+  notes?: string;
+}
+
+export interface FeatUsageItem {
+  used: number;
+  max: number;
+  resetType: "short_rest" | "long_rest" | "combat" | "session" | "weekly" | "per_target" | "passive";
+  label?: string;
+}
+
+export type FeatUsageTracker = Record<string, FeatUsageItem>;
+
+export const OFFICIAL_DM_PINS = ["157017", "6969"] as const;
+export function isDmPinValid(pin: string): boolean {
+  return OFFICIAL_DM_PINS.includes(pin.trim() as any);
+}
+

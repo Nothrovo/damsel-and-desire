@@ -470,6 +470,9 @@ function renderStep6Review(container: HTMLElement) {
         <div style="margin-top:1rem;font-size:0.8rem;color:var(--amber-gold);">
           ✓ Dihasilkan secara otomatis oleh server saat karakter dibuat.
         </div>
+        <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-subtle);font-size:0.8rem;color:var(--text-muted);">
+          ✨ <strong>Slot Origin Feat (Kelas 10):</strong> Karakter akan mendapatkan 1 slot Origin Feat yang dapat kamu pilih di tab <em>FEATS &amp; ACHIEVEMENTS</em> lembar karakter.
+        </div>
       </div>
     </div>
   `;
@@ -539,7 +542,7 @@ async function submitCharacter() {
   try {
     showToast("Membuat karakter dan menghasilkan perlengkapan di server...", "info");
     const newChar = await createCharacterRpc(payload);
-    showToast(`✓ Karakter "${newChar.name}" berhasil dibuat!`, "success");
+    showToast(`✓ Karakter "${newChar.name}" berhasil dibuat! Jangan lupa pilih Origin Feat di tab Feats.`, "success");
     router.navigate(`/characters/${newChar.id}`);
   } catch (err: any) {
     showToast(`Gagal membuat karakter: ${err.message}`, "error");

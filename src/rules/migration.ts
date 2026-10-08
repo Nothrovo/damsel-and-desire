@@ -1,4 +1,4 @@
-import type { Character, CharacterChangeLogEntry } from "../types";
+import type { Character, CharacterChangeLogEntry, FeatGrant } from "../types";
 import {
   getGradeForLevel,
   getRestDiceCountForLevel,
@@ -20,6 +20,66 @@ export interface MigrationResult {
   changes: string[];
   changelogEntries: CharacterChangeLogEntry[];
 }
+
+/**
+ * Ensures that a character has appropriate pending FeatGrants according to their school grade:
+ * - Grade 10: 1 Origin Feat grant
+ * - Grade 11: 1 Origin Feat grant (G10) + 1 General Feat grant (G11)
+ * - Grade 12: 1 Origin Feat grant (G10) + 1 General Feat grant (G11) + 1 General Feat grant (G12)
+ * Pure, non-duplicative, and idempotent.
+ */
+export function ensureGradeFeatGrants(grade: number, existingGrants: FeatGrant[] = []): FeatGrant[] {
+  const grants: FeatGrant[] = existingGrants.map(g => ({ ...g }));
+
+  // Check Grade 10 Origin Feat grant
+  const hasG10 = grants.some(g => g.grade === 10 && g.source === "grade");
+  if (!hasG10) {
+    grants.push({
+      id: "grant_grade_10",
+      source: "grade",
+      sourceRef: "grade_10",
+      grade: 10,
+      category: "origin",
+      featId: null,
+      status: "pending"
+    });
+  }
+
+  // Check Grade 11 General Feat grant
+  if (grade >= 11) {
+    const hasG11 = grants.some(g => g.grade === 11 && g.source === "grade");
+    if (!hasG11) {
+      grants.push({
+        id: "grant_grade_11",
+        source: "grade",
+        sourceRef: "grade_11",
+        grade: 11,
+        category: "general",
+        featId: null,
+        status: "pending"
+      });
+    }
+  }
+
+  // Check Grade 12 General Feat grant
+  if (grade >= 12) {
+    const hasG12 = grants.some(g => g.grade === 12 && g.source === "grade");
+    if (!hasG12) {
+      grants.push({
+        id: "grant_grade_12",
+        source: "grade",
+        sourceRef: "grade_12",
+        grade: 12,
+        category: "general",
+        featId: null,
+        status: "pending"
+      });
+    }
+  }
+
+  return grants;
+}
+
 
 /**
  * Normalizes legacy grade/level representations into modern Level 1..6 and Grade 10..12.
@@ -136,9 +196,22 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
   const rawCompCurrent = raw.vitals?.composureCurrent ?? raw.composureCurrent ?? finalCompMax;
   const finalCompCurrent = Math.min(finalCompMax, Math.max(0, rawCompCurrent));
 
-  // 4. Schema version bump
-  if (!isAlreadyV2) {
-    changes.push(`Schema version dinaikkan ke v2`);
+  // 4. Feats & Grants normalization
+  const targetSchemaVersion = options.targetSchemaVersion ?? (raw.schemaVersion && raw.schemaVersion >= 3 ? 3 : 2);
+  const isAlreadyTarget = currentSchema >= targetSchemaVersion;
+
+  const existingGrants: FeatGrant[] = raw.featGrants || raw.feat_grants || [];
+  let finalGrants = existingGrants;
+  if (targetSchemaVersion >= 3) {
+    finalGrants = ensureGradeFeatGrants(grade, existingGrants);
+    if (finalGrants.length !== existingGrants.length) {
+      changes.push(`Ditambahkan ${finalGrants.length - existingGrants.length} slot Feat pending sesuai tingkat Kelas ${grade}`);
+    }
+  }
+
+  // 5. Schema version bump
+  if (!isAlreadyTarget) {
+    changes.push(`Schema version dinaikkan ke v${targetSchemaVersion}`);
   }
 
   const hasModifications = changes.length > 0;
@@ -152,7 +225,7 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
   if (hasModifications) {
     const entry: CharacterChangeLogEntry = {
       timestamp: new Date().toISOString(),
-      action: "MIGRATION_V2",
+      action: targetSchemaVersion >= 3 ? "MIGRATION_V3" : "MIGRATION_V2",
       description: changes.join("; "),
       previousValue: {
         schemaVersion: raw.schemaVersion,
@@ -161,7 +234,7 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
         subclass_id: raw.subclass_id ?? raw.subclassId
       },
       newValue: {
-        schemaVersion: 2,
+        schemaVersion: targetSchemaVersion,
         level,
         grade,
         subclass_id: subclassId
@@ -183,7 +256,7 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
     archetype_id: raw.archetype_id || raw.archetypeId || "normies",
     level,
     grade,
-    schemaVersion: 2,
+    schemaVersion: targetSchemaVersion,
     avatar_path: raw.avatar_path || raw.avatar || "",
     abilities: raw.abilities || raw.baseAbilities || {
       physique: 10,
@@ -227,6 +300,12 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
     profClubTools: raw.profClubTools || raw.prof_club_tools || "",
     profLanguages: raw.profLanguages || raw.prof_languages || "",
     targets: raw.targets || [],
+    feats: raw.feats || [],
+    featGrants: finalGrants,
+    feat_grants: finalGrants,
+    achievements: raw.achievements || [],
+    featUsage: raw.featUsage || raw.feat_usage || {},
+    feat_usage: raw.featUsage || raw.feat_usage || {},
     version: (raw.version || 1) + (hasModifications ? 1 : 0),
     changelog: existingChangelog,
     created_at: raw.created_at || new Date().toISOString(),
@@ -239,6 +318,16 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
     changes,
     changelogEntries: newChangelogEntries
   };
+}
+
+/**
+ * Convenience wrapper to migrate a character specifically to Schema Version 3 (with Feats).
+ */
+export function migrateCharacterToV3(
+  raw: any,
+  options: MigrationOptions = {}
+): MigrationResult {
+  return migrateCharacter(raw, { ...options, targetSchemaVersion: 3 });
 }
 
 /**
@@ -261,3 +350,4 @@ export function migrateCharacters(
 
   return { characters, totalMigrated };
 }
+

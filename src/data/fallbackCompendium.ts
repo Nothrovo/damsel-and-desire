@@ -1,6 +1,9 @@
+import { ALL_FEATS } from "./featCompendium";
+import { ALL_ACHIEVEMENTS } from "./achievementCompendium";
+
 // Fallback static compendium data in case Supabase tables are not yet seeded or user is offline
 export const FALLBACK_DD_DATA = {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "title": "Damsel & Desire",
   "subtitle": "Japanese High School Romance TRPG",
   "abilities": {
@@ -2882,5 +2885,10 @@ export const FALLBACK_DD_DATA = {
       "term": "Akhir Tahun Ajaran",
       "desc": "Pengumuman kelulusan dan momen perpisahan yang penuh air mata kenangan."
     }
-  ]
+  ],
+  feats: ALL_FEATS,
+  achievements: ALL_ACHIEVEMENTS
 };
+
+export { ALL_FEATS, ALL_ACHIEVEMENTS };
+

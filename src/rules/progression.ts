@@ -3,10 +3,17 @@ import type {
   CharacterChangeLogEntry,
   ClubMoveCompendium,
   SubclassMoveCompendium,
-  EkskulCompendium
+  EkskulCompendium,
+  FeatDefinition,
+  FeatGrant,
+  CharacterFeatTaken,
+  FeatCategory,
+  AbilityKey,
+  CharacterAbilities
 } from "../types";
-import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
+import { FALLBACK_DD_DATA, ALL_FEATS } from "../data/fallbackCompendium";
 import { calculateAbilityModifier, calculateProficiencyBonus } from "../services/ruleEngine";
+import { ensureGradeFeatGrants } from "./migration";
 
 export const MIN_LEVEL = 1;
 export const MAX_LEVEL = 6;
@@ -78,26 +85,38 @@ export function getHitDieAverage(hitDie: string = "d8"): number {
 }
 
 /**
+ * Safely extracts numeric ability score whether stored as number or { score: number }.
+ */
+export function extractAbilityScore(val: any): number {
+  if (typeof val === "object" && val !== null) {
+    return typeof val.score === "number" ? val.score : 10;
+  }
+  return typeof val === "number" ? val : 10;
+}
+
+/**
  * Calculate HP gain for a specific level up.
- * Level 1: HitDieMax + Mod PHY + (Delinquent +2)
- * Level 2..6: HitDieAvg + Mod PHY + (Delinquent +2)
+ * Level 1: HitDieMax + Mod PHY + (Delinquent +2) + (BuiltDifferent +2)
+ * Level 2..6: HitDieAvg + Mod PHY + (Delinquent +2) + (BuiltDifferent +2)
  * Minimum gain is always 1 HP.
  */
 export function calculateHpGainAtLevel(
   level: number,
   hitDie: string,
   physiqueScore: number,
-  isDelinquent: boolean
+  isDelinquent: boolean,
+  hasBuiltDifferent: boolean = false
 ): number {
   const modPhy = calculateAbilityModifier(physiqueScore);
   const delinquentBonus = isDelinquent ? 2 : 0;
+  const builtDiffBonus = hasBuiltDifferent ? 2 : 0;
 
   if (level <= 1) {
     const sides = getHitDieSides(hitDie);
-    return Math.max(1, sides + modPhy + delinquentBonus);
+    return Math.max(1, sides + modPhy + delinquentBonus + builtDiffBonus);
   }
   const avg = getHitDieAverage(hitDie);
-  return Math.max(1, avg + modPhy + delinquentBonus);
+  return Math.max(1, avg + modPhy + delinquentBonus + builtDiffBonus);
 }
 
 /**
@@ -107,40 +126,196 @@ export function calculateMaxHp(
   level: number,
   hitDie: string,
   physiqueScore: number,
-  isDelinquent: boolean
+  isDelinquent: boolean,
+  hasBuiltDifferent: boolean = false
 ): number {
   const clampedLevel = Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, level));
   let total = 0;
   for (let l = 1; l <= clampedLevel; l++) {
-    total += calculateHpGainAtLevel(l, hitDie, physiqueScore, isDelinquent);
+    total += calculateHpGainAtLevel(l, hitDie, physiqueScore, isDelinquent, hasBuiltDifferent);
   }
   return total;
 }
 
 /**
  * Calculate Composure gain for a specific level up.
- * Level 1: 10 + Mod MND
- * Level 2..6: 4 + Mod MND
+ * Level 1: 10 + Mod MND + (WhoGonnaCarryTheBoats +2)
+ * Level 2..6: 4 + Mod MND + (WhoGonnaCarryTheBoats +2)
  * Minimum gain is always 1 Composure.
  */
-export function calculateComposureGainAtLevel(level: number, mindScore: number): number {
+export function calculateComposureGainAtLevel(
+  level: number,
+  mindScore: number,
+  hasWhoGonnaCarryTheBoats: boolean = false
+): number {
   const modMnd = calculateAbilityModifier(mindScore);
+  const boatsBonus = hasWhoGonnaCarryTheBoats ? 2 : 0;
   if (level <= 1) {
-    return Math.max(1, 10 + modMnd);
+    return Math.max(1, 10 + modMnd + boatsBonus);
   }
-  return Math.max(1, 4 + modMnd);
+  return Math.max(1, 4 + modMnd + boatsBonus);
 }
 
 /**
  * Calculate total Max Composure from Level 1 up to target level.
  */
-export function calculateMaxComposure(level: number, mindScore: number): number {
+export function calculateMaxComposure(
+  level: number,
+  mindScore: number,
+  hasWhoGonnaCarryTheBoats: boolean = false
+): number {
   const clampedLevel = Math.max(MIN_LEVEL, Math.min(MAX_LEVEL, level));
   let total = 0;
   for (let l = 1; l <= clampedLevel; l++) {
-    total += calculateComposureGainAtLevel(l, mindScore);
+    total += calculateComposureGainAtLevel(l, mindScore, hasWhoGonnaCarryTheBoats);
   }
   return total;
+}
+
+export interface EffectiveCharacterStats {
+  abilities: CharacterAbilities;
+  modifiers: Record<AbilityKey, number>;
+  proficiencyBonus: number;
+  physicalHpMax: number;
+  composureMax: number;
+  speed: string;
+  speedFeet: number;
+  passivePerception: number;
+  passiveInsight: number;
+  passiveInvestigation: number;
+  proficientSkills: string[];
+  proficientSaves: string[];
+  jackOfAllTrades: boolean;
+  jackOfAllTradesBonus: number;
+  clumsyLuckBonus: number;
+  luckBonus: number;
+  meleeToHitBonus: number;
+  unarmedDamageBonus: number;
+  hasBuiltDifferent: boolean;
+  hasWhoGonnaCarryTheBoats: boolean;
+  hpMaxBonus: number;
+  composureMaxBonus: number;
+}
+
+/**
+ * Calculates unified effective stats for a character, factoring in base stats,
+ * level scaling, ekskul hit dice, archetype traits, and all taken Feat effects.
+ */
+export function calculateEffectiveStats(
+  character: Character,
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): EffectiveCharacterStats {
+  const featMap = new Map<string, FeatDefinition>(compendiumFeats.map(f => [f.id, f]));
+  const takenFeats = character.feats || [];
+
+  const baseScores: Record<AbilityKey, number> = {
+    physique: extractAbilityScore(character.abilities?.physique),
+    intelligent: extractAbilityScore(character.abilities?.intelligent),
+    looks: extractAbilityScore(character.abilities?.looks),
+    mind: extractAbilityScore(character.abilities?.mind),
+    talent: extractAbilityScore(character.abilities?.talent),
+    luck: extractAbilityScore(character.abilities?.luck)
+  };
+
+  const effectiveAbilities: CharacterAbilities = { ...baseScores };
+  const modifiers: Record<AbilityKey, number> = {} as any;
+
+  const statKeys: AbilityKey[] = ["physique", "intelligent", "looks", "mind", "talent", "luck"];
+  for (const k of statKeys) {
+    modifiers[k] = calculateAbilityModifier(effectiveAbilities[k]);
+  }
+
+  const pb = calculateProficiencyBonus(character.level);
+
+  const profSkills = new Set<string>(character.proficient_skills || []);
+  const profSaves = new Set<string>(character.proficient_saves || []);
+
+  let hasBuiltDifferent = false;
+  let hasWhoGonnaCarryTheBoats = false;
+  let hasSprinter = false;
+  let flatPassivePerceptionBonus = 0;
+  let flatPassiveInvestigationBonus = 0;
+  let hasJackOfAllTrades = false;
+  let clumsyLuckBonus = 0;
+  let meleeToHitBonus = 0;
+  let unarmedDamageBonus = 0;
+
+  for (const taken of takenFeats) {
+    const feat = featMap.get(taken.featId);
+    if (!feat) continue;
+
+    if (feat.effects?.skillsGranted) {
+      feat.effects.skillsGranted.forEach(s => profSkills.add(s));
+    }
+    if (taken.choices?.skills) {
+      taken.choices.skills.forEach(s => profSkills.add(s));
+    }
+    if (feat.effects?.savesGranted) {
+      feat.effects.savesGranted.forEach(s => profSaves.add(s));
+    }
+    if (taken.choices?.saves) {
+      taken.choices.saves.forEach(s => profSaves.add(s));
+    }
+
+    if (feat.id === "built_different" || feat.effects?.hpPerLevelBonus) hasBuiltDifferent = true;
+    if (feat.id === "whos_gonna_carry_the_boats" || feat.effects?.composurePerLevelBonus) hasWhoGonnaCarryTheBoats = true;
+    if (feat.id === "sprinter" || feat.effects?.flatSpeed) hasSprinter = true;
+    if (feat.effects?.flatPassivePerception) flatPassivePerceptionBonus += feat.effects.flatPassivePerception;
+    if (feat.effects?.flatPassiveInvestigation) flatPassiveInvestigationBonus += feat.effects.flatPassiveInvestigation;
+    if (feat.id === "jack_of_all_trades" || feat.effects?.jackOfAllTrades) hasJackOfAllTrades = true;
+    if (feat.id === "clumsy" || feat.effects?.clumsyLuckBonus) clumsyLuckBonus += (feat.effects?.clumsyLuckBonus ?? 2);
+    if (feat.effects?.meleeToHitBonus) meleeToHitBonus += feat.effects.meleeToHitBonus;
+    if (feat.effects?.unarmedDamageBonus) unarmedDamageBonus += feat.effects.unarmedDamageBonus;
+  }
+
+  const ekskul = resolveEkskulData(character.ekskul_id);
+  const hitDie = ekskul?.hit_die || "d8";
+  const isDelinquent = character.archetype_id === "delinquent";
+
+  const minHp = calculateMaxHp(character.level, hitDie, effectiveAbilities.physique, isDelinquent, hasBuiltDifferent);
+  const rawHpMax = character.vitals?.physicalHpMax ?? minHp;
+  const physicalHpMax = Math.max(rawHpMax, minHp);
+
+  const minComp = calculateMaxComposure(character.level, effectiveAbilities.mind, hasWhoGonnaCarryTheBoats);
+  const rawCompMax = character.vitals?.composureMax ?? minComp;
+  const composureMax = Math.max(rawCompMax, minComp);
+
+  const baseSpeedFeet = character.archetype_id === "jock" ? 35 : 30;
+  const totalSpeedFeet = baseSpeedFeet + (hasSprinter ? 10 : 0);
+  const speed = `${totalSpeedFeet} ft`;
+
+  const hasAwareness = profSkills.has("awareness");
+  const hasPeople = profSkills.has("people") || profSkills.has("interpersonal");
+  const hasAcademic = profSkills.has("academic");
+
+  const passivePerception = 10 + modifiers.mind + (hasAwareness ? pb : 0) + flatPassivePerceptionBonus;
+  const passiveInsight = 10 + modifiers.intelligent + (hasPeople ? pb : 0);
+  const passiveInvestigation = 10 + modifiers.intelligent + (hasAcademic ? pb : 0) + flatPassiveInvestigationBonus;
+
+  return {
+    abilities: effectiveAbilities,
+    modifiers,
+    proficiencyBonus: pb,
+    physicalHpMax,
+    composureMax,
+    speed,
+    speedFeet: totalSpeedFeet,
+    passivePerception,
+    passiveInsight,
+    passiveInvestigation,
+    proficientSkills: Array.from(profSkills),
+    proficientSaves: Array.from(profSaves),
+    jackOfAllTrades: hasJackOfAllTrades,
+    jackOfAllTradesBonus: hasJackOfAllTrades ? 1 : 0,
+    clumsyLuckBonus,
+    luckBonus: clumsyLuckBonus,
+    meleeToHitBonus,
+    unarmedDamageBonus,
+    hasBuiltDifferent,
+    hasWhoGonnaCarryTheBoats,
+    hpMaxBonus: hasBuiltDifferent ? character.level * 2 : 0,
+    composureMaxBonus: hasWhoGonnaCarryTheBoats ? character.level : 0
+  };
 }
 
 /**
@@ -307,12 +482,13 @@ export interface PendingChoice {
   title: string;
   description: string;
   options?: any[];
+  grantId?: string;
+  category?: string;
 }
 
 /**
  * Inspect character for pending progression choices.
- * E.g. Grade >= 11 (Level >= 3) without chosen subclass.
- * Extensible for future feats hook.
+ * E.g. Grade >= 11 without subclass, or pending FeatGrants.
  */
 export function getPendingChoices(
   character: Character,
@@ -321,6 +497,7 @@ export function getPendingChoices(
   const choices: PendingChoice[] = [];
   const grade = character.grade ?? getGradeForLevel(character.level);
 
+  // 1. Pending Subclass (Kelas 11+)
   if (grade >= 11 && !character.subclass_id) {
     const ekskul = resolveEkskulData(character.ekskul_id, compendiumEkskul);
     choices.push({
@@ -333,12 +510,31 @@ export function getPendingChoices(
     });
   }
 
+  // 2. Pending Feat Grants
+  const grants = character.featGrants || character.feat_grants || [];
+  for (const grant of grants) {
+    if (grant.status === "pending") {
+      const grantLabel = grant.grade ? `Kelas ${grant.grade}` : grant.source === "achievement" ? "Pencapaian" : "Penghargaan DM";
+      const catLabel = grant.category === "origin" ? "Origin Feat" : grant.category === "general" ? "General Feat" : "Feat";
+      choices.push({
+        id: `choose_feat_${grant.id}`,
+        type: "feat",
+        required: true,
+        title: `Pilih ${catLabel} (${grantLabel})`,
+        description: `Karaktermu berhak memilih 1 ${catLabel} untuk slot ${grantLabel}.`,
+        grantId: grant.id,
+        category: grant.category
+      });
+    }
+  }
+
   return choices;
 }
 
 export interface LevelUpChoices {
   subclassId?: string;
   featId?: string;
+  featChoices?: CharacterFeatTaken["choices"];
 }
 
 export interface LevelUpPreview {
@@ -399,17 +595,20 @@ export function previewLevelUp(
 
   const ekskul = resolveEkskulData(character.ekskul_id, compendiumEkskul);
   const hitDie = ekskul?.hit_die || "d8";
-  const physique = (typeof character.abilities?.physique === "object" ? (character.abilities.physique as any)?.score : character.abilities?.physique) ?? 10;
-  const mind = (typeof character.abilities?.mind === "object" ? (character.abilities.mind as any)?.score : character.abilities?.mind) ?? 10;
+  const physique = extractAbilityScore(character.abilities?.physique);
+  const mind = extractAbilityScore(character.abilities?.mind);
   const isDelinquent = character.archetype_id === "delinquent";
 
-  const hpDelta = calculateHpGainAtLevel(nextLevel, hitDie, physique, isDelinquent);
-  const composureDelta = calculateComposureGainAtLevel(nextLevel, mind);
+  const hasBuiltDifferent = (character.feats || []).some(f => f.featId === "built_different") || choices?.featId === "built_different";
+  const hasWhoGonnaCarryTheBoats = (character.feats || []).some(f => f.featId === "whos_gonna_carry_the_boats") || choices?.featId === "whos_gonna_carry_the_boats";
 
-  const hpMaxCurrent = character.vitals?.physicalHpMax ?? calculateMaxHp(currentLevel, hitDie, physique, isDelinquent);
+  const hpDelta = calculateHpGainAtLevel(nextLevel, hitDie, physique, isDelinquent, hasBuiltDifferent);
+  const composureDelta = calculateComposureGainAtLevel(nextLevel, mind, hasWhoGonnaCarryTheBoats);
+
+  const hpMaxCurrent = character.vitals?.physicalHpMax ?? calculateMaxHp(currentLevel, hitDie, physique, isDelinquent, hasBuiltDifferent);
   const hpMaxNext = hpMaxCurrent + hpDelta;
 
-  const composureMaxCurrent = character.vitals?.composureMax ?? calculateMaxComposure(currentLevel, mind);
+  const composureMaxCurrent = character.vitals?.composureMax ?? calculateMaxComposure(currentLevel, mind, hasWhoGonnaCarryTheBoats);
   const composureMaxNext = composureMaxCurrent + composureDelta;
 
   const pbCurrent = calculateProficiencyBonus(currentLevel);
@@ -477,6 +676,7 @@ export function previewLevelUp(
 
 /**
  * Pure progression engine function to level up a character.
+ * Automatically provisions new FeatGrants when crossing grades.
  * Returns a new character object with changelog entry. Does NOT mutate the input object.
  */
 export function levelUp(
@@ -528,6 +728,9 @@ export function levelUp(
     descParts.push(`Memilih subclass: ${newSubclassId}`);
   }
 
+  // Ensure feat grants for new grade
+  let updatedGrants = ensureGradeFeatGrants(newGrade, character.featGrants || character.feat_grants);
+
   const changelogEntry: CharacterChangeLogEntry = {
     timestamp,
     action: "LEVEL_UP",
@@ -551,13 +754,15 @@ export function levelUp(
 
   const updatedChangelog = [...(character.changelog || []), changelogEntry];
 
-  const updatedCharacter: Character = {
+  let updatedCharacter: Character = {
     ...character,
     level: newLevel,
     grade: newGrade,
     subclass_id: newSubclassId,
-    schemaVersion: 2,
+    schemaVersion: 3,
     version: (character.version || 1) + 1,
+    featGrants: updatedGrants,
+    feat_grants: updatedGrants,
     vitals: {
       ...character.vitals,
       physicalHpMax: newHpMax,
@@ -570,6 +775,15 @@ export function levelUp(
     changelog: updatedChangelog,
     updated_at: timestamp
   };
+
+  // If choices include featId, atomically take the feat for the new grade grant
+  if (choices?.featId) {
+    const pendingGradeGrant = updatedGrants.find(g => g.grade === newGrade && g.status === "pending");
+    if (pendingGradeGrant) {
+      const takeResult = takeFeat(updatedCharacter, pendingGradeGrant.id, choices.featId, choices.featChoices);
+      updatedCharacter = takeResult.character;
+    }
+  }
 
   return {
     character: updatedCharacter,
@@ -623,3 +837,595 @@ export function validateCharacter(
     errors
   };
 }
+
+// =========================================================================
+// FEAT & ACHIEVEMENT PROGRESSION ENGINE FUNCTIONS (PROMPT 2)
+// =========================================================================
+
+/**
+ * Checks whether a character satisfies all prerequisites and category rules for a given Feat.
+ */
+export function checkFeatEligibility(
+  character: Character,
+  feat: FeatDefinition,
+  grant?: FeatGrant
+): { eligible: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  const charGrade = character.grade ?? getGradeForLevel(character.level);
+  const takenFeats = character.feats || [];
+
+  // 1. Grant category restrictions
+  if (grant) {
+    if (grant.category === "origin" && feat.category !== "origin") {
+      reasons.push("Slot Kelas 10 hanya dapat memilih Origin Feat.");
+    } else if (grant.category === "general" && feat.category !== "general") {
+      reasons.push("Slot Kelas 11 & 12 hanya dapat memilih General Feat.");
+    } else if (grant.category === "achievement" && feat.category !== "achievement") {
+      reasons.push("Grant ini dikhususkan untuk Achievement Feat.");
+    }
+    if (grant.featId && grant.featId !== feat.id) {
+      reasons.push(`Grant ini terkunci khusus untuk feat ${grant.featId}.`);
+    }
+  }
+
+  // 2. Repeatable restriction: No feats can be taken twice
+  if (!feat.repeatable && takenFeats.some(f => f.featId === feat.id)) {
+    reasons.push("Feat ini sudah diambil sebelumnya (tidak dapat diambil dua kali).");
+  }
+
+  // 3. Prerequisites
+  const prereqs = feat.prerequisites;
+  if (prereqs) {
+    if (prereqs.minGrade && charGrade < prereqs.minGrade) {
+      reasons.push(`Memerlukan minimal Kelas ${prereqs.minGrade}.`);
+    }
+    if (prereqs.minLevel && character.level < prereqs.minLevel) {
+      reasons.push(`Memerlukan minimal Level ${prereqs.minLevel}.`);
+    }
+    if (prereqs.requiresEkskul && character.ekskul_id !== prereqs.requiresEkskul) {
+      reasons.push(`Hanya untuk ekskul ${prereqs.requiresEkskul}.`);
+    }
+    if (prereqs.requiresSubclass && character.subclass_id !== prereqs.requiresSubclass) {
+      reasons.push(`Memerlukan peminatan subclass ${prereqs.requiresSubclass}.`);
+    }
+    if (prereqs.requiresFeat && !takenFeats.some(f => f.featId === prereqs.requiresFeat)) {
+      reasons.push(`Memerlukan feat prasyarat ${prereqs.requiresFeat}.`);
+    }
+    if (prereqs.minAbility) {
+      for (const [stat, reqScore] of Object.entries(prereqs.minAbility)) {
+        const charScore = extractAbilityScore((character.abilities as any)?.[stat]);
+        if (charScore < reqScore!) {
+          reasons.push(`Memerlukan nilai ${stat.toUpperCase()} minimal ${reqScore} (saat ini ${charScore}).`);
+        }
+      }
+    }
+  }
+
+  return {
+    eligible: reasons.length === 0,
+    reasons
+  };
+}
+
+/**
+ * Returns all feats from compendium that are eligible to be taken by character for a given grant.
+ */
+export function getAvailableFeats(
+  character: Character,
+  grant: FeatGrant,
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): FeatDefinition[] {
+  return compendiumFeats.filter(feat => {
+    const { eligible } = checkFeatEligibility(character, feat, grant);
+    return eligible;
+  });
+}
+
+/**
+ * Pure function to take a feat for a specific pending grant.
+ * Atomically validates requirements, choices, caps stat bonuses (Option B),
+ * and updates character data and changelog.
+ */
+export function takeFeat(
+  character: Character,
+  grantId: string,
+  featId: string,
+  choices?: CharacterFeatTaken["choices"],
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): { character: Character; changelogEntry: CharacterChangeLogEntry } {
+  const grants = character.featGrants || character.feat_grants || [];
+  const targetGrant = grants.find(g => g.id === grantId);
+  if (!targetGrant) {
+    throw new Error(`Slot FeatGrant dengan ID '${grantId}' tidak ditemukan.`);
+  }
+  if (targetGrant.status !== "pending") {
+    throw new Error(`Slot FeatGrant '${grantId}' sudah digunakan atau tidak berstatus pending.`);
+  }
+
+  const feat = compendiumFeats.find(f => f.id === featId);
+  if (!feat) {
+    throw new Error(`Feat dengan ID '${featId}' tidak ditemukan di compendium.`);
+  }
+
+  const eligibility = checkFeatEligibility(character, feat, targetGrant);
+  if (!eligibility.eligible) {
+    throw new Error(`Karakter tidak memenuhi syarat untuk mengambil ${feat.name}: ${eligibility.reasons.join(", ")}`);
+  }
+
+  // Validate choices
+  if (feat.choices) {
+    if (feat.choices.type === "skill") {
+      let chosenSkills = choices?.skills || [];
+      if (!chosenSkills.length && (choices as any)?.skill) {
+        chosenSkills = [(choices as any).skill];
+      }
+      if (chosenSkills.length !== feat.choices.count) {
+        throw new Error(`Feat ${feat.name} mewajibkan pemilihan tepat ${feat.choices.count} skill.`);
+      }
+      if (feat.choices.pool) {
+        for (const s of chosenSkills) {
+          if (!feat.choices.pool.includes(s)) {
+            throw new Error(`Skill '${s}' tidak terdapat dalam daftar pilihan yang diizinkan untuk ${feat.name}.`);
+          }
+        }
+      }
+      if (new Set(chosenSkills).size !== chosenSkills.length) {
+        throw new Error("Pilihan skill tidak boleh mengandung skill yang sama ganda.");
+      }
+    } else if (feat.choices.type === "save") {
+      let chosenSaves = choices?.saves || [];
+      if (!chosenSaves.length && (choices as any)?.savingThrow) {
+        chosenSaves = [(choices as any).savingThrow];
+      }
+      if (chosenSaves.length !== feat.choices.count) {
+        throw new Error(`Feat ${feat.name} mewajibkan pemilihan tepat ${feat.choices.count} saving throw.`);
+      }
+      if (feat.choices.pool) {
+        for (const s of chosenSaves) {
+          if (!feat.choices.pool.includes(s)) {
+            throw new Error(`Saving throw '${s}' tidak terdapat dalam pilihan yang diizinkan.`);
+          }
+        }
+      }
+    }
+  }
+
+  const timestamp = new Date().toISOString();
+
+  // 1. Update grant
+  const updatedGrants = grants.map(g => {
+    if (g.id === grantId) {
+      return {
+        ...g,
+        featId: feat.id,
+        status: "taken" as const,
+        takenAt: timestamp
+      };
+    }
+    return { ...g };
+  });
+
+  // 2. Add to character.feats
+  const newFeatTaken: CharacterFeatTaken = {
+    featId: feat.id,
+    grantId: targetGrant.id,
+    choices,
+    takenAt: timestamp
+  };
+  const updatedFeats = [...(character.feats || []), newFeatTaken];
+
+  // 3. Update abilities (Capped via Option B: never exceed cap 20 / 30)
+  const newAbilities: any = { ...character.abilities };
+  let statGainDesc = "";
+  if (feat.bonusAbility) {
+    const statKey = feat.bonusAbility.ability;
+    const currentVal = extractAbilityScore(character.abilities?.[statKey]);
+    const cap = feat.bonusAbility.cap;
+    const bonusVal = feat.bonusAbility.value;
+    const finalScore = Math.min(cap, currentVal + bonusVal);
+    const actualIncrease = finalScore - currentVal;
+
+    if (typeof character.abilities?.[statKey] === "object" && character.abilities?.[statKey] !== null) {
+      newAbilities[statKey] = {
+        ...(character.abilities[statKey] as any),
+        score: finalScore
+      };
+    } else {
+      newAbilities[statKey] = finalScore;
+    }
+
+    if (actualIncrease > 0) {
+      statGainDesc = `+${actualIncrease} ${statKey.toUpperCase()} (kini ${finalScore})`;
+    } else {
+      statGainDesc = `${statKey.toUpperCase()} tertahan pada batas stat (${finalScore})`;
+    }
+  }
+
+  // 4. Update proficient skills & saves
+  const newProfSkills = new Set(character.proficient_skills || []);
+  if (feat.effects?.skillsGranted) {
+    feat.effects.skillsGranted.forEach(s => newProfSkills.add(s));
+  }
+  if (choices?.skills) {
+    choices.skills.forEach(s => newProfSkills.add(s));
+  }
+
+  const newProfSaves = new Set(character.proficient_saves || []);
+  if (feat.effects?.savesGranted) {
+    feat.effects.savesGranted.forEach(s => newProfSaves.add(s));
+  }
+  if (choices?.saves) {
+    choices.saves.forEach(s => newProfSaves.add(s));
+  }
+
+  let newLanguages = character.profLanguages || "";
+  if (choices?.language) {
+    newLanguages = newLanguages ? `${newLanguages}, ${choices.language}` : choices.language;
+  }
+
+  // 5. Update usage tracker
+  const newUsage = { ...(character.featUsage || character.feat_usage || {}) };
+  if (feat.usage && feat.usage.type !== "passive") {
+    let maxUses = 1;
+    if (feat.usage.countFormula === "fixed") {
+      maxUses = feat.usage.fixedCount || 1;
+    } else if (feat.usage.countFormula === "pb") {
+      maxUses = calculateProficiencyBonus(character.level);
+    } else if (feat.usage.countFormula === "ability_mod") {
+      const score = extractAbilityScore(newAbilities[feat.usage.abilityKey || "intelligent"]);
+      maxUses = Math.max(1, calculateAbilityModifier(score));
+    } else if (feat.usage.countFormula === "level") {
+      maxUses = character.level;
+    }
+
+    newUsage[feat.id] = {
+      used: 0,
+      max: maxUses,
+      resetType: feat.usage.type,
+      label: feat.name
+    };
+  }
+
+  // 6. Recalculate Vitals if Built Different or Who's Gonna Carry the Boats
+  const newVitals = { ...character.vitals };
+  if (feat.id === "built_different") {
+    const hpDelta = 2 * character.level;
+    newVitals.physicalHpMax += hpDelta;
+    newVitals.physicalHpCurrent += hpDelta;
+  }
+  if (feat.id === "whos_gonna_carry_the_boats") {
+    const compDelta = 2 * character.level;
+    newVitals.composureMax += compDelta;
+    newVitals.composureCurrent += compDelta;
+  }
+
+  const descParts = [`Mengambil Feat: ${feat.name}`];
+  if (statGainDesc) descParts.push(statGainDesc);
+  if (choices?.skills && choices.skills.length > 0) descParts.push(`Proficiency: ${choices.skills.join(", ")}`);
+  if (choices?.saves && choices.saves.length > 0) descParts.push(`Save: ${choices.saves.join(", ")}`);
+
+  const changelogEntry: CharacterChangeLogEntry = {
+    timestamp,
+    action: "TAKE_FEAT",
+    description: descParts.join(", "),
+    previousValue: { featId: null, grantId },
+    newValue: { featId: feat.id, grantId, choices },
+    source: "user"
+  };
+
+  const updatedChangelog = [...(character.changelog || []), changelogEntry];
+
+  const updatedCharacter: Character = {
+    ...character,
+    abilities: newAbilities,
+    proficient_skills: Array.from(newProfSkills),
+    proficient_saves: Array.from(newProfSaves),
+    profLanguages: newLanguages,
+    feats: updatedFeats,
+    featGrants: updatedGrants,
+    feat_grants: updatedGrants,
+    featUsage: newUsage,
+    feat_usage: newUsage,
+    vitals: newVitals,
+    schemaVersion: 3,
+    version: (character.version || 1) + 1,
+    changelog: updatedChangelog,
+    updated_at: timestamp
+  };
+
+  return {
+    character: updatedCharacter,
+    changelogEntry
+  };
+}
+
+/**
+ * Retrains / replaces an already taken feat with another valid feat.
+ * Cleanly reverses old stat bonuses, skills, and usage trackers, then takes the new feat.
+ */
+export function retrainFeat(
+  character: Character,
+  grantId: string,
+  newFeatId: string,
+  newChoices?: CharacterFeatTaken["choices"],
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): { character: Character; changelogEntry: CharacterChangeLogEntry } {
+  const currentFeats = character.feats || [];
+  const takenIndex = currentFeats.findIndex(f => f.grantId === grantId);
+  if (takenIndex === -1) {
+    throw new Error(`Tidak ditemukan feat yang sudah diambil untuk slot '${grantId}'.`);
+  }
+
+  const oldTaken = currentFeats[takenIndex];
+  const oldFeat = compendiumFeats.find(f => f.id === oldTaken.featId);
+  if (!oldFeat) {
+    throw new Error(`Feat lama '${oldTaken.featId}' tidak ditemukan di compendium.`);
+  }
+
+  // 1. Revert old feat's stat bonus
+  const revertedAbilities: any = { ...character.abilities };
+  if (oldFeat.bonusAbility) {
+    const statKey = oldFeat.bonusAbility.ability;
+    const currentScore = extractAbilityScore(character.abilities?.[statKey]);
+    const revertedScore = Math.max(1, currentScore - oldFeat.bonusAbility.value);
+    if (typeof character.abilities?.[statKey] === "object" && character.abilities?.[statKey] !== null) {
+      revertedAbilities[statKey] = {
+        ...(character.abilities[statKey] as any),
+        score: revertedScore
+      };
+    } else {
+      revertedAbilities[statKey] = revertedScore;
+    }
+  }
+
+  // 2. Revert skills
+  const skillsToRemove = new Set<string>();
+  if (oldFeat.effects?.skillsGranted) oldFeat.effects.skillsGranted.forEach(s => skillsToRemove.add(s));
+  if (oldTaken.choices?.skills) oldTaken.choices.skills.forEach(s => skillsToRemove.add(s));
+  const revertedSkills = (character.proficient_skills || []).filter(s => !skillsToRemove.has(s));
+
+  // 3. Revert saves
+  const savesToRemove = new Set<string>();
+  if (oldFeat.effects?.savesGranted) oldFeat.effects.savesGranted.forEach(s => savesToRemove.add(s));
+  if (oldTaken.choices?.saves) oldTaken.choices.saves.forEach(s => savesToRemove.add(s));
+  const revertedSaves = (character.proficient_saves || []).filter(s => !savesToRemove.has(s));
+
+  // 4. Revert usage
+  const revertedUsage = { ...(character.featUsage || character.feat_usage || {}) };
+  delete revertedUsage[oldFeat.id];
+
+  // 5. Revert HP/Comp if Built Different / Who's Gonna Carry the Boats
+  const revertedVitals = { ...character.vitals };
+  if (oldFeat.id === "built_different") {
+    const hpDelta = 2 * character.level;
+    revertedVitals.physicalHpMax = Math.max(1, revertedVitals.physicalHpMax - hpDelta);
+    revertedVitals.physicalHpCurrent = Math.max(1, Math.min(revertedVitals.physicalHpMax, revertedVitals.physicalHpCurrent - hpDelta));
+  }
+  if (oldFeat.id === "whos_gonna_carry_the_boats") {
+    const compDelta = 2 * character.level;
+    revertedVitals.composureMax = Math.max(1, revertedVitals.composureMax - compDelta);
+    revertedVitals.composureCurrent = Math.max(1, Math.min(revertedVitals.composureMax, revertedVitals.composureCurrent - compDelta));
+  }
+
+  // 6. Reset grant to pending
+  const revertedGrants = (character.featGrants || character.feat_grants || []).map(g => {
+    if (g.id === grantId) {
+      return {
+        ...g,
+        featId: null,
+        status: "pending" as const,
+        takenAt: undefined
+      };
+    }
+    return { ...g };
+  });
+
+  const remainingFeats = currentFeats.filter((_, idx) => idx !== takenIndex);
+
+  const intermediateChar: Character = {
+    ...character,
+    abilities: revertedAbilities,
+    proficient_skills: revertedSkills,
+    proficient_saves: revertedSaves,
+    featUsage: revertedUsage,
+    feat_usage: revertedUsage,
+    vitals: revertedVitals,
+    featGrants: revertedGrants,
+    feat_grants: revertedGrants,
+    feats: remainingFeats
+  };
+
+  // Now take the new feat!
+  const result = takeFeat(intermediateChar, grantId, newFeatId, newChoices, compendiumFeats);
+
+  const newFeat = compendiumFeats.find(f => f.id === newFeatId);
+  const retrainLog: CharacterChangeLogEntry = {
+    timestamp: new Date().toISOString(),
+    action: "RETRAIN_FEAT",
+    description: `Mengganti Feat '${oldFeat.name}' dengan '${newFeat?.name || newFeatId}'`,
+    previousValue: { featId: oldFeat.id, choices: oldTaken.choices },
+    newValue: { featId: newFeatId, choices: newChoices },
+    source: "user"
+  };
+
+  const finalChangelog = [...(result.character.changelog || []).slice(0, -1), retrainLog];
+
+  return {
+    character: {
+      ...result.character,
+      changelog: finalChangelog
+    },
+    changelogEntry: retrainLog
+  };
+}
+
+/**
+ * Grants a new Feat slot to a character (e.g. from Grade level up, Achievement, or DM Award).
+ * If a specific featId is provided (such as 1-to-1 achievement reward), it takes the feat immediately.
+ */
+export function grantFeat(
+  character: Character,
+  source: "grade" | "achievement" | "dm",
+  details: {
+    grade?: number;
+    category?: FeatCategory | "any";
+    featId?: string;
+    sourceRef?: string;
+    notes?: string;
+    choices?: CharacterFeatTaken["choices"];
+  },
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): { character: Character; newGrant: FeatGrant; changelogEntry: CharacterChangeLogEntry } {
+  const timestamp = new Date().toISOString();
+  const grantId = `grant_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+
+  const newGrant: FeatGrant = {
+    id: grantId,
+    source,
+    sourceRef: details.sourceRef,
+    grade: details.grade,
+    category: details.category || (source === "achievement" ? "achievement" : "any"),
+    featId: details.featId || null,
+    status: "pending"
+  };
+
+  const updatedGrants = [...(character.featGrants || character.feat_grants || []), newGrant];
+  let updatedAchievements = character.achievements || [];
+  if (source === "achievement" && details.sourceRef) {
+    if (!updatedAchievements.some(a => a.achievementId === details.sourceRef)) {
+      updatedAchievements = [
+        ...updatedAchievements,
+        {
+          achievementId: details.sourceRef,
+          earnedAt: timestamp,
+          notes: details.notes
+        }
+      ];
+    }
+  }
+
+  const changelogEntry: CharacterChangeLogEntry = {
+    timestamp,
+    action: "GRANT_FEAT",
+    description: `Menerima Feat Grant baru: sumber ${source}${details.sourceRef ? ` (${details.sourceRef})` : ""}${details.featId ? `, feat: ${details.featId}` : ""}`,
+    previousValue: null,
+    newValue: newGrant,
+    source: source === "dm" ? "system" : "level_up"
+  };
+
+  let updatedChar: Character = {
+    ...character,
+    featGrants: updatedGrants,
+    feat_grants: updatedGrants,
+    achievements: updatedAchievements,
+    schemaVersion: 3,
+    version: (character.version || 1) + 1,
+    changelog: [...(character.changelog || []), changelogEntry],
+    updated_at: timestamp
+  };
+
+  if (details.featId) {
+    const takeRes = takeFeat(updatedChar, newGrant.id, details.featId, details.choices, compendiumFeats);
+    updatedChar = takeRes.character;
+  }
+
+  return {
+    character: updatedChar,
+    newGrant,
+    changelogEntry
+  };
+}
+
+/**
+ * Resets limited-use feat counters based on rest/event type (short_rest, long_rest, combat, session, weekly).
+ * Automatically recalculates maximum counts in case proficiency bonus or modifiers changed.
+ */
+export function resetFeatUsage(
+  character: Character,
+  resetType: "short_rest" | "long_rest" | "combat" | "session" | "weekly",
+  compendiumFeats: FeatDefinition[] = ALL_FEATS
+): Character {
+  const usage = { ...(character.featUsage || character.feat_usage || {}) };
+  const featMap = new Map<string, FeatDefinition>(compendiumFeats.map(f => [f.id, f]));
+  const effective = calculateEffectiveStats(character, compendiumFeats);
+
+  let hasChanged = false;
+
+  for (const [featId, item] of Object.entries(usage)) {
+    const feat = featMap.get(featId);
+    const shouldReset =
+      item.resetType === resetType ||
+      (resetType === "long_rest" && item.resetType === "short_rest");
+
+    let newMax = item.max;
+    if (feat?.usage) {
+      if (feat.usage.countFormula === "pb") {
+        newMax = effective.proficiencyBonus;
+      } else if (feat.usage.countFormula === "ability_mod") {
+        const mod = effective.modifiers[feat.usage.abilityKey || "intelligent"] || 0;
+        newMax = Math.max(1, mod);
+      } else if (feat.usage.countFormula === "level") {
+        newMax = character.level;
+      } else if (feat.usage.countFormula === "fixed") {
+        newMax = feat.usage.fixedCount || 1;
+      }
+    }
+
+    if (shouldReset && item.used !== 0) {
+      usage[featId] = { ...item, used: 0, max: newMax };
+      hasChanged = true;
+    } else if (newMax !== item.max) {
+      usage[featId] = { ...item, max: newMax };
+      hasChanged = true;
+    }
+  }
+
+  if (!hasChanged) return character;
+
+  return {
+    ...character,
+    featUsage: usage,
+    feat_usage: usage
+  };
+}
+
+/**
+ * Records an active use of a limited-use Feat (e.g. Plot Armor reroll, Toughen Up heal).
+ * Throws an error if the usage limit is already reached.
+ */
+export function useFeatAction(
+  character: Character,
+  featId: string
+): { character: Character; used: number; max: number; remaining: number } {
+  const usage = { ...(character.featUsage || character.feat_usage || {}) };
+  const item = usage[featId];
+  if (!item) {
+    throw new Error(`Feat '${featId}' tidak memiliki tracker pemakaian terbatas.`);
+  }
+
+  if (item.used >= item.max) {
+    throw new Error(`Pemakaian Feat '${item.label || featId}' sudah mencapai batas (${item.used}/${item.max}).`);
+  }
+
+  const newUsed = item.used + 1;
+  usage[featId] = {
+    ...item,
+    used: newUsed
+  };
+
+  const updatedChar: Character = {
+    ...character,
+    featUsage: usage,
+    feat_usage: usage,
+    version: (character.version || 1) + 1,
+    updated_at: new Date().toISOString()
+  };
+
+  return {
+    character: updatedChar,
+    used: newUsed,
+    max: item.max,
+    remaining: Math.max(0, item.max - newUsed)
+  };
+}
+

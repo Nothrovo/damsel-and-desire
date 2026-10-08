@@ -1,20 +1,28 @@
 import { supabase } from "./supabase";
 import { characterStore } from "../store/characterStore";
 import type { RollLogEntry } from "../types";
+import { resetFeatUsage, calculateEffectiveStats } from "../rules/progression";
 
 export async function shortRestRpc(characterId: string, currentVersion: number) {
+  let char = characterStore.currentCharacter;
   try {
     const { data, error } = await supabase.rpc("short_rest", {
       p_character_id: characterId,
       p_client_version: currentVersion
     });
-    if (!error && data) return data;
+    if (!error && data) {
+      if (char) {
+        char = resetFeatUsage(char, "short_rest");
+        char.vitals = data.vitals || char.vitals;
+        characterStore.setCurrentCharacter(char);
+      }
+      return { ...data, featUsage: char?.featUsage };
+    }
   } catch (e) {
     console.warn("RPC short_rest gagal di cloud, fallback lokal:", e);
   }
 
   // Local fallback
-  const char = characterStore.currentCharacter;
   if (!char) throw new Error("Karakter tidak ditemukan.");
 
   const dieFaces = char.ekskul_id === "kendo" || char.ekskul_id === "martial_arts" ? 10 : 8;
@@ -30,6 +38,9 @@ export async function shortRestRpc(characterId: string, currentVersion: number) 
   char.vitals.composureCurrent = newComp;
   char.vitals.restDiceSpent = spent;
 
+  char = resetFeatUsage(char, "short_rest");
+  characterStore.setCurrentCharacter(char);
+
   return {
     characterId,
     dieRolled: `d${dieFaces}`,
@@ -37,37 +48,77 @@ export async function shortRestRpc(characterId: string, currentVersion: number) 
     modPhysique: modPhy,
     healTotal: heal,
     vitals: char.vitals,
+    featUsage: char.featUsage,
     newVersion: currentVersion + 1
   };
 }
 
 export async function longRestRpc(characterId: string, currentVersion: number) {
+  let char = characterStore.currentCharacter;
   try {
     const { data, error } = await supabase.rpc("long_rest", {
       p_character_id: characterId,
       p_client_version: currentVersion
     });
-    if (!error && data) return data;
+    if (!error && data) {
+      if (char) {
+        char = resetFeatUsage(char, "long_rest");
+        const effective = calculateEffectiveStats(char);
+        const hasGymBro = (char.feats || []).some(f => f.featId === "gym_bro");
+        if (hasGymBro) {
+          const currentTemp = char.vitals.physicalHpTemp || 0;
+          char.vitals.physicalHpTemp = Math.max(currentTemp, effective.proficiencyBonus);
+        }
+        const hasEarlyBird = (char.feats || []).some(f => f.featId === "early_bird");
+        if (hasEarlyBird) {
+          const currentTempComp = char.vitals.composureTemp || 0;
+          char.vitals.composureTemp = Math.max(currentTempComp, effective.proficiencyBonus);
+        }
+        char.vitals = data.vitals || char.vitals;
+        char.finances = data.finances || char.finances;
+        characterStore.setCurrentCharacter(char);
+      }
+      return { ...data, featUsage: char?.featUsage };
+    }
   } catch (e) {
     console.warn("RPC long_rest gagal di cloud, fallback lokal:", e);
   }
 
   // Local fallback
-  const char = characterStore.currentCharacter;
   if (!char) throw new Error("Karakter tidak ditemukan.");
 
   char.vitals.physicalHpCurrent = char.vitals.physicalHpMax;
   char.vitals.composureCurrent = char.vitals.composureMax;
   char.vitals.restDiceSpent = 0;
 
-  const daily = char.finances.dailyMoneyAmount || 0;
+  char = resetFeatUsage(char, "long_rest");
+
+  const effective = calculateEffectiveStats(char);
+  const hasGymBro = (char.feats || []).some(f => f.featId === "gym_bro");
+  if (hasGymBro) {
+    const currentTemp = char.vitals.physicalHpTemp || 0;
+    char.vitals.physicalHpTemp = Math.max(currentTemp, effective.proficiencyBonus);
+  }
+  const hasEarlyBird = (char.feats || []).some(f => f.featId === "early_bird");
+  if (hasEarlyBird) {
+    const currentTempComp = char.vitals.composureTemp || 0;
+    char.vitals.composureTemp = Math.max(currentTempComp, effective.proficiencyBonus);
+  }
+
+  // Hustler feat: +50% uang saku harian
+  const hasHustler = (char.feats || []).some(f => f.featId === "hustler");
+  const baseDaily = char.finances.dailyMoneyAmount || 0;
+  const daily = hasHustler ? Math.floor(baseDaily * 1.5) : baseDaily;
   const wage = char.finances.jobWageAmount || 0;
   char.finances.savingsAmount += daily + wage;
+
+  characterStore.setCurrentCharacter(char);
 
   return {
     characterId,
     vitals: char.vitals,
     finances: char.finances,
+    featUsage: char.featUsage,
     depositDaily: daily,
     depositWage: wage,
     totalAdded: daily + wage,
