@@ -7,7 +7,7 @@ export const CHAPTER_3_ARCHETYPES: HandbookChapter = {
   title: "Arketipe Murid (Archetypes)",
   subtitle: "Kepribadian Sekolah, Bonus Atribut, Keistimewaan & Jurus Personal",
   summary: "Memilih identitas sosial dan persona karaktermu di sekolah: dari Berandalan dengan tatapan maut hingga Idola Sekolah yang membius kalbu.",
-  leadParagraph: "Di lorong SMA Seishun Academy, setiap murid membawa cap sosial dan stereotip unik yang mendefinisifikasikan cara mereka berinteraksi dengan lingkungan. Arketipe bukan sekadar label, melainkan cetak biru psikologis yang menentukan bonus atribut, keistimewaan pasif (perks), dan tiga jurus khas (archetype moves) yang dapat digunakan dalam konflik fisik maupun drama percintaan.",
+  leadParagraph: "Di lorong SMA Housen Academy, setiap murid membawa cap sosial dan stereotip unik yang mendefinisifikasikan cara mereka berinteraksi dengan lingkungan. Arketipe bukan sekadar label, melainkan cetak biru psikologis yang menentukan bonus atribut, keistimewaan pasif (perks), dan tiga jurus khas (archetype moves) yang dapat digunakan dalam konflik fisik maupun drama percintaan.",
   sections: [
     {
       id: "archetype-overview",

@@ -3,11 +3,11 @@ import { HandbookChapter } from "./types";
 export const ch0_cover_intro: HandbookChapter = {
   id: "chapter-0-intro",
   number: 0,
-  japaneseTitle: "序章 : 青春学園へようこそ",
-  title: "Pendahuluan: Selamat Datang di SMA Seishun",
+  japaneseTitle: "序章 : 鳳泉学園へようこそ",
+  title: "Pendahuluan: Selamat Datang di SMA Housen",
   subtitle: "Filosofi Permainan, Tiga Pilar Kehidupan Sekolah, dan Aturan Inti d20",
   summary: "Pengantar dasar semesta Damsel & Desire, peran Dungeon Master dan Murid, serta mekanik lemparan dadu d20.",
-  leadParagraph: "Di bawah guyuran kelopak bunga sakura yang berguguran di gerbang sekolah, kisah masa mudamu baru saja dimulai. Selamat datang di SMA Seishun, panggung drama kasmaran, persaingan sengit antarklub ekskul, dan persahabatan tak tergantikan.",
+  leadParagraph: "Di bawah guyuran kelopak bunga sakura yang berguguran di gerbang sekolah, kisah masa mudamu baru saja dimulai. Selamat datang di SMA Housen, panggung drama kasmaran, persaingan sengit antarklub ekskul, dan persahabatan tak tergantikan.",
   sections: [
     {
       id: "ch0-sec1",

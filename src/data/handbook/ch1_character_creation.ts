@@ -5,7 +5,7 @@ export const ch1_character_creation: HandbookChapter = {
   number: 1,
   japaneseTitle: "第１章 : キャラクター作成",
   title: "Bab 1: Pembuatan Karakter Murid",
-  subtitle: "Enam Langkah Membentuk Murid SMA Impianmu di Seishun High",
+  subtitle: "Enam Langkah Membentuk Murid SMA Impianmu di Housen High",
   summary: "Panduan sistematis pembuatan lembar karakter mulai dari konsep, archetype, klub ekskul, kelas sosial, skor atribut, hingga perhitungan vitalitas.",
   leadParagraph: "Menciptakan murid SMA di Damsel & Desire adalah proses menuangkan imajinasi dan jiwa ke dalam lembaran biodata sekolah. Apakah karaktermu berandalan berjaket sobek yang diam-diam suka memelihara kucing liar, atau atlet basket karismatik yang gugup setengah mati saat diajak mengobrol berdua?",
   sections: [
@@ -13,7 +13,7 @@ export const ch1_character_creation: HandbookChapter = {
       id: "ch1-sec1",
       title: "Enam Langkah Pembuatan Karakter",
       contentHtml: `
-        <p><span class="phb-drop-cap">U</span>ntuk memulai petualanganmu di SMA Seishun, ikuti 6 tahapan terstruktur berikut ini:</p>
+        <p><span class="phb-drop-cap">U</span>ntuk memulai petualanganmu di SMA Housen, ikuti 6 tahapan terstruktur berikut ini:</p>
         <ol>
           <li><strong>Tentukan Konsep &amp; Identitas Karakter:</strong> Pilih nama lengkap, nama panggilan, gender, dan penampilan khas (gaya seragam, potongan rambut, atau aksesori unik).</li>
           <li><strong>Pilih Archetype Karakter (Ras / Trope):</strong> Pilih salah satu dari 8 arketipe anime (seperti Delinquent, Jock, Nerd, Class Clown, Emo, Weeb, Popular Kids, atau Normies). Archetype memberikan bonus skor atribut, passive traits, dan 3 jurus khas (Archetype Moves).</li>

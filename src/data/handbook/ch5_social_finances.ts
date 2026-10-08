@@ -7,7 +7,7 @@ export const CHAPTER_5_SOCIAL_FINANCES: HandbookChapter = {
   title: "Status Sosial & Ekonomi Siswa",
   subtitle: "6 Tingkat Kelas Sosial, Uang Saku Harian, Tabungan Celengan & Kerja Paruh Waktu (Baito)",
   summary: "Memahami latar belakang finansial keluarga karaktermu, kemampuan belanja, perlengkapan awal, serta sistem konversi mata uang Yen dan Rupiah.",
-  leadParagraph: "Di Seishun Academy, status ekonomi keluarga bukan hanya angka di rekening bank, melainkan cerminan gaya hidup dan dinamika sosial harian. Murid konglomerat datang diantar mobil limusin dengan dompet tebal, sementara anak panti asuhan menghitung koin receh untuk membeli onigiri makan siang. Sistem ekonomi di Damsel & Desire dirancang sederhana namun berdampak nyata terhadap roleplay dan daya tahan karakter.",
+  leadParagraph: "Di Housen Academy, status ekonomi keluarga bukan hanya angka di rekening bank, melainkan cerminan gaya hidup dan dinamika sosial harian. Murid konglomerat datang diantar mobil limusin dengan dompet tebal, sementara anak panti asuhan menghitung koin receh untuk membeli onigiri makan siang. Sistem ekonomi di Damsel & Desire dirancang sederhana namun berdampak nyata terhadap roleplay dan daya tahan karakter.",
   sections: [
     {
       id: "currency-exchange",
@@ -40,7 +40,7 @@ export const CHAPTER_5_SOCIAL_FINANCES: HandbookChapter = {
       contentHtml: `<p>Saat pembuatan karakter, pemain memilih salah satu kelas sosial berikut:</p>`,
       tables: [
         {
-          caption: "Perbandingan Finansial 6 Kelas Sosial Seishun Academy",
+          caption: "Perbandingan Finansial 6 Kelas Sosial Housen Academy",
           headers: ["Kelas Sosial", "Uang Saku / Hari", "Tabungan Awal", "Pekerjaan Sampingan (Baito)", "Fasilitas Utama"],
           rows: [
             ["Rich (Konglomerat)", "¥5.000 (Rp 500.000)", "¥200.000 (Rp 20.000.000)", "Dilarang keluarga (¥0)", "Mobil jemputan, kartu kredit, koneksi yayasan"],
@@ -66,7 +66,7 @@ export const CHAPTER_5_SOCIAL_FINANCES: HandbookChapter = {
       <p><strong>Paket Barang Bawaan:</strong> Smartphone Bagus, Sepatu Branded, Earphone Wireless Premium, Tumbler Keren.</p>
 
       <h3>3. Medium (Keluarga Pegawai Biasa)</h3>
-      <p>Mayoritas siswa Seishun Academy. Hidup hangat dalam rumah keluarga bahagia, membawa bekal bento buatan ibu dengan potongan telur gulung manis.</p>
+      <p>Mayoritas siswa Housen Academy. Hidup hangat dalam rumah keluarga bahagia, membawa bekal bento buatan ibu dengan potongan telur gulung manis.</p>
       <p><strong>Paket Barang Bawaan:</strong> Smartphone Standar, Kotak Bento Susun, Payung Lipat Polos, Kartu Kereta Komuter.</p>
 
       <h3>4. Medium Poor (Keluarga Berhemat Ketat)</h3>

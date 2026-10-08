@@ -7,7 +7,7 @@ export const CHAPTER_9_REST_SCHOOL_LIFE: HandbookChapter = {
   title: "Istirahat & Ritme Kehidupan Sekolah",
   subtitle: "Short Rest Jam Istirahat, Long Rest Tidur Malam, Deposit Bank Otomatis & Kalender Semester",
   summary: "Menjaga stamina di antara jam pelajaran, memulihkan Composure dengan makan siang di atap, serta membagi waktu antara ujian dan festival sekolah.",
-  leadParagraph: "Kehidupan di SMA bukan sekadar tentang konflik tanpa henti; ritme keseharian yang santai di sela-sela jam pelajaran adalah tempat di mana persahabatan mekar dan karakter memulihkan energi fisik serta mental. Mengetahui kapan harus mengambil napas dan bagaimana mengelola waktu istirahat adalah kunci bertahan hidup di Seishun Academy.",
+  leadParagraph: "Kehidupan di SMA bukan sekadar tentang konflik tanpa henti; ritme keseharian yang santai di sela-sela jam pelajaran adalah tempat di mana persahabatan mekar dan karakter memulihkan energi fisik serta mental. Mengetahui kapan harus mengambil napas dan bagaimana mengelola waktu istirahat adalah kunci bertahan hidup di Housen Academy.",
   sections: [
     {
       id: "rest-mechanics",
@@ -33,7 +33,7 @@ export const CHAPTER_9_REST_SCHOOL_LIFE: HandbookChapter = {
         {
           type: "rule",
           title: "Sisa Uang Saku & Deposit Bank Otomatis",
-          content: "Saat seorang karakter mengambil <strong>Long Rest</strong> untuk menyambut hari baru, sisa uang saku di dompet yang tidak terpakai kemarin tidak akan hilang sia-sia! Secara otomatis, sistem perbankan Seishun Academy mentransfer sisa uang saku tersebut ke <strong>Tabungan Bank (Savings)</strong> karakter, lalu dompet diisi kembali dengan uang saku harian baru."
+          content: "Saat seorang karakter mengambil <strong>Long Rest</strong> untuk menyambut hari baru, sisa uang saku di dompet yang tidak terpakai kemarin tidak akan hilang sia-sia! Secara otomatis, sistem perbankan Housen Academy mentransfer sisa uang saku tersebut ke <strong>Tabungan Bank (Savings)</strong> karakter, lalu dompet diisi kembali dengan uang saku harian baru."
         }
       ]
     },

@@ -1302,7 +1302,7 @@ export const FALLBACK_DD_DATA = {
                 "id": "archivist",
                 "name": "Penjaga Arsip Sejarah Sekolah",
                 "tagline": "Penjaga dokumen terlarang dan rahasia kuno di balik dinding sekolah.",
-                "identityDesc": "Lore master & researcher; mengingat sejarah sekolah tanpa cela dan membuka arsip lama yang menyingkap misteri besar Seishun Academy.",
+                "identityDesc": "Lore master & researcher; mengingat sejarah sekolah tanpa cela dan membuka arsip lama yang menyingkap misteri besar Housen Academy.",
                 "desc": "Ahli sejarah dan dokumen. Advantage pada semua check Intelligent terkait sejarah, peraturan, atau informasi tertulis.",
                 "subclassMoves": [
                     {

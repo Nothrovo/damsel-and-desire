@@ -63,7 +63,7 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         floorId: "f3",
         rect: { x: 281, y: 8, width: 137, height: 97 },
         labelOrientation: "horizontal",
-        description: "Pusat informasi dan media sekolah Seishun Academy. Terhubung ke jaringan penyiaran & buletin berita.",
+        description: "Pusat informasi dan media sekolah Housen Academy. Terhubung ke jaringan penyiaran & buletin berita.",
         ekskulId: "penyiaran"
       },
       {
@@ -478,7 +478,7 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         floorId: "f1",
         rect: { x: 8, y: 281, width: 98, height: 136 },
         labelOrientation: "vertical",
-        description: "Ruang dewan guru Seishun Academy. Deretan meja kerja penuh lembar soal ujian dan cangkir kopi."
+        description: "Ruang dewan guru Housen Academy. Deretan meja kerja penuh lembar soal ujian dan cangkir kopi."
       },
       {
         id: "f1_infirmary",
@@ -780,7 +780,7 @@ export const MAP_FLOORS: Record<FloorId, Floor> = {
         floorId: "campus",
         rect: { x: 196, y: 477, width: 290, height: 328 },
         labelOrientation: "horizontal",
-        description: "Gedung utama 3 lantai Seishun Academy. Klik untuk masuk dan melihat denah lantai secara mendalam."
+        description: "Gedung utama 3 lantai Housen Academy. Klik untuk masuk dan melihat denah lantai secara mendalam."
       }
     ],
     decorativeElements: [

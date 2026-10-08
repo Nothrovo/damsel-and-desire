@@ -69,7 +69,7 @@ export const CHAPTER_6_EQUIPMENT_INVENTORY: HandbookChapter = {
       `,
       tables: [
         {
-          caption: "Contoh Seleksi Item Populer Seishun Academy",
+          caption: "Contoh Seleksi Item Populer Housen Academy",
           headers: ["Nama Item", "Kategori", "Rarity", "Efek Mekanik Singkat", "Tipe Aksi"],
           rows: [
             ["Bento Buatan Sendiri", "Romance / Food", "Uncommon", "Pulihkan 1d8 HP + 1d6 Composure berdua", "Istirahat / Aksi"],

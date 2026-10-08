@@ -23,7 +23,7 @@ export const CHAPTER_4_EKSKUL: HandbookChapter = {
       </ul>`,
       tables: [
         {
-          caption: "Ringkasan 16 Klub Ekstrakurikuler Seishun Academy",
+          caption: "Ringkasan 16 Klub Ekstrakurikuler Housen Academy",
           headers: ["Klub (Club)", "Hit Die", "Atribut Primer", "Saving Throws", "Fokus Utama"],
           rows: [
             ["OSIS (Student Council)", "d8", "Looks / Intelligent", "INT, LOK", "Otoritas, kepemimpinan & izin sekolah"],

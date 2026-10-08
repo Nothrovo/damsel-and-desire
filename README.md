@@ -26,7 +26,7 @@ Kompilasi ensiklopedia TRPG interaktif:
 - **Custom Item Builder**: Fitur tambah barang kustom ke dalam tas karakter (*inventory*).
 
 ### 4. 🗺️ Interactive School Map (Peta Denah Sekolah 2D & 3D)
-Peta interaktif gedung dan kampus Seishun Academy di rute `/map`:
+Peta interaktif gedung dan kampus Housen Academy di rute `/map`:
 - **5 Tingkat Denah**: Campus, 1F, 2F, 3F, dan Rooftop dengan 67 ruangan lengkap.
 - **Navigasi Cepat**: Pan, zoom, Level-of-Detail (LOD), pencarian autocomplete cepat (`/`), dan drawer detail ruangan yang terintegrasi dengan Compendium.
 

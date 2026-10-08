@@ -748,7 +748,7 @@ ON CONFLICT (id) DO UPDATE SET
   identity_desc = EXCLUDED.identity_desc,
   description = EXCLUDED.description;
 INSERT INTO public.ekskul_subclasses (id, ekskul_id, name, tagline, identity_desc, description)
-VALUES ('archivist', 'literatur', 'Penjaga Arsip Sejarah Sekolah', 'Penjaga dokumen terlarang dan rahasia kuno di balik dinding sekolah.', 'Lore master & researcher; mengingat sejarah sekolah tanpa cela dan membuka arsip lama yang menyingkap misteri besar Seishun Academy.', 'Ahli sejarah dan dokumen. Advantage pada semua check Intelligent terkait sejarah, peraturan, atau informasi tertulis.')
+VALUES ('archivist', 'literatur', 'Penjaga Arsip Sejarah Sekolah', 'Penjaga dokumen terlarang dan rahasia kuno di balik dinding sekolah.', 'Lore master & researcher; mengingat sejarah sekolah tanpa cela dan membuka arsip lama yang menyingkap misteri besar Housen Academy.', 'Ahli sejarah dan dokumen. Advantage pada semua check Intelligent terkait sejarah, peraturan, atau informasi tertulis.')
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   tagline = EXCLUDED.tagline,
