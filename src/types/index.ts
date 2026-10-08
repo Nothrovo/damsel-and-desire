@@ -105,9 +105,21 @@ export interface Character {
   profLanguages?: string;
   targets?: TargetSecret[];
   version: number;
+  grade?: number; // 10 | 11 | 12
+  schemaVersion?: number; // schema version (e.g. 2)
+  changelog?: CharacterChangeLogEntry[];
   created_at: string;
   updated_at: string;
   owner_profile?: Profile;
+}
+
+export interface CharacterChangeLogEntry {
+  timestamp: string;
+  action: string;
+  description: string;
+  previousValue?: any;
+  newValue?: any;
+  source: "user" | "level_up" | "migration" | "system";
 }
 
 export interface TargetSecret {
@@ -179,13 +191,32 @@ export interface ClubMoveCompendium {
   check_type: string;
   effect: string;
   description: string;
+  order?: number;
+  unlock_grade?: number;
+}
+
+export interface SubclassMoveCompendium {
+  id: string;
+  subclass_id: string;
+  name: string;
+  tier: "G11" | "G12";
+  unlock_grade: number; // 11 or 12
+  move_type: string;
+  cost: string;
+  range?: string;
+  check_type?: string;
+  effect: string;
+  description: string;
 }
 
 export interface SubclassCompendium {
   id: string;
   ekskul_id: string;
   name: string;
+  tagline?: string;
+  identity_desc?: string;
   description: string;
+  subclass_moves?: SubclassMoveCompendium[];
 }
 
 export interface EkskulCompendium {

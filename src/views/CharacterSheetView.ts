@@ -32,6 +32,15 @@ import { backstoryModal } from "../components/BackstoryModal";
 import { diceRollerModal } from "../components/DiceRollerModal";
 import { itemDetailModal } from "../components/ItemDetailModal";
 import { addItemModal } from "../components/AddItemModal";
+import { levelUpWizardModal } from "../components/LevelUpWizardModal";
+import { subclassSelectModal } from "../components/SubclassSelectModal";
+import { editCharacterModal } from "../components/EditCharacterModal";
+import {
+  getLevelLabel,
+  getGradeForLevel,
+  getPendingChoices,
+  getAllMovesSummary
+} from "../rules/progression";
 import { renderSheetSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
 import type {
@@ -50,12 +59,15 @@ const DM_PIN = "6969";
 
 interface MoveItem {
   name: string;
-  category: "basic_combat" | "basic_social" | "club_move" | "archetype_move";
+  category: "basic_combat" | "basic_social" | "club_move" | "subclass_move" | "archetype_move";
   type: string;
   range: string;
   check: string;
   damage: string;
   desc: string;
+  isLocked?: boolean;
+  lockReason?: string;
+  unlockGrade?: number;
 }
 
 // Module-level state for the active sheet session
@@ -177,6 +189,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
   // Metadata Lookups
   const curArchetype = compArchetypes.find(a => a.id === char.archetype_id);
   const curEkskul = compEkskul.find(e => e.id === char.ekskul_id);
+  const curSubclass = curEkskul?.subclasses?.find(sc => sc.id === char.subclass_id);
   const curSocial = compSocial.find(s => s.id === char.social_class_id);
 
   const archetypeName = curArchetype ? curArchetype.name : char.archetype_id.toUpperCase();
@@ -222,8 +235,12 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
             <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd"/></svg>
             Menu Utama
           </a>
-          <a href="/characters/new" class="btn btn-secondary btn-sm" id="btnEditBuilder">
+          <button class="btn btn-secondary btn-sm" id="btnEditCharacter">
             <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/></svg>
+            Edit Karakter
+          </button>
+          <a href="/characters/new" class="btn btn-secondary btn-sm" id="btnEditBuilder">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
             Builder Baru
           </a>
           <span style="display:inline-flex;align-items:center;margin-left:8px;font-size:0.8rem;color:var(--text-muted);">
@@ -247,6 +264,20 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
         </div>
       </div>
 
+      <!-- PENDING SUBCLASS CHOICE BANNER (IF GRADE >= 11 AND NO SUBCLASS) -->
+      ${getPendingChoices(char, compEkskul).length > 0 ? `
+        <div class="pending-subclass-alert" style="background:linear-gradient(90deg, rgba(245,158,11,0.2), rgba(239,68,68,0.15));border:1px solid #f59e0b;padding:0.75rem 1.25rem;border-radius:var(--radius-md);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1.4rem;">⚠️</span>
+            <div>
+              <strong style="color:#fbbf24;">Peringatan Peminatan (Kelas 11):</strong>
+              <span style="color:var(--text-primary);font-size:0.9rem;margin-left:0.25rem;">Karaktermu berada di Kelas 11 tetapi belum menentukan spesialisasi Subclass!</span>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-accent" id="btnPendingSubclassAction">Pilih Subclass Sekarang →</button>
+        </div>
+      ` : ''}
+
       <!-- SHEET HEADER BANNER -->
       <div class="sheet-banner">
         <div class="banner-char-identity">
@@ -258,13 +289,22 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
             <div class="char-meta-tags">
               <span id="sheetArchetypeBadge" class="meta-tag tag-species">${escapeHtml(archetypeName)}</span>
               <span id="sheetEkskulBadge" class="meta-tag tag-class">${escapeHtml(ekskulName)}</span>
+              ${curSubclass ? `
+                <span id="sheetSubclassBadge" class="meta-tag tag-subclass" style="background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.3);">
+                  ${escapeHtml(curSubclass.name)}
+                </span>
+              ` : ''}
               <span id="sheetSocialBadge" class="meta-tag tag-bg">${escapeHtml(socialName)}</span>
-              <span id="sheetGradeBadge" class="meta-tag tag-level">Kelas ${10 + (char.level - 1)} (Lvl ${char.level})</span>
+              <span id="sheetGradeBadge" class="meta-tag tag-level">${getLevelLabel(char.level)}</span>
             </div>
           </div>
         </div>
 
         <div class="banner-rest-controls">
+          <button class="btn-rest btn-level-up ${char.level >= 6 ? 'disabled' : ''}" id="btnLevelUp" title="${char.level >= 6 ? 'Level maksimal tercapai (Kelas 12 Sem 2)' : 'Naik Kelas / Level Up'}" ${char.level >= 6 ? 'disabled' : ''} style="background:linear-gradient(135deg, #e11d48, #9333ea);color:white;border-color:#e11d48;font-weight:700;">
+            <svg viewBox="0 0 20 20" fill="currentColor" class="rest-icon" style="color:#fde047;"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/></svg>
+            Naik Kelas
+          </button>
           <button class="btn-rest btn-short-rest" id="btnShortRest" title="Pulihkan Composure & HP menggunakan Rest Dice">
             <svg viewBox="0 0 20 20" fill="currentColor" class="rest-icon"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
             Short Rest
@@ -545,6 +585,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                 <button class="filter-pill ${activeMoveFilter === 'basic_combat' ? 'active' : ''}" data-filter="basic_combat">BASIC COMBAT</button>
                 <button class="filter-pill ${activeMoveFilter === 'basic_social' ? 'active' : ''}" data-filter="basic_social">BASIC SOCIAL</button>
                 <button class="filter-pill ${activeMoveFilter === 'club_move' ? 'active' : ''}" data-filter="club_move">CLUB MOVES</button>
+                <button class="filter-pill ${activeMoveFilter === 'subclass_move' ? 'active' : ''}" data-filter="subclass_move">SUBCLASS MOVES</button>
                 <button class="filter-pill ${activeMoveFilter === 'archetype_move' ? 'active' : ''}" data-filter="archetype_move">ARCHETYPE MOVES</button>
               </div>
               <div class="moves-list" id="sheetMovesList">
@@ -699,6 +740,11 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
 
       </div>
 
+      <!-- MODALS -->
+      ${subclassSelectModal.render()}
+      ${levelUpWizardModal.render()}
+      ${editCharacterModal.render()}
+
     </div>
   `;
 }
@@ -730,9 +776,11 @@ function renderSkillsRows(char: Character, mods: Record<string, number>, profBon
 function renderMovesList(char: Character, filter: string): string {
   const charEkskulId = (char.ekskul_id || (char as any).ekskulId || "").toLowerCase();
   const charArchetypeId = (char.archetype_id || (char as any).archetypeId || "").toLowerCase();
+  const charGrade = char.grade ?? getGradeForLevel(char.level);
 
   const curEkskul = compEkskul.find(e => e.id.toLowerCase() === charEkskulId || e.name.toLowerCase().includes(charEkskulId));
   const curArchetype = compArchetypes.find(a => a.id.toLowerCase() === charArchetypeId || a.name.toLowerCase().includes(charArchetypeId));
+  const curSubclass = curEkskul?.subclasses?.find(sc => sc.id === char.subclass_id);
 
   let moves: MoveItem[] = [];
 
@@ -748,22 +796,6 @@ function renderMovesList(char: Character, filter: string): string {
       desc: b.description || (b as any).desc || ""
     });
   });
-
-  // Club Moves
-  const clubMoves = (curEkskul?.club_moves || (curEkskul as any)?.clubMoves || []);
-  if (curEkskul && clubMoves.length > 0) {
-    clubMoves.forEach((m: any) => {
-      moves.push({
-        name: m.name,
-        category: "club_move",
-        type: `${m.move_type || m.type || 'Action'} [${curEkskul.name.split('(')[0].trim()}]`,
-        range: m.range || "Self / 15 ft",
-        check: m.check_type || m.check || "Otomatis",
-        damage: m.effect || m.damage || "-",
-        desc: m.description || m.desc || ""
-      });
-    });
-  }
 
   // Archetype Moves
   const arcMoves = (curArchetype?.archetype_moves || (curArchetype as any)?.archetypeMoves || []);
@@ -781,6 +813,67 @@ function renderMovesList(char: Character, filter: string): string {
     });
   }
 
+  // Club Moves (with Grade unlocks)
+  const clubMoves = (curEkskul?.club_moves || (curEkskul as any)?.clubMoves || []);
+  if (curEkskul && clubMoves.length > 0) {
+    clubMoves.forEach((m: any, idx: number) => {
+      const unlockGrade = m.unlock_grade || (m.order === 1 ? 10 : m.order === 2 ? 11 : 12);
+      const isLocked = charGrade < unlockGrade;
+      moves.push({
+        name: m.name,
+        category: "club_move",
+        type: `${m.move_type || m.type || 'Action'} [${curEkskul.name.split('(')[0].trim()}]`,
+        range: m.range || "Self / 15 ft",
+        check: m.check_type || m.check || "Otomatis",
+        damage: m.effect || m.damage || "-",
+        desc: m.description || m.desc || "",
+        isLocked,
+        lockReason: isLocked ? `Terkunci (Terbuka di Kelas ${unlockGrade})` : undefined,
+        unlockGrade
+      });
+    });
+  }
+
+  // Subclass Moves (G11, G12)
+  if (curEkskul) {
+    if (curSubclass && curSubclass.subclass_moves) {
+      curSubclass.subclass_moves.forEach(sm => {
+        const unlockGrade = sm.unlock_grade || (sm.tier === "G12" ? 12 : 11);
+        const isLocked = charGrade < unlockGrade;
+        moves.push({
+          name: sm.name,
+          category: "subclass_move",
+          type: `${sm.move_type || 'Subclass'} [${curSubclass.name}]`,
+          range: sm.range || "Self / 30 ft",
+          check: sm.check_type || "Otomatis",
+          damage: sm.effect || "-",
+          desc: sm.description || "",
+          isLocked,
+          lockReason: isLocked ? `Terkunci (Terbuka di Kelas ${unlockGrade})` : undefined,
+          unlockGrade
+        });
+      });
+    } else if (!char.subclass_id && curEkskul.subclasses) {
+      // Subclass not selected yet; preview candidate moves with lock badge
+      curEkskul.subclasses.forEach(sc => {
+        (sc.subclass_moves || []).forEach(sm => {
+          moves.push({
+            name: sm.name,
+            category: "subclass_move",
+            type: `${sm.move_type || 'Subclass'} [${sc.name}]`,
+            range: sm.range || "Self / 30 ft",
+            check: sm.check_type || "Otomatis",
+            damage: sm.effect || "-",
+            desc: sm.description || "",
+            isLocked: true,
+            lockReason: `Peminatan ${sc.name} Belum Dipilih`,
+            unlockGrade: sm.unlock_grade || (sm.tier === "G12" ? 12 : 11)
+          });
+        });
+      });
+    }
+  }
+
   if (filter !== "all") {
     moves = moves.filter(m => m.category === filter);
   }
@@ -790,19 +883,31 @@ function renderMovesList(char: Character, filter: string): string {
   }
 
   return moves.map(m => {
-    const categoryColor = m.category === "club_move" ? "#fda4af" : m.category === "archetype_move" ? "#c4b5fd" : m.category === "basic_combat" ? "#60a5fa" : "#86efac";
+    const categoryColor = m.category === "club_move" ? "#fda4af"
+      : m.category === "subclass_move" ? "#f43f5e"
+      : m.category === "archetype_move" ? "#c4b5fd"
+      : m.category === "basic_combat" ? "#60a5fa"
+      : "#86efac";
+
     return `
-      <div class="move-card">
+      <div class="move-card ${m.isLocked ? 'move-card-locked' : ''}" style="${m.isLocked ? 'opacity:0.65;border:1px dashed var(--border-card);background:rgba(255,255,255,0.02);' : ''}">
         <div class="move-card-header">
-          <span class="move-name">${escapeHtml(m.name)}</span>
-          <span class="move-type-badge" style="background:${categoryColor}22;color:${categoryColor}">${escapeHtml(m.type)}</span>
+          <span class="move-name" style="${m.isLocked ? 'color:var(--text-muted);' : ''}">${escapeHtml(m.name)}</span>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            ${m.isLocked ? `
+              <span class="badge badge-locked" style="background:rgba(255,255,255,0.08);color:#fbbf24;font-size:0.72rem;border:1px solid rgba(251,191,36,0.3);padding:2px 6px;border-radius:4px;">
+                🔒 ${escapeHtml(m.lockReason || 'Terkunci')}
+              </span>
+            ` : ''}
+            <span class="move-type-badge" style="background:${categoryColor}22;color:${categoryColor}">${escapeHtml(m.type)}</span>
+          </div>
         </div>
         <div class="move-metrics-row">
           <span><strong>Range:</strong> ${escapeHtml(m.range)}</span>
           <span><strong>Check:</strong> ${escapeHtml(m.check)}</span>
           <span><strong>Efek:</strong> ${escapeHtml(m.damage)}</span>
         </div>
-        <p class="move-desc">${escapeHtml(m.desc)}</p>
+        <p class="move-desc" style="${m.isLocked ? 'color:var(--text-muted);font-style:italic;' : ''}">${escapeHtml(m.desc)}</p>
       </div>
     `;
   }).join("");
@@ -1162,6 +1267,29 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     }
   });
 
+  // 17. Progression & Edit Modals
+  subclassSelectModal.attachEvents();
+  levelUpWizardModal.attachEvents();
+  editCharacterModal.attachEvents();
+
+  document.getElementById("btnEditCharacter")?.addEventListener("click", () => {
+    editCharacterModal.show();
+  });
+
+  document.getElementById("btnLevelUp")?.addEventListener("click", () => {
+    levelUpWizardModal.show();
+  });
+
+  document.getElementById("btnPendingSubclassAction")?.addEventListener("click", () => {
+    subclassSelectModal.show(() => {
+      const current = characterStore.currentCharacter;
+      if (current) {
+        renderDndBeyondSheet(container, current);
+        attachSheetEvents(container, current);
+      }
+    });
+  });
+
   attachTargetHeartEvents(container, char);
 }
 
@@ -1321,6 +1449,16 @@ function updateDynamicElements(char: Character) {
   // Backstory
   const bsEl = document.getElementById("sheetDisplayBackstory");
   if (bsEl) bsEl.textContent = char.backstory_fields.backstory || "Belum ada catatan kisah masa lalu.";
+
+  // Grade Badge & Proficiency Bonus
+  const gradeBadge = document.getElementById("sheetGradeBadge");
+  if (gradeBadge) gradeBadge.textContent = getLevelLabel(char.level);
+  const profBadge = document.getElementById("sheetProfBonus");
+  if (profBadge) profBadge.textContent = `+${calculateProficiencyBonus(char.level)}`;
+
+  // Refresh Moves List
+  const movesList = document.getElementById("sheetMovesList");
+  if (movesList) movesList.innerHTML = renderMovesList(char, activeMoveFilter);
 }
 
 // ----------------------------------------------------------------------------

@@ -74,11 +74,8 @@ export async function renderBuilderWizardView(): Promise<void> {
             </div>
             <div>
               <select id="builderGradeSelect" class="input-text" style="padding:0.4rem 0.6rem;font-size:0.85rem;">
-                <option value="1">Kelas 10 (Lvl 1)</option>
-                <option value="2">Kelas 10 Sem 2 (Lvl 2)</option>
-                <option value="3">Kelas 11 (Lvl 3)</option>
-                <option value="4">Kelas 11 Sem 2 (Lvl 4)</option>
-                <option value="5">Kelas 12 (Lvl 5)</option>
+                <option value="1">Kelas 10 (Sem 1) • Level 1</option>
+                <option value="2">Kelas 10 (Sem 2) • Level 2</option>
               </select>
             </div>
           </div>

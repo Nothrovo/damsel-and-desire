@@ -1,0 +1,286 @@
+import { updateCharacterDirect } from "../api/characters";
+import { characterStore } from "../store/characterStore";
+import { showToast } from "./Toast";
+import {
+  getCompendiumArchetypes,
+  getCompendiumSocialClasses
+} from "../api/compendium";
+import type {
+  Character,
+  ArchetypeCompendium,
+  SocialClassCompendium,
+  CharacterChangeLogEntry
+} from "../types";
+
+export class EditCharacterModal {
+  private modalEl: HTMLElement | null = null;
+  private isDirty: boolean = false;
+  private compArchetypes: ArchetypeCompendium[] = [];
+  private compSocial: SocialClassCompendium[] = [];
+
+  render(): string {
+    return `
+      <div id="editCharacterModal" class="modal-overlay" style="display:none;z-index:9999;">
+        <div class="modal-card" style="max-width:800px;width:95%;max-height:90vh;overflow-y:auto;">
+          <div class="modal-header">
+            <h3>✏️ Mode Sunting Karakter (Edit Mode)</h3>
+            <button class="modal-close-btn" id="closeEditCharModalBtn">&times;</button>
+          </div>
+          <div class="modal-body" id="editCharModalBody">
+            <!-- Form populated dynamically -->
+          </div>
+          <div class="modal-footer" style="display:flex;justify-content:space-between;align-items:center;">
+            <button class="btn btn-secondary" id="cancelEditCharModalBtn">Batal</button>
+            <button class="btn btn-primary" id="saveEditCharModalBtn">Simpan Perubahan</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async attachEvents() {
+    this.modalEl = document.getElementById("editCharacterModal");
+    document.getElementById("closeEditCharModalBtn")?.addEventListener("click", () => this.tryClose());
+    document.getElementById("cancelEditCharModalBtn")?.addEventListener("click", () => this.tryClose());
+
+    this.modalEl?.addEventListener("click", (e) => {
+      if (e.target === this.modalEl) this.tryClose();
+    });
+
+    document.getElementById("saveEditCharModalBtn")?.addEventListener("click", () => this.saveChanges());
+
+    // Preload compendiums for dropdowns
+    try {
+      this.compArchetypes = await getCompendiumArchetypes();
+      this.compSocial = await getCompendiumSocialClasses();
+    } catch (e) {
+      // Ignored, will use fallbacks
+    }
+  }
+
+  show() {
+    const char = characterStore.currentCharacter;
+    if (!char) return;
+
+    this.isDirty = false;
+    this.renderForm(char);
+    if (this.modalEl) this.modalEl.style.display = "flex";
+  }
+
+  private tryClose() {
+    if (this.isDirty) {
+      const confirmDiscard = window.confirm("Terdapat perubahan yang belum disimpan. Yakin ingin membatalkan?");
+      if (!confirmDiscard) return;
+    }
+    this.hide();
+  }
+
+  hide() {
+    if (this.modalEl) this.modalEl.style.display = "none";
+    this.isDirty = false;
+  }
+
+  private markDirty() {
+    this.isDirty = true;
+  }
+
+  private renderForm(char: Character) {
+    const bodyEl = document.getElementById("editCharModalBody");
+    if (!bodyEl) return;
+
+    const abilities = char.abilities || ({} as any);
+    const backstory = char.backstory_fields || ({} as any);
+
+    bodyEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:1.25rem;">
+        
+        <!-- Identity Section -->
+        <div class="card p-3" style="background:rgba(255,255,255,0.02);">
+          <h4 style="margin:0 0 0.75rem 0;font-size:0.95rem;color:var(--text-primary);">Identitas Dasar</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Nama Karakter:</label>
+              <input type="text" id="editCharNameInput" class="input-text" value="${escapeAttr(char.name)}" style="width:100%;">
+            </div>
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">URL Avatar:</label>
+              <input type="text" id="editCharAvatarInput" class="input-text" value="${escapeAttr(char.avatar_path || '')}" style="width:100%;" placeholder="https://...">
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Arketipe:</label>
+              <select id="editCharArchetypeSelect" class="input-text" style="width:100%;">
+                ${this.compArchetypes.map(a => `
+                  <option value="${a.id}" ${char.archetype_id === a.id ? 'selected' : ''}>${a.name}</option>
+                `).join("")}
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Kelas Sosial:</label>
+              <select id="editCharSocialSelect" class="input-text" style="width:100%;">
+                ${this.compSocial.map(s => `
+                  <option value="${s.id}" ${char.social_class_id === s.id ? 'selected' : ''}>${s.name}</option>
+                `).join("")}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ability Scores Section -->
+        <div class="card p-3" style="background:rgba(255,255,255,0.02);">
+          <h4 style="margin:0 0 0.75rem 0;font-size:0.95rem;color:var(--text-primary);">Skor Atribut Dasar</h4>
+          <div style="display:grid;grid-template-columns:repeat(6, 1fr);gap:0.5rem;">
+            ${(["physique", "intelligent", "looks", "mind", "talent", "luck"] as const).map(stat => {
+              const rawStat = (abilities as any)?.[stat];
+              const score = typeof rawStat === "object" ? rawStat?.score : (rawStat ?? 10);
+              return `
+                <div style="text-align:center;">
+                  <label style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">${stat.slice(0, 3)}</label>
+                  <input type="number" id="editCharStat_${stat}" class="input-text" min="3" max="24" value="${score}" style="width:100%;text-align:center;font-weight:700;">
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+
+        <!-- Backstory & Persona Section -->
+        <div class="card p-3" style="background:rgba(255,255,255,0.02);">
+          <h4 style="margin:0 0 0.75rem 0;font-size:0.95rem;color:var(--text-primary);">Kisah & Kepribadian (Backstory)</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Kepribadian (Personality):</label>
+              <textarea id="editCharPersonalityInput" class="input-textarea" rows="2" style="width:100%;">${escapeAttr(backstory.personality || '')}</textarea>
+            </div>
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Cita-cita (Ideals):</label>
+              <textarea id="editCharIdealsInput" class="input-textarea" rows="2" style="width:100%;">${escapeAttr(backstory.ideals || '')}</textarea>
+            </div>
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Ikatan (Bonds):</label>
+              <textarea id="editCharBondsInput" class="input-textarea" rows="2" style="width:100%;">${escapeAttr(backstory.bonds || '')}</textarea>
+            </div>
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Kelemahan (Flaws):</label>
+              <textarea id="editCharFlawsInput" class="input-textarea" rows="2" style="width:100%;">${escapeAttr(backstory.flaws || '')}</textarea>
+            </div>
+          </div>
+          <div class="form-group" style="margin-top:0.75rem;">
+            <label style="font-size:0.8rem;color:var(--text-muted);">Kisah Masa Lalu Lengkap (Backstory):</label>
+            <textarea id="editCharBackstoryInput" class="input-textarea" rows="4" style="width:100%;">${escapeAttr(backstory.backstory || '')}</textarea>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    // Listen to changes to toggle dirty state
+    bodyEl.querySelectorAll("input, select, textarea").forEach(el => {
+      el.addEventListener("input", () => this.markDirty());
+      el.addEventListener("change", () => this.markDirty());
+    });
+  }
+
+  private async saveChanges() {
+    const char = characterStore.currentCharacter;
+    if (!char) return;
+
+    const nameInput = document.getElementById("editCharNameInput") as HTMLInputElement;
+    const avatarInput = document.getElementById("editCharAvatarInput") as HTMLInputElement;
+    const archetypeSelect = document.getElementById("editCharArchetypeSelect") as HTMLSelectElement;
+    const socialSelect = document.getElementById("editCharSocialSelect") as HTMLSelectElement;
+
+    const newName = nameInput ? nameInput.value.trim() : "";
+    if (!newName) {
+      showToast("Nama karakter tidak boleh kosong.", "error");
+      return;
+    }
+
+    const statKeys = ["physique", "intelligent", "looks", "mind", "talent", "luck"] as const;
+    const newAbilities: any = { ...char.abilities };
+    for (const k of statKeys) {
+      const input = document.getElementById(`editCharStat_${k}`) as HTMLInputElement;
+      const val = input ? parseInt(input.value, 10) : 10;
+      if (isNaN(val) || val < 1 || val > 30) {
+        showToast(`Nilai atribut ${k} harus antara 1 dan 30.`, "error");
+        return;
+      }
+      if (newAbilities[k] && typeof newAbilities[k] === "object") {
+        newAbilities[k].score = val;
+      } else {
+        newAbilities[k] = val;
+      }
+    }
+
+    const personalityInput = document.getElementById("editCharPersonalityInput") as HTMLTextAreaElement;
+    const idealsInput = document.getElementById("editCharIdealsInput") as HTMLTextAreaElement;
+    const bondsInput = document.getElementById("editCharBondsInput") as HTMLTextAreaElement;
+    const flawsInput = document.getElementById("editCharFlawsInput") as HTMLTextAreaElement;
+    const backstoryInput = document.getElementById("editCharBackstoryInput") as HTMLTextAreaElement;
+
+    const newBackstory = {
+      personality: personalityInput ? personalityInput.value.trim() : "",
+      ideals: idealsInput ? idealsInput.value.trim() : "",
+      bonds: bondsInput ? bondsInput.value.trim() : "",
+      flaws: flawsInput ? flawsInput.value.trim() : "",
+      backstory: backstoryInput ? backstoryInput.value.trim() : ""
+    };
+
+    const changelogEntry: CharacterChangeLogEntry = {
+      timestamp: new Date().toISOString(),
+      action: "EDIT_CHARACTER",
+      description: "Memperbarui data profil, atribut, atau kisah karakter",
+      previousValue: {
+        name: char.name,
+        archetype_id: char.archetype_id,
+        social_class_id: char.social_class_id
+      },
+      newValue: {
+        name: newName,
+        archetype_id: archetypeSelect?.value || char.archetype_id,
+        social_class_id: socialSelect?.value || char.social_class_id
+      },
+      source: "user"
+    };
+
+    const updatedChangelog = [...(char.changelog || []), changelogEntry];
+
+    const updates: Partial<Character> = {
+      name: newName,
+      avatar_path: avatarInput ? avatarInput.value.trim() : char.avatar_path,
+      archetype_id: archetypeSelect?.value || char.archetype_id,
+      social_class_id: socialSelect?.value || char.social_class_id,
+      abilities: newAbilities,
+      backstory_fields: newBackstory,
+      changelog: updatedChangelog
+    };
+
+    try {
+      await characterStore.runOptimisticUpdate(
+        (draft) => {
+          Object.assign(draft, updates);
+          draft.version = (draft.version || 1) + 1;
+        },
+        () => updateCharacterDirect(char.id, updates, char.version)
+      );
+
+      this.isDirty = false;
+      this.hide();
+      showToast("Karakter berhasil diperbarui!", "success");
+    } catch (err: any) {
+      showToast(`Gagal menyimpan perubahan: ${err.message}`, "error");
+    }
+  }
+}
+
+function escapeAttr(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+export const editCharacterModal = new EditCharacterModal();

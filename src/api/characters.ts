@@ -1,6 +1,8 @@
 import { supabase } from "./supabase";
 import type { Character, CharacterSecret, CalendarProgress } from "../types";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
+import { migrateCharacter } from "../rules/migration";
+import { calculateMaxHp, calculateMaxComposure } from "../rules/progression";
 
 const LOCAL_STORAGE_KEY = "damsel_and_desire_roster_v1";
 
@@ -26,58 +28,7 @@ function saveLocalRoster(roster: Character[]) {
 }
 
 function normalizeCharacter(item: any): Character {
-  return {
-    id: item.id || `char_${Date.now()}`,
-    owner_id: item.owner_id || "local_user",
-    campaign_id: item.campaign_id || null,
-    name: item.name || "Karakter Tanpa Nama",
-    ekskul_id: item.ekskul_id || item.ekskulId || "kendo",
-    subclass_id: item.subclass_id || item.subclassId || null,
-    social_class_id: item.social_class_id || item.socialClassId || "medium",
-    archetype_id: item.archetype_id || item.archetypeId || "delinquent",
-    level: item.level || item.grade || 1,
-    avatar_path: item.avatar_path || item.avatar || "",
-    abilities: item.abilities || item.baseAbilities || {
-      physique: 10, intelligent: 10, looks: 10, mind: 10, talent: 10, luck: 10
-    },
-    proficient_skills: item.proficient_skills || item.proficientSkills || [],
-    proficient_saves: item.proficient_saves || item.proficientSaves || [],
-    vitals: item.vitals || {
-      physicalHpCurrent: item.physicalHpCurrent ?? 10,
-      physicalHpMax: item.physicalHpMax ?? 10,
-      physicalHpTemp: item.physicalHpTemp ?? 0,
-      composureCurrent: item.composureCurrent ?? 10,
-      composureMax: item.composureMax ?? 10,
-      composureTemp: item.composureTemp ?? 0,
-      restDiceTotal: item.restDiceTotal ?? 1,
-      restDiceSpent: item.restDiceSpent ?? 0,
-      heartInspiration: item.heartInspiration ?? false
-    },
-    finances: item.finances || {
-      dailyMoneyAmount: item.dailyMoneyAmount ?? 1000,
-      savingsAmount: item.savingsAmount ?? 15000,
-      job: item.job || "-",
-      jobWageAmount: item.jobWageAmount ?? 0
-    },
-    inventory: item.inventory || {
-      bagItems: item.bagItems || [],
-      keepsakes: item.keepsakes || ["Jimat Omamori Cinta (Kuil)"]
-    },
-    backstory_fields: item.backstory_fields || {
-      personality: item.personality || "",
-      ideals: item.ideals || "",
-      bonds: item.bonds || "",
-      flaws: item.flaws || "",
-      backstory: item.backstory || ""
-    },
-    profUniform: item.profUniform || item.prof_uniform || "",
-    profClubTools: item.profClubTools || item.prof_club_tools || "",
-    profLanguages: item.profLanguages || item.prof_languages || "",
-    targets: item.targets || [],
-    version: item.version || 1,
-    created_at: item.created_at || new Date().toISOString(),
-    updated_at: item.updated_at || new Date().toISOString()
-  };
+  return migrateCharacter(item).character;
 }
 
 export async function listAllCharacters(): Promise<Character[]> {
@@ -159,11 +110,13 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
   const soc = FALLBACK_DD_DATA.socialClasses.find((s: any) => s.id === payload.socialClassId);
 
   const hitDie = eks?.hitDie || "d8";
-  const modPhy = Math.floor(((payload.baseAbilities?.physique || 10) - 10) / 2);
-  const modMnd = Math.floor(((payload.baseAbilities?.mind || 10) - 10) / 2);
+  const charLevel = payload.level || (payload.grade === 2 ? 2 : 1);
+  const isDelinquent = payload.archetypeId === "delinquent";
+  const phyScore = payload.baseAbilities?.physique || 10;
+  const mndScore = payload.baseAbilities?.mind || 10;
 
-  const baseHp = Math.max(1, (hitDie === "d10" ? 10 : hitDie === "d8" ? 8 : 6) + modPhy);
-  const baseComp = Math.max(1, 10 + modMnd);
+  const baseHp = calculateMaxHp(charLevel, hitDie, phyScore, isDelinquent);
+  const baseComp = calculateMaxComposure(charLevel, mndScore);
 
   const defaultItems = FALLBACK_DD_DATA.equipmentPacks?.student || [];
   const socialItems = soc?.equipment || [];
@@ -179,7 +132,10 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     subclass_id: payload.subclassId || null,
     social_class_id: payload.socialClassId,
     archetype_id: payload.archetypeId,
-    level: payload.grade || 1,
+    level: charLevel,
+    grade: 10,
+    schemaVersion: 2,
+    changelog: [],
     avatar_path: payload.avatar,
     abilities: payload.baseAbilities,
     proficient_skills: payload.proficientSkills || [],
@@ -191,7 +147,7 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
       composureCurrent: baseComp,
       composureMax: baseComp,
       composureTemp: 0,
-      restDiceTotal: payload.grade || 1,
+      restDiceTotal: 1,
       restDiceSpent: 0,
       heartInspiration: false
     },

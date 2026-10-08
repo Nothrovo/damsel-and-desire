@@ -66,46 +66,72 @@ export async function getCompendiumEkskul(): Promise<EkskulCompendium[]> {
       id: sc.id,
       ekskul_id: e.id,
       name: sc.name,
-      description: sc.desc,
-      features: sc.features || []
+      tagline: sc.tagline,
+      identity_desc: sc.identityDesc || sc.identity_desc,
+      description: sc.desc || sc.description,
+      subclass_moves: (sc.subclassMoves || sc.subclass_moves || []).map((sm: any) => ({
+        id: sm.id,
+        subclass_id: sc.id,
+        name: sm.name,
+        tier: sm.tier,
+        unlock_grade: sm.unlockGrade || sm.unlock_grade || (sm.tier === "G12" ? 12 : 11),
+        move_type: sm.type || sm.move_type,
+        cost: sm.cost,
+        range: sm.range,
+        check_type: sm.check || sm.check_type,
+        effect: sm.effect,
+        description: sm.desc || sm.description
+      }))
     })),
     club_moves: (e.clubMoves || []).map((m: any, idx: number) => ({
-      id: `${e.id}_move_${idx + 1}`,
+      id: m.id || `${e.id}_move_${idx + 1}`,
       ekskul_id: e.id,
       name: m.name,
-      move_type: m.type,
+      move_type: m.type || m.move_type,
       cost: m.cost,
       range: m.range,
-      check_type: m.check,
+      check_type: m.check || m.check_type,
       effect: m.effect,
-      description: m.desc
+      description: m.desc || m.description,
+      order: m.order || (idx + 1),
+      unlock_grade: m.unlockGrade || m.unlock_grade || (idx === 0 ? 10 : idx === 1 ? 11 : 12)
     }))
   }));
 
   try {
     const { data, error } = await supabase
       .from("ekskul")
-      .select("*, subclasses:ekskul_subclasses(*), club_moves:ekskul_moves(*)")
+      .select("*, subclasses:ekskul_subclasses(*, subclass_moves(*)), club_moves:ekskul_moves(*)")
       .order("name");
 
     if (!error && data && data.length > 0) {
       const mergedList: EkskulCompendium[] = (data as any[]).map(e => {
-        const fallback = FALLBACK_DD_DATA.ekskul.find((fe: any) => fe.id === e.id);
+        const fallback = fallbackList.find((fe) => fe.id === e.id);
         const moves = (e.club_moves && e.club_moves.length > 0)
-          ? e.club_moves
-          : (fallback?.clubMoves || []).map((m: any, idx: number) => ({
-              id: `${e.id}_move_${idx + 1}`,
-              ekskul_id: e.id,
-              name: m.name,
-              move_type: m.type,
-              cost: m.cost,
-              range: m.range,
-              check_type: m.check,
-              effect: m.effect,
-              description: m.desc
-            }));
+          ? e.club_moves.map((m: any, idx: number) => ({
+              ...m,
+              order: m.order || (idx + 1),
+              unlock_grade: m.unlock_grade || (idx === 0 ? 10 : idx === 1 ? 11 : 12)
+            }))
+          : (fallback?.club_moves || []);
+
+        const subclasses = (e.subclasses && e.subclasses.length > 0)
+          ? e.subclasses.map((sc: any) => {
+              const fbSc = fallback?.subclasses?.find((fsc) => fsc.id === sc.id);
+              return {
+                ...sc,
+                tagline: sc.tagline || fbSc?.tagline,
+                identity_desc: sc.identity_desc || fbSc?.identity_desc,
+                subclass_moves: (sc.subclass_moves && sc.subclass_moves.length > 0)
+                  ? sc.subclass_moves
+                  : (fbSc?.subclass_moves || [])
+              };
+            })
+          : (fallback?.subclasses || []);
+
         return {
           ...e,
+          subclasses,
           club_moves: moves
         };
       });
