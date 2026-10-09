@@ -201,23 +201,30 @@ function renderCurrentStep() {
 function renderStep1Ekskul(container: HTMLElement) {
   container.innerHTML = `
     <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">Langkah 1: Pilih Klub Ekstrakurikuler (Class)</h2>
-    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">Ekskul menentukan Hit Die darah, atribut utama, serta 3 Club Moves istimewa karaktermu.</p>
+    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">Ekskul menentukan Hit Die darah, atribut utama, Saving Throws, serta 3 Club Moves istimewa karaktermu.</p>
     
     <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1rem;">
-      ${compEkskul.map(e => `
+      ${compEkskul.map(e => {
+        const savesLabel = (e.saving_throws || []).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(" & ");
+        return `
         <div class="card-option ${draft.ekskulId === e.id ? 'active' : ''}" data-ekskul="${e.id}" style="border:1px solid ${draft.ekskulId === e.id ? 'var(--rose-primary)' : 'var(--border-subtle)'};background:var(--bg-surface);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;">
           <h3 style="margin:0 0 4px 0;font-size:1.05rem;color:var(--text-main);">${e.name}</h3>
           <div style="font-size:0.75rem;color:var(--amber-gold);margin-bottom:6px;">${e.tagline || ''}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:8px;">Hit Die: <strong>${e.hit_die}</strong> • Stat: <strong>${e.primary_stat}</strong></div>
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:4px;">Hit Die: <strong>${e.hit_die}</strong> • Stat: <strong>${e.primary_stat}</strong></div>
+          <div style="font-size:0.75rem;color:var(--rose-light);margin-bottom:8px;">Saving Throws: <strong>${savesLabel || '-'}</strong></div>
           <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">${e.perk_description || ''}</p>
         </div>
-      `).join("")}
+      `;}).join("")}
     </div>
   `;
 
   container.querySelectorAll(".card-option").forEach((card: any) => {
     card.addEventListener("click", () => {
       draft.ekskulId = card.dataset.ekskul;
+      const selectedEkskul = compEkskul.find(ek => ek.id === draft.ekskulId);
+      if (selectedEkskul && Array.isArray(selectedEkskul.saving_throws) && selectedEkskul.saving_throws.length > 0) {
+        draft.proficientSaves = [...selectedEkskul.saving_throws];
+      }
       renderStep1Ekskul(container);
     });
   });
@@ -533,6 +540,11 @@ async function submitCharacter() {
     showToast("Maksimal 4 keahlian yang dapat dipilih.", "error");
     goToStep(5);
     return;
+  }
+
+  const selectedEkskul = compEkskul.find(ek => ek.id === draft.ekskulId);
+  if (selectedEkskul && Array.isArray(selectedEkskul.saving_throws) && selectedEkskul.saving_throws.length > 0) {
+    draft.proficientSaves = [...selectedEkskul.saving_throws];
   }
 
   const payload = {

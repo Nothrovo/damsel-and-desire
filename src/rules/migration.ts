@@ -275,7 +275,25 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
       luck: 10
     },
     proficient_skills: raw.proficient_skills || raw.proficientSkills || [],
-    proficient_saves: raw.proficient_saves || raw.proficientSaves || [],
+    proficient_saves: (() => {
+      const rawSaves: string[] = raw.proficient_saves || raw.proficientSaves || [];
+      const isStaleDefault =
+        Boolean(ekskul?.saving_throws?.length) &&
+        rawSaves.length === 2 &&
+        rawSaves.includes("physique") &&
+        rawSaves.includes("mind") &&
+        !(ekskul!.saving_throws.includes("physique") && ekskul!.saving_throws.includes("mind"));
+      if ((rawSaves.length === 0 || isStaleDefault) && ekskul?.saving_throws?.length) {
+        const fixedSaves = new Set<string>(ekskul.saving_throws);
+        for (const f of (raw.feats || [])) {
+          if (Array.isArray(f?.choices?.saves)) {
+            f.choices.saves.forEach((s: string) => fixedSaves.add(s));
+          }
+        }
+        return Array.from(fixedSaves);
+      }
+      return rawSaves;
+    })(),
     vitals: {
       physicalHpCurrent: finalHpCurrent,
       physicalHpMax: finalHpMax,

@@ -302,7 +302,7 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     avatar_path: payload.avatar,
     abilities: payload.baseAbilities,
     proficient_skills: payload.proficientSkills || [],
-    proficient_saves: payload.proficientSaves || [],
+    proficient_saves: (eks?.savingThrows && eks.savingThrows.length > 0) ? [...eks.savingThrows] : (payload.proficientSaves || []),
     feats: payload.feats || [],
     featGrants: payload.featGrants || ensureGradeFeatGrants(charGrade, []),
     feat_grants: payload.featGrants || ensureGradeFeatGrants(charGrade, []),

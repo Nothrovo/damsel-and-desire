@@ -169,9 +169,12 @@ BEGIN
   v_mod_phy := floor(((v_phy + COALESCE((v_arch_bonus->>'physique')::int, 0)) - 10) / 2.0)::int;
   v_mod_mnd := floor(((v_mnd + COALESCE((v_arch_bonus->>'mind')::int, 0)) - 10) / 2.0)::int;
 
-  -- Hit Die from Ekskul
-  SELECT hit_die INTO v_hit_die FROM public.ekskul WHERE id = v_ekskul_id;
+  -- Hit Die & Saving Throws from Ekskul
+  SELECT hit_die, COALESCE(to_jsonb(saving_throws), v_saves)
+  INTO v_hit_die, v_saves
+  FROM public.ekskul WHERE id = v_ekskul_id;
   v_hit_die := COALESCE(v_hit_die, 'd8');
+  v_saves := COALESCE(v_saves, '["physique", "mind"]'::jsonb);
 
   v_die_max := CASE v_hit_die WHEN 'd10' THEN 10 WHEN 'd6' THEN 6 ELSE 8 END;
   v_die_avg := CASE v_hit_die WHEN 'd10' THEN 6 WHEN 'd6' THEN 4 ELSE 5 END;

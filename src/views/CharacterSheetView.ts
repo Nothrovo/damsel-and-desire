@@ -267,7 +267,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
       </div>
 
       <!-- PENDING SUBCLASS CHOICE BANNER (IF GRADE >= 11 AND NO SUBCLASS) -->
-      ${getPendingChoices(char, compEkskul).length > 0 ? `
+      ${getPendingChoices(char, compEkskul).some(c => c.type === "subclass") ? `
         <div class="pending-subclass-alert" style="background:linear-gradient(90deg, rgba(245,158,11,0.2), rgba(239,68,68,0.15));border:1px solid #f59e0b;padding:0.75rem 1.25rem;border-radius:var(--radius-md);margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
           <div style="display:flex;align-items:center;gap:0.75rem;">
             <span style="font-size:1.4rem;">⚠️</span>
@@ -372,7 +372,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
             <div class="box-header-title">SAVING THROWS (STAT SAVES)</div>
             <div class="saves-list" id="sheetSavesList">
               ${statKeys.map(key => {
-                const isProf = (char.proficient_saves || []).includes(key);
+                const isProf = effective.proficientSaves.includes(key);
                 const saveTotal = mods[key] + (isProf ? profBonus : 0);
                 const saveSign = formatModifier(saveTotal);
                 const labelName = capitalize(key);

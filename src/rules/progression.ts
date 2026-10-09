@@ -254,9 +254,20 @@ export function calculateEffectiveStats(
   }
 
   const pb = calculateProficiencyBonus(character.level);
+  const ekskulForSaves = resolveEkskulData(character.ekskul_id);
+  const rawSaves = character.proficient_saves || [];
+  const isStaleDefaultSaves =
+    Boolean(ekskulForSaves?.saving_throws?.length) &&
+    rawSaves.length === 2 &&
+    rawSaves.includes("physique") &&
+    rawSaves.includes("mind") &&
+    !(ekskulForSaves!.saving_throws.includes("physique") && ekskulForSaves!.saving_throws.includes("mind"));
+  const baseSaves = (rawSaves.length === 0 || isStaleDefaultSaves) && ekskulForSaves?.saving_throws?.length
+    ? ekskulForSaves.saving_throws
+    : rawSaves;
 
   const profSkills = new Set<string>(character.proficient_skills || []);
-  const profSaves = new Set<string>(character.proficient_saves || []);
+  const profSaves = new Set<string>(baseSaves);
 
   let hasBuiltDifferent = false;
   let hasWhoGonnaCarryTheBoats = false;
