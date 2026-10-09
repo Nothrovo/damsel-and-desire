@@ -538,6 +538,93 @@ BEGIN
 END;
 $$;
 
+-- 9b. Update short_rest RPC to include Archetype physique stat_bonus
+CREATE OR REPLACE FUNCTION public.short_rest(
+  p_character_id UUID,
+  p_client_version INT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_char RECORD;
+  v_ekskul RECORD;
+  v_arch_bonus JSONB;
+  v_base_phy INT;
+  v_spent INT;
+  v_total INT;
+  v_die_faces INT;
+  v_roll INT;
+  v_mod_phy INT;
+  v_heal INT;
+  v_new_hp INT;
+  v_new_comp INT;
+  v_new_vitals JSONB;
+BEGIN
+  SELECT * INTO v_char FROM public.characters WHERE id = p_character_id FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'ERR_NOT_FOUND: Karakter tidak ditemukan.'; END IF;
+
+  IF v_char.version <> p_client_version THEN
+    RAISE EXCEPTION 'ERR_CONCURRENCY_CONFLICT: Versi data karakter telah diperbarui oleh perangkat lain.';
+  END IF;
+
+  v_spent := COALESCE((v_char.vitals->>'restDiceSpent')::int, 0);
+  v_total := COALESCE((v_char.vitals->>'restDiceTotal')::int, 1);
+
+  IF v_spent >= v_total THEN
+    RAISE EXCEPTION 'ERR_REST_DICE_EXHAUSTED: Kuota Rest Dice habis! Karakter membutuhkan Long Rest.';
+  END IF;
+
+  SELECT hit_die INTO v_ekskul FROM public.ekskul WHERE id = v_char.ekskul_id;
+  v_die_faces := CASE COALESCE(v_ekskul.hit_die, 'd8')
+    WHEN 'd10' THEN 10
+    WHEN 'd8'  THEN 8
+    WHEN 'd6'  THEN 6
+    ELSE 8
+  END;
+
+  SELECT stat_bonus INTO v_arch_bonus FROM public.archetypes WHERE id = v_char.archetype_id;
+  v_arch_bonus := COALESCE(v_arch_bonus, '{}'::jsonb);
+
+  IF jsonb_typeof(v_char.abilities->'physique') = 'object' THEN
+    v_base_phy := COALESCE((v_char.abilities->'physique'->>'score')::int, 10);
+  ELSE
+    v_base_phy := COALESCE((v_char.abilities->>'physique')::int, 10);
+  END IF;
+
+  v_roll := floor(random() * v_die_faces + 1)::int;
+  v_mod_phy := floor(((v_base_phy + COALESCE((v_arch_bonus->>'physique')::int, 0)) - 10) / 2.0)::int;
+  v_heal := GREATEST(1, v_roll + v_mod_phy);
+
+  v_new_hp := LEAST((v_char.vitals->>'physicalHpMax')::int, (v_char.vitals->>'physicalHpCurrent')::int + v_heal);
+  v_new_comp := LEAST((v_char.vitals->>'composureMax')::int, (v_char.vitals->>'composureCurrent')::int + v_heal);
+
+  v_new_vitals := v_char.vitals || jsonb_build_object(
+    'physicalHpCurrent', v_new_hp,
+    'composureCurrent', v_new_comp,
+    'restDiceSpent', v_spent + 1
+  );
+
+  UPDATE public.characters
+  SET vitals = v_new_vitals,
+      version = version + 1,
+      updated_at = now()
+  WHERE id = p_character_id;
+
+  RETURN jsonb_build_object(
+    'characterId', p_character_id,
+    'dieRolled', 'd' || v_die_faces,
+    'rollResult', v_roll,
+    'modPhysique', v_mod_phy,
+    'healTotal', v_heal,
+    'vitals', v_new_vitals,
+    'newVersion', v_char.version + 1
+  );
+END;
+$$;
+
 -- 10. Grant Execute and Table permissions to anon & authenticated
 GRANT USAGE ON SCHEMA public TO anon, authenticated;
 GRANT ALL ON TABLE public.characters TO anon, authenticated;
