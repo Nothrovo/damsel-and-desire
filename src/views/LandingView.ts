@@ -1,13 +1,15 @@
-import { listMyCharacters, deleteCharacter } from "../api/characters";
-import { importLegacyCharacter } from "../api/characters";
+import { listMyCharacters, deleteCharacter, importLegacyCharacter } from "../api/characters";
+import { supabase } from "../api/supabase";
 import { exportCharacterJson, validateCharacterJson } from "../services/exporter";
 import { authStore } from "../store/authStore";
 import { renderCardSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
 import { router } from "../router/router";
 import type { Character } from "../types";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 let cachedCharacters: Character[] = [];
+let rosterChannel: RealtimeChannel | null = null;
 
 export async function renderLandingView(): Promise<void> {
   const appContainer = document.getElementById("appMain");
@@ -66,7 +68,40 @@ export async function renderLandingView(): Promise<void> {
   `;
 
   attachLandingEvents();
+  subscribeRosterRealtime();
   await loadCharacters();
+}
+
+function subscribeRosterRealtime() {
+  if (rosterChannel) {
+    try {
+      supabase.removeChannel(rosterChannel);
+    } catch {
+      // ignore
+    }
+    rosterChannel = null;
+  }
+
+  try {
+    rosterChannel = supabase
+      .channel("public_roster_characters_sync")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "characters"
+        },
+        () => {
+          if (document.getElementById("rosterGrid")) {
+            loadCharacters();
+          }
+        }
+      )
+      .subscribe();
+  } catch (e) {
+    console.warn("Realtime roster subscription warning:", e);
+  }
 }
 
 function attachLandingEvents() {
@@ -108,6 +143,7 @@ async function loadCharacters() {
   const gridEl = document.getElementById("rosterGrid");
   const countBadge = document.getElementById("rosterCountBadge");
   const emptyEl = document.getElementById("rosterEmptyState");
+  const searchInput = document.getElementById("searchRosterInput") as HTMLInputElement | null;
 
   try {
     cachedCharacters = await listMyCharacters();
@@ -119,12 +155,13 @@ async function loadCharacters() {
       if (emptyEl) emptyEl.style.display = "block";
     } else {
       if (emptyEl) emptyEl.style.display = "none";
-      renderFilteredCards("");
+      const currentQuery = searchInput?.value?.toLowerCase().trim() || "";
+      renderFilteredCards(currentQuery);
     }
   } catch (err: any) {
     console.error("Gagal memuat karakter:", err);
     if (gridEl) {
-      gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--rose-light);">Gagal memuat karakter: ${err.message}. Masuk ke akun Anda untuk melihat karakter cloud.</div>`;
+      gridEl.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--rose-light);">Gagal memuat karakter: ${err.message}.</div>`;
     }
   }
 }

@@ -1977,9 +1977,10 @@ GRANT ALL ON TABLE public.character_secrets TO anon, authenticated;
 GRANT ALL ON TABLE public.roll_log TO anon, authenticated;
 GRANT ALL ON TABLE public.calendar_progress TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.create_character(JSONB) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.import_legacy_character(JSONB, UUID) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.short_rest(UUID, INT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.long_rest(UUID, INT) TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.adjust_savings(UUID, INT, INT, TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.adjust_savings(UUID, NUMERIC, INT, TEXT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.apply_vital_change(UUID, TEXT, INT, INT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.roll_dice(UUID, UUID, TEXT, TEXT, TEXT, INT) TO anon, authenticated;
 

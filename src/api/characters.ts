@@ -27,8 +27,94 @@ function saveLocalRoster(roster: Character[]) {
   }
 }
 
+function isUuid(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || "");
+}
+
 function normalizeCharacter(item: any): Character {
-  return migrateCharacterToV3(item).character;
+  const char = migrateCharacterToV3(item).character;
+  if (typeof item?.version === "number") {
+    char.version = item.version;
+  }
+  return char;
+}
+
+function toDbCharacterInsert(char: Character): Record<string, any> {
+  return {
+    owner_id: isUuid(char.owner_id) ? char.owner_id : null,
+    campaign_id: char.campaign_id && isUuid(char.campaign_id) ? char.campaign_id : null,
+    name: char.name,
+    ekskul_id: char.ekskul_id,
+    subclass_id: char.subclass_id || null,
+    social_class_id: char.social_class_id,
+    archetype_id: char.archetype_id,
+    level: Math.max(1, Math.min(6, char.level || 1)),
+    grade: char.grade || (char.level <= 2 ? 10 : char.level <= 4 ? 11 : 12),
+    schema_version: char.schemaVersion || 3,
+    changelog: char.changelog || [],
+    avatar_path: char.avatar_path || "",
+    abilities: char.abilities,
+    proficient_skills: char.proficient_skills || [],
+    proficient_saves: char.proficient_saves || [],
+    feats: char.feats || [],
+    feat_grants: char.featGrants || char.feat_grants || ensureGradeFeatGrants(char.grade || 10, []),
+    achievements: char.achievements || [],
+    feat_usage: char.featUsage || char.feat_usage || {},
+    vitals: char.vitals,
+    finances: char.finances,
+    inventory: char.inventory,
+    backstory_fields: char.backstory_fields,
+    version: char.version || 1
+  };
+}
+
+function sanitizeDbUpdates(updates: Partial<Character>): Record<string, any> {
+  const clean: Record<string, any> = {};
+  const allowedColumns = new Set([
+    "owner_id",
+    "campaign_id",
+    "name",
+    "ekskul_id",
+    "subclass_id",
+    "social_class_id",
+    "archetype_id",
+    "level",
+    "grade",
+    "schema_version",
+    "changelog",
+    "avatar_path",
+    "abilities",
+    "proficient_skills",
+    "proficient_saves",
+    "feats",
+    "feat_grants",
+    "achievements",
+    "feat_usage",
+    "vitals",
+    "finances",
+    "inventory",
+    "backstory_fields",
+    "version",
+    "updated_at"
+  ]);
+
+  const raw = updates as Record<string, any>;
+  if (raw.featGrants !== undefined && raw.feat_grants === undefined) {
+    clean.feat_grants = raw.featGrants;
+  }
+  if (raw.featUsage !== undefined && raw.feat_usage === undefined) {
+    clean.feat_usage = raw.featUsage;
+  }
+  if (raw.schemaVersion !== undefined && raw.schema_version === undefined) {
+    clean.schema_version = raw.schemaVersion;
+  }
+
+  for (const [k, v] of Object.entries(raw)) {
+    if (allowedColumns.has(k) && v !== undefined) {
+      clean[k] = v;
+    }
+  }
+  return clean;
 }
 
 export async function listAllCharacters(): Promise<Character[]> {
@@ -41,8 +127,43 @@ export async function listAllCharacters(): Promise<Character[]> {
     if (!error && data) {
       const remote = (data || []).map((c: any) => normalizeCharacter(c));
       const local = getLocalRoster();
+
+      // Auto-sync any local-only characters (e.g. created while offline or before RLS open access)
+      const remoteNames = new Set(remote.map(r => (r.name || "").trim().toLowerCase()));
       const remoteIds = new Set(remote.map(r => r.id));
-      const merged = [...remote, ...local.filter(l => !remoteIds.has(l.id))];
+      let localSynced = false;
+
+      for (const localChar of local) {
+        const normName = (localChar.name || "").trim().toLowerCase();
+        const isLocalOnlyId = !isUuid(localChar.id);
+
+        if (isLocalOnlyId && normName && !remoteNames.has(normName)) {
+          try {
+            const { data: inserted, error: insertErr } = await supabase
+              .from("characters")
+              .insert(toDbCharacterInsert(localChar))
+              .select("*")
+              .single();
+
+            if (!insertErr && inserted) {
+              const syncedChar = normalizeCharacter(inserted);
+              remote.unshift(syncedChar);
+              remoteNames.add(normName);
+              remoteIds.add(syncedChar.id);
+              localSynced = true;
+            }
+          } catch (syncErr) {
+            console.warn("Gagal sinkronisasi karakter lokal ke Supabase:", syncErr);
+          }
+        }
+      }
+
+      // Keep any truly unsynced local-only characters if upload failed, otherwise mirror remote
+      const remainingUnsynced = local.filter(
+        l => !isUuid(l.id) && !remoteNames.has((l.name || "").trim().toLowerCase())
+      );
+      const merged = [...remote, ...remainingUnsynced];
+      saveLocalRoster(merged);
       return merged;
     }
   } catch (e) {
@@ -67,23 +188,63 @@ export async function listCampaignCharacters(campaignId: string): Promise<Charac
 }
 
 export async function getCharacter(id: string): Promise<Character | null> {
-  try {
-    const { data, error } = await supabase
-      .from("characters")
-      .select("*, owner_profile:profiles(*)")
-      .eq("id", id)
-      .single();
+  if (isUuid(id)) {
+    try {
+      const { data, error } = await supabase
+        .from("characters")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    if (!error && data) {
-      return normalizeCharacter(data);
+      if (!error && data) {
+        const normalized = normalizeCharacter(data);
+        const roster = getLocalRoster();
+        const idx = roster.findIndex(c => c.id === id);
+        if (idx >= 0) {
+          roster[idx] = normalized;
+        } else {
+          roster.unshift(normalized);
+        }
+        saveLocalRoster(roster);
+        return normalized;
+      }
+    } catch (e) {
+      console.warn("Gagal mengambil karakter dari cloud:", e);
     }
-  } catch (e) {
-    console.warn("Gagal mengambil karakter dari cloud:", e);
   }
 
-  // Fallback to local storage
+  // Fallback to local storage (and sync if local ID)
   const localList = getLocalRoster();
   const found = localList.find(c => c.id === id);
+  if (found && !isUuid(found.id)) {
+    try {
+      const { data: existing } = await supabase
+        .from("characters")
+        .select("*")
+        .ilike("name", found.name.trim())
+        .limit(1)
+        .maybeSingle();
+
+      if (existing) {
+        return normalizeCharacter(existing);
+      }
+
+      const { data: inserted, error: insertErr } = await supabase
+        .from("characters")
+        .insert(toDbCharacterInsert(found))
+        .select("*")
+        .single();
+
+      if (!insertErr && inserted) {
+        const synced = normalizeCharacter(inserted);
+        const updatedRoster = localList.map(c => (c.id === id ? synced : c));
+        saveLocalRoster(updatedRoster);
+        return synced;
+      }
+    } catch (e) {
+      // ignore and return local
+    }
+  }
   return found || null;
 }
 
@@ -95,22 +256,23 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
 
     if (!error && data) {
       const created = normalizeCharacter(data);
-      const roster = getLocalRoster();
+      const roster = getLocalRoster().filter(c => c.id !== created.id);
       roster.unshift(created);
       saveLocalRoster(roster);
       return created;
     }
     if (error) console.warn("RPC create_character info:", error.message);
   } catch (e) {
-    console.warn("Gagal mengeksekusi RPC create_character di cloud, beralih ke local:", e);
+    console.warn("Gagal mengeksekusi RPC create_character di cloud, mencoba insert langsung:", e);
   }
 
-  // Offline / Fallback local character creation
+  // Build normalized character structure
   const eks = FALLBACK_DD_DATA.ekskul.find((e: any) => e.id === payload.ekskulId);
   const soc = FALLBACK_DD_DATA.socialClasses.find((s: any) => s.id === payload.socialClassId);
 
   const hitDie = eks?.hitDie || "d8";
   const charLevel = payload.level || (payload.grade === 2 ? 2 : 1);
+  const charGrade = charLevel <= 2 ? 10 : charLevel <= 4 ? 11 : 12;
   const isDelinquent = payload.archetypeId === "delinquent";
   const phyScore = payload.baseAbilities?.physique || 10;
   const mndScore = payload.baseAbilities?.mind || 10;
@@ -133,7 +295,7 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     social_class_id: payload.socialClassId,
     archetype_id: payload.archetypeId,
     level: charLevel,
-    grade: 10,
+    grade: charGrade,
     schemaVersion: 3,
     changelog: [],
     avatar_path: payload.avatar,
@@ -141,8 +303,8 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     proficient_skills: payload.proficientSkills || [],
     proficient_saves: payload.proficientSaves || [],
     feats: payload.feats || [],
-    featGrants: payload.featGrants || ensureGradeFeatGrants(10, []),
-    feat_grants: payload.featGrants || ensureGradeFeatGrants(10, []),
+    featGrants: payload.featGrants || ensureGradeFeatGrants(charGrade, []),
+    feat_grants: payload.featGrants || ensureGradeFeatGrants(charGrade, []),
     achievements: payload.achievements || [],
     featUsage: payload.featUsage || {},
     feat_usage: payload.featUsage || {},
@@ -153,7 +315,7 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
       composureCurrent: baseComp,
       composureMax: baseComp,
       composureTemp: 0,
-      restDiceTotal: 1,
+      restDiceTotal: charGrade === 10 ? 1 : charGrade === 11 ? 2 : 3,
       restDiceSpent: 0,
       heartInspiration: false
     },
@@ -179,6 +341,26 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
     updated_at: new Date().toISOString()
   };
 
+  // Fallback 1: Direct table insert to Supabase before falling back to offline localStorage
+  try {
+    const { data: inserted, error: insertError } = await supabase
+      .from("characters")
+      .insert(toDbCharacterInsert(localChar))
+      .select("*")
+      .single();
+
+    if (!insertError && inserted) {
+      const created = normalizeCharacter(inserted);
+      const roster = getLocalRoster().filter(c => c.id !== created.id);
+      roster.unshift(created);
+      saveLocalRoster(roster);
+      return created;
+    }
+  } catch (e) {
+    console.warn("Direct insert ke Supabase gagal, menyimpan ke localStorage:", e);
+  }
+
+  // Fallback 2: Offline localStorage
   const roster = getLocalRoster();
   roster.unshift(localChar);
   saveLocalRoster(roster);
@@ -191,36 +373,49 @@ export async function updateCharacterDirect(
   updates: Partial<Character>,
   expectedVersion: number
 ): Promise<Character> {
-  try {
-    const { data, error } = await supabase
-      .from("characters")
-      .update({
-        ...updates,
-        version: expectedVersion + 1,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", id)
-      .eq("version", expectedVersion)
-      .select()
-      .single();
+  const cleanUpdates = sanitizeDbUpdates(updates);
+  const nextVersion = (expectedVersion || 1) + 1;
 
-    if (!error && data) {
-      return normalizeCharacter(data);
+  if (isUuid(id)) {
+    try {
+      const { data, error } = await supabase
+        .from("characters")
+        .update({
+          ...cleanUpdates,
+          version: nextVersion,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", id)
+        .select("*")
+        .single();
+
+      if (!error && data) {
+        const updated = normalizeCharacter(data);
+        const roster = getLocalRoster();
+        const idx = roster.findIndex(c => c.id === id);
+        if (idx >= 0) {
+          roster[idx] = updated;
+        } else {
+          roster.unshift(updated);
+        }
+        saveLocalRoster(roster);
+        return updated;
+      }
+    } catch (e) {
+      console.warn("Gagal update cloud, mengupdate cache lokal.");
     }
-  } catch (e) {
-    console.warn("Gagal update cloud, mengupdate cache lokal.");
   }
 
   // Local update fallback
   const roster = getLocalRoster();
   const idx = roster.findIndex(c => c.id === id);
   if (idx >= 0) {
-    roster[idx] = {
+    roster[idx] = normalizeCharacter({
       ...roster[idx],
       ...updates,
-      version: expectedVersion + 1,
+      version: nextVersion,
       updated_at: new Date().toISOString()
-    };
+    });
     saveLocalRoster(roster);
     return roster[idx];
   }
@@ -229,10 +424,12 @@ export async function updateCharacterDirect(
 }
 
 export async function deleteCharacter(id: string): Promise<void> {
-  try {
-    await supabase.from("characters").delete().eq("id", id);
-  } catch (e) {
-    console.warn("Gagal delete cloud:", e);
+  if (isUuid(id)) {
+    try {
+      await supabase.from("characters").delete().eq("id", id);
+    } catch (e) {
+      console.warn("Gagal delete cloud:", e);
+    }
   }
 
   const roster = getLocalRoster().filter(c => c.id !== id);
