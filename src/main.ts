@@ -84,6 +84,7 @@ function initApp() {
   router
     .register("/", renderLandingView)
     .register("/characters/new", renderBuilderWizardView)
+    .register("/characters/:id/edit", renderBuilderWizardView)
     .register("/characters/:id", renderCharacterSheetView)
     .register("/codex", renderCodexCatalogView)
     .register("/codex/:category", renderCodexCategoryView)

@@ -136,9 +136,9 @@ BEGIN
     v_campaign_id := NULL;
   END IF;
 
-  -- Validate Skill Proficiencies (Limit 4)
-  IF jsonb_array_length(v_skills) > 4 THEN
-    RAISE EXCEPTION 'ERR_VALIDATION: Maksimal 4 keahlian (skills) yang dapat dipilih!';
+  -- Validate Skill Proficiencies (Up to 4 base + feat skills)
+  IF jsonb_array_length(v_skills) > 8 THEN
+    RAISE EXCEPTION 'ERR_VALIDATION: Maksimal 4 keahlian dasar (ditambah bonus feat) yang dapat dipilih!';
   END IF;
 
   -- Validate Ability Scores
@@ -174,7 +174,11 @@ BEGIN
   INTO v_hit_die, v_saves
   FROM public.ekskul WHERE id = v_ekskul_id;
   v_hit_die := COALESCE(v_hit_die, 'd8');
-  v_saves := COALESCE(v_saves, '["physique", "mind"]'::jsonb);
+  IF p_payload->'proficientSaves' IS NOT NULL AND jsonb_array_length(p_payload->'proficientSaves') >= 2 THEN
+    v_saves := p_payload->'proficientSaves';
+  ELSE
+    v_saves := COALESCE(v_saves, '["physique", "mind"]'::jsonb);
+  END IF;
 
   v_die_max := CASE v_hit_die WHEN 'd10' THEN 10 WHEN 'd6' THEN 6 ELSE 8 END;
   v_die_avg := CASE v_hit_die WHEN 'd10' THEN 6 WHEN 'd6' THEN 4 ELSE 5 END;
@@ -214,10 +218,15 @@ BEGIN
     social_class_id,
     archetype_id,
     level,
+    grade,
+    schema_version,
     avatar_path,
     abilities,
     proficient_skills,
     proficient_saves,
+    feats,
+    feat_grants,
+    feat_usage,
     vitals,
     finances,
     inventory,
@@ -232,10 +241,15 @@ BEGIN
     v_social_class_id,
     v_archetype_id,
     v_level,
+    v_grade,
+    3,
     COALESCE(p_payload->>'avatar', p_payload->>'avatar_path', ''),
     v_abilities,
     v_skills,
     v_saves,
+    COALESCE(p_payload->'feats', '[]'::jsonb),
+    COALESCE(p_payload->'featGrants', p_payload->'feat_grants', '[]'::jsonb),
+    COALESCE(p_payload->'featUsage', p_payload->'feat_usage', '{}'::jsonb),
     jsonb_build_object(
       'physicalHpCurrent', v_base_hp,
       'physicalHpMax', v_base_hp,

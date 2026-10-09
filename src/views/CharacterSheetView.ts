@@ -20,6 +20,7 @@ import {
   applyVitalChangeRpc
 } from "../api/gameRpc";
 import { characterStore } from "../store/characterStore";
+import { router } from "../router/router";
 import { exportCharacterJson, triggerPrintCharacterSheet } from "../services/exporter";
 import {
   calculateAbilityModifier,
@@ -1581,7 +1582,8 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   window.addEventListener("characterUpdated", onCharUpdated);
 
   document.getElementById("btnEditCharacter")?.addEventListener("click", () => {
-    editCharacterModal.show();
+    const current = characterStore.currentCharacter || char;
+    router.navigate(`/characters/${current.id}/edit`);
   });
 
   document.getElementById("btnLevelUp")?.addEventListener("click", () => {
