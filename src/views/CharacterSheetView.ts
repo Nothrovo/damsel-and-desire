@@ -704,7 +704,12 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
 
               <!-- School Calendar Box -->
               <div class="school-calendar-box mt-4">
-                <div class="inv-head-title">Kalender Acara SMA (Academic Flags)</div>
+                <div class="inv-head-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                  <span>Kalender Acara SMA (Academic Flags)</span>
+                  <a href="/calendar" style="font-size:0.78rem;color:var(--amber-gold);text-decoration:none;font-weight:700;">
+                    📅 Buka Kalender Progresif 12 Bulan →
+                  </a>
+                </div>
                 <div class="calendar-list" id="sheetCalendarList">
                   ${compCalendar.map(evt => {
                     const isDone = checkedCalendarEvents.includes(evt.id);

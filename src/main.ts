@@ -20,6 +20,7 @@ import { renderCompendiumView } from "./views/CompendiumView";
 import { renderHandbookView } from "./views/HandbookView";
 import { renderSettingsView } from "./views/SettingsView";
 import { renderMapView } from "./views/MapView";
+import { renderCalendarView } from "./views/CalendarView";
 import { renderNotFoundView } from "./views/NotFoundView";
 import { renderCodexCatalogView } from "./views/CodexCatalogView";
 import { renderCodexCategoryView } from "./views/CodexCategoryView";
@@ -92,6 +93,7 @@ function initApp() {
     .register("/compendium", renderCompendiumView)
     .register("/handbook", renderHandbookView)
     .register("/map", renderMapView)
+    .register("/calendar", renderCalendarView)
     .register("/login", renderLandingView)
     .register("/campaigns", renderLandingView)
     .register("/campaigns/:id", renderLandingView)

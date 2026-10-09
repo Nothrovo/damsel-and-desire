@@ -425,4 +425,117 @@ export function isDmPinValid(pin: string): boolean {
 
 export * from "./codex";
 
+// ==========================================
+// SCHOOL CALENDAR PROGRESSIVE SYSTEM
+// ==========================================
+
+export type SchoolCalendarMonthId =
+  | "april"
+  | "may"
+  | "june"
+  | "july"
+  | "august"
+  | "september"
+  | "october"
+  | "november"
+  | "december"
+  | "january"
+  | "february"
+  | "march";
+
+export type SchoolCalendarMonthStatus = "passed" | "current" | "upcoming";
+
+export type SchoolEventCategoryTag =
+  | "Wajib"
+  | "Akademik"
+  | "Ujian"
+  | "Ekskul"
+  | "Festival"
+  | "Kompetisi"
+  | "Romance"
+  | "Liburan"
+  | "School Trip"
+  | "Tradisi Elite"
+  | "Slice of Life"
+  | "Milestone"
+  | "Momen Party";
+
+export interface SchoolCalendarEventItem {
+  id: string;
+  monthId: SchoolCalendarMonthId;
+  periodLabel: string; // e.g. "Minggu 1", "Pertengahan Agustus", "Hari 1 — Kyoto"
+  title: string;
+  japaneseTerm?: string;
+  category: SchoolEventCategoryTag;
+  description: string;
+  isKeyEvent?: boolean;
+}
+
+export interface SchoolCalendarCustomEvent {
+  id: string;
+  monthId: SchoolCalendarMonthId;
+  title: string;
+  note?: string;
+  category: SchoolEventCategoryTag;
+  done: boolean;
+  createdAt: string;
+}
+
+export interface SchoolCalendarMonth {
+  id: SchoolCalendarMonthId;
+  order: number; // 1 (April) .. 12 (March)
+  name: string; // "April"
+  shortName: string; // "Apr"
+  englishTitle: string; // "The First Encounter"
+  arcLabel: string; // "Arc 01 · Awal Hubungan"
+  romanceStageId: string; // "curiosity" | "trust" | "attraction" | "jealousy_honesty" | "distance_choice" | "confession_commitment"
+  romanceStageName: string; // "Curiosity (Rasa Penasaran)"
+  semesterLabel: string; // "Semester 1 · Musim Semi"
+  seasonIcon: string; // "🌸"
+  mainEventTitle: string; // "入学式 (Nyūgakushiki) — Upacara Penerimaan Siswa Baru"
+  summary: string;
+  memorableSceneTitle: string;
+  memorableSceneStory: string;
+  conflictSeed: string;
+  events: SchoolCalendarEventItem[];
+}
+
+export interface SchoolRomanceArcStage {
+  id: string;
+  monthsLabel: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  monthIds: SchoolCalendarMonthId[];
+}
+
+export interface SchoolTraditionItem {
+  id: string;
+  title: string;
+  japaneseSubtitle?: string;
+  timingLabel: string;
+  description: string;
+  storyPotential: string;
+  icon: string;
+}
+
+export interface SchoolDailyRoutineItem {
+  id: string;
+  title: string;
+  japaneseTerm: string;
+  description: string;
+  gameplayHook: string;
+  icon: string;
+}
+
+export interface SchoolCalendarState {
+  currentMonthId: SchoolCalendarMonthId;
+  completedEventIds: string[];
+  customEvents: SchoolCalendarCustomEvent[];
+  monthNotes: Partial<Record<SchoolCalendarMonthId, string>>;
+  academicYear: number; // 1 = Kelas 10 (Kōkō Ichinensei), 2 = Kelas 11 (Kōkō Ninensei)
+  updatedAt: string;
+}
+
 

@@ -36,6 +36,9 @@ export async function renderLandingView(): Promise<void> {
             <a href="/compendium" class="btn btn-secondary btn-large">
               📖 Buka Compendium
             </a>
+            <a href="/calendar" class="btn btn-secondary btn-large">
+              📅 Kalender Sekolah
+            </a>
           </div>
         </div>
       </div>
