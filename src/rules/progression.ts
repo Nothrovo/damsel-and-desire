@@ -12,6 +12,7 @@ import type {
   CharacterAbilities
 } from "../types";
 import { FALLBACK_DD_DATA, ALL_FEATS } from "../data/fallbackCompendium";
+import { getCachedEkskul, getCachedArchetypes } from "../api/compendium";
 import { calculateAbilityModifier, calculateProficiencyBonus } from "../services/ruleEngine";
 import { ensureGradeFeatGrants } from "./migration";
 
@@ -101,6 +102,10 @@ export function extractAbilityScore(val: any): number {
 export function getArchetypeStatBonus(archetypeId?: string): Partial<Record<AbilityKey, number>> {
   if (!archetypeId) return {};
   const normId = archetypeId.toLowerCase().trim();
+  const cached = getCachedArchetypes()?.find(a => a.id.toLowerCase() === normId);
+  if (cached?.stat_bonus) {
+    return cached.stat_bonus as Partial<Record<AbilityKey, number>>;
+  }
   const arch = FALLBACK_DD_DATA.archetypes.find((a: any) => a.id.toLowerCase() === normId);
   return (arch?.statBonus || (arch as any)?.stat_bonus || {}) as Partial<Record<AbilityKey, number>>;
 }
@@ -256,13 +261,7 @@ export function calculateEffectiveStats(
   const pb = calculateProficiencyBonus(character.level);
   const ekskulForSaves = resolveEkskulData(character.ekskul_id);
   const rawSaves = character.proficient_saves || [];
-  const isStaleDefaultSaves =
-    Boolean(ekskulForSaves?.saving_throws?.length) &&
-    rawSaves.length === 2 &&
-    rawSaves.includes("physique") &&
-    rawSaves.includes("mind") &&
-    !(ekskulForSaves!.saving_throws.includes("physique") && ekskulForSaves!.saving_throws.includes("mind"));
-  const baseSaves = (rawSaves.length === 0 || isStaleDefaultSaves) && ekskulForSaves?.saving_throws?.length
+  const baseSaves = ekskulForSaves?.saving_throws?.length
     ? ekskulForSaves.saving_throws
     : rawSaves;
 
@@ -311,13 +310,8 @@ export function calculateEffectiveStats(
   const hitDie = ekskul?.hit_die || "d8";
   const isDelinquent = character.archetype_id === "delinquent";
 
-  const minHp = calculateMaxHp(character.level, hitDie, effectiveAbilities.physique, isDelinquent, hasBuiltDifferent);
-  const rawHpMax = character.vitals?.physicalHpMax ?? minHp;
-  const physicalHpMax = Math.max(rawHpMax, minHp);
-
-  const minComp = calculateMaxComposure(character.level, effectiveAbilities.mind, hasWhoGonnaCarryTheBoats);
-  const rawCompMax = character.vitals?.composureMax ?? minComp;
-  const composureMax = Math.max(rawCompMax, minComp);
+  const physicalHpMax = calculateMaxHp(character.level, hitDie, effectiveAbilities.physique, isDelinquent, hasBuiltDifferent);
+  const composureMax = calculateMaxComposure(character.level, effectiveAbilities.mind, hasWhoGonnaCarryTheBoats);
 
   const baseSpeedFeet = character.archetype_id === "jock" ? 35 : 30;
   const totalSpeedFeet = baseSpeedFeet + (hasSprinter ? 10 : 0);
@@ -358,7 +352,7 @@ export function calculateEffectiveStats(
 }
 
 /**
- * Helper to fetch ekskul definition from provided compendium or static fallback.
+ * Helper to fetch ekskul definition from provided compendium, live cache, or static fallback.
  */
 export function resolveEkskulData(
   ekskulId: string,
@@ -371,6 +365,12 @@ export function resolveEkskulData(
     } else if (compendiumEkskul.id === ekskulId) {
       return compendiumEkskul;
     }
+  }
+
+  const cachedList = getCachedEkskul();
+  if (cachedList) {
+    const foundCached = cachedList.find(e => e.id === ekskulId);
+    if (foundCached) return foundCached;
   }
 
   const fallback = FALLBACK_DD_DATA.ekskul.find((e: any) => e.id === ekskulId);

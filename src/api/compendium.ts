@@ -22,6 +22,14 @@ let cacheEquipmentPacks: EquipmentPackCompendium[] | null = null;
 let cacheFeats: FeatDefinition[] | null = null;
 let cacheAchievements: AchievementCompendium[] | null = null;
 
+export function getCachedEkskul(): EkskulCompendium[] | null {
+  return cacheEkskul;
+}
+
+export function getCachedArchetypes(): ArchetypeCompendium[] | null {
+  return cacheArchetypes;
+}
+
 export async function getCompendiumAbilities(): Promise<AbilityCompendium[]> {
   if (cacheAbilities) return cacheAbilities;
   try {

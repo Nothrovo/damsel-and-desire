@@ -2,6 +2,7 @@ import { updateCharacterDirect } from "../api/characters";
 import { characterStore } from "../store/characterStore";
 import { showToast } from "./Toast";
 import {
+  getCompendiumEkskul,
   getCompendiumArchetypes,
   getCompendiumSocialClasses
 } from "../api/compendium";
@@ -11,6 +12,7 @@ import { featPickerModal } from "./FeatPickerModal";
 import { getArchetypeStatBonus, calculateEffectiveStats } from "../rules/progression";
 import type {
   Character,
+  EkskulCompendium,
   ArchetypeCompendium,
   SocialClassCompendium,
   CharacterChangeLogEntry
@@ -19,6 +21,7 @@ import type {
 export class EditCharacterModal {
   private modalEl: HTMLElement | null = null;
   private isDirty: boolean = false;
+  private compEkskul: EkskulCompendium[] = [];
   private compArchetypes: ArchetypeCompendium[] = [];
   private compSocial: SocialClassCompendium[] = [];
 
@@ -55,6 +58,7 @@ export class EditCharacterModal {
 
     // Preload compendiums for dropdowns
     try {
+      this.compEkskul = await getCompendiumEkskul();
       this.compArchetypes = await getCompendiumArchetypes();
       this.compSocial = await getCompendiumSocialClasses();
     } catch (e) {
@@ -111,7 +115,15 @@ export class EditCharacterModal {
               <input type="text" id="editCharAvatarInput" class="input-text" value="${escapeAttr(char.avatar_path || '')}" style="width:100%;" placeholder="https://...">
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
+            <div class="form-group">
+              <label style="font-size:0.8rem;color:var(--text-muted);">Klub Ekskul:</label>
+              <select id="editCharEkskulSelect" class="input-text" style="width:100%;">
+                ${this.compEkskul.map(e => `
+                  <option value="${e.id}" ${char.ekskul_id === e.id ? 'selected' : ''}>${e.name}</option>
+                `).join("")}
+              </select>
+            </div>
             <div class="form-group">
               <label style="font-size:0.8rem;color:var(--text-muted);">Arketipe:</label>
               <select id="editCharArchetypeSelect" class="input-text" style="width:100%;">
@@ -284,6 +296,7 @@ export class EditCharacterModal {
 
     const nameInput = document.getElementById("editCharNameInput") as HTMLInputElement;
     const avatarInput = document.getElementById("editCharAvatarInput") as HTMLInputElement;
+    const ekskulSelect = document.getElementById("editCharEkskulSelect") as HTMLSelectElement;
     const archetypeSelect = document.getElementById("editCharArchetypeSelect") as HTMLSelectElement;
     const socialSelect = document.getElementById("editCharSocialSelect") as HTMLSelectElement;
 
@@ -323,29 +336,36 @@ export class EditCharacterModal {
       backstory: backstoryInput ? backstoryInput.value.trim() : ""
     };
 
+    const nextEkskulId = ekskulSelect?.value || char.ekskul_id;
+    const nextArchId = archetypeSelect?.value || char.archetype_id;
+    const nextSubclassId = nextEkskulId !== char.ekskul_id ? null : (char.subclass_id ?? null);
+
     const changelogEntry: CharacterChangeLogEntry = {
       timestamp: new Date().toISOString(),
       action: "EDIT_CHARACTER",
       description: "Memperbarui data profil, atribut, atau kisah karakter",
       previousValue: {
         name: char.name,
+        ekskul_id: char.ekskul_id,
         archetype_id: char.archetype_id,
         social_class_id: char.social_class_id
       },
       newValue: {
         name: newName,
-        archetype_id: archetypeSelect?.value || char.archetype_id,
+        ekskul_id: nextEkskulId,
+        archetype_id: nextArchId,
         social_class_id: socialSelect?.value || char.social_class_id
       },
       source: "user"
     };
 
     const updatedChangelog = [...(char.changelog || []), changelogEntry];
-    const nextArchId = archetypeSelect?.value || char.archetype_id;
 
-    // Recalculate vitals max if abilities or archetype changed
+    // Recalculate effective stats, proficient saves, and vitals max dynamically
     const candidateChar: Character = {
       ...char,
+      ekskul_id: nextEkskulId,
+      subclass_id: nextSubclassId,
       archetype_id: nextArchId,
       abilities: newAbilities
     };
@@ -365,9 +385,12 @@ export class EditCharacterModal {
     const updates: Partial<Character> = {
       name: newName,
       avatar_path: avatarInput ? avatarInput.value.trim() : char.avatar_path,
+      ekskul_id: nextEkskulId,
+      subclass_id: nextSubclassId,
       archetype_id: nextArchId,
       social_class_id: socialSelect?.value || char.social_class_id,
       abilities: newAbilities,
+      proficient_saves: effective.proficientSaves,
       vitals: newVitals,
       backstory_fields: newBackstory,
       changelog: updatedChangelog
