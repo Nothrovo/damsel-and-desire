@@ -18,7 +18,10 @@ import {
   canLevelUp,
   previewLevelUp,
   levelUp,
-  validateCharacter
+  validateCharacter,
+  getArchetypeStatBonus,
+  getEffectiveAbilityScore,
+  calculateEffectiveStats
 } from "../src/rules/progression";
 import type { Character } from "../src/types";
 
@@ -362,6 +365,48 @@ describe("Progression Rule Engine", () => {
       const result = validateCharacter(char);
       expect(result.valid).toBe(false);
       expect(result.errors.some(e => e.includes("bukan peminatan valid"))).toBe(true);
+    });
+  });
+
+  describe("Archetype Stat Bonuses", () => {
+    it("resolves archetype stat bonuses accurately from compendium", () => {
+      expect(getArchetypeStatBonus("delinquent")).toEqual({ physique: 2, looks: 1 });
+      expect(getArchetypeStatBonus("jock")).toEqual({ physique: 2, talent: 1 });
+      expect(getArchetypeStatBonus("nerd")).toEqual({ intelligent: 2, mind: 1 });
+      expect(getArchetypeStatBonus("normies")).toEqual({
+        physique: 1,
+        intelligent: 1,
+        looks: 1,
+        mind: 1,
+        talent: 1,
+        luck: 1
+      });
+    });
+
+    it("adds archetype stat bonuses to effective ability scores, modifiers, and vitals", () => {
+      const char = createMockCharacter({
+        archetype_id: "delinquent",
+        ekskul_id: "kendo", // d10
+        abilities: {
+          physique: 15,
+          intelligent: 10,
+          looks: 13,
+          mind: 12,
+          talent: 14,
+          luck: 8
+        }
+      });
+
+      expect(getEffectiveAbilityScore(char, "physique")).toBe(17); // 15 + 2
+      expect(getEffectiveAbilityScore(char, "looks")).toBe(14); // 13 + 1
+
+      const effective = calculateEffectiveStats(char);
+      expect(effective.abilities.physique).toBe(17);
+      expect(effective.modifiers.physique).toBe(3); // floor((17-10)/2) = +3
+      expect(effective.abilities.looks).toBe(14);
+      expect(effective.modifiers.looks).toBe(2); // floor((14-10)/2) = +2
+      // Level 1 Kendo (d10=10) + PHY mod (+3) + Delinquent (+2) = 15 HP
+      expect(effective.physicalHpMax).toBe(15);
     });
   });
 });

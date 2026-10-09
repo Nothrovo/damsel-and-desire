@@ -27,7 +27,8 @@ export async function shortRestRpc(characterId: string, currentVersion: number) 
 
   const dieFaces = char.ekskul_id === "kendo" || char.ekskul_id === "martial_arts" ? 10 : 8;
   const roll = Math.floor(Math.random() * dieFaces) + 1;
-  const modPhy = Math.floor((char.abilities.physique - 10) / 2);
+  const effective = calculateEffectiveStats(char);
+  const modPhy = effective.modifiers.physique;
   const heal = Math.max(1, roll + modPhy);
 
   const newHp = Math.min(char.vitals.physicalHpMax, char.vitals.physicalHpCurrent + heal);

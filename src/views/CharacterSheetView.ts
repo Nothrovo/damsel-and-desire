@@ -45,6 +45,8 @@ import {
   getPendingChoices,
   getAllMovesSummary,
   calculateEffectiveStats,
+  extractAbilityScore,
+  getArchetypeStatBonus,
   useFeatAction
 } from "../rules/progression";
 import { renderSheetSkeleton } from "../components/Skeleton";
@@ -189,7 +191,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
   const effective = calculateEffectiveStats(char);
   const avatar = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
   const profBonus = effective.proficiencyBonus;
-  const abilities = char.abilities;
+  const abilities = effective.abilities;
   const vitals = char.vitals;
   const finances = char.finances;
 
@@ -323,14 +325,20 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
       <!-- 6 ABILITY SCORE CARDS ROW (ACROSS TOP) -->
       <div class="ability-cards-row">
         ${statKeys.map(key => {
+          const baseScore = extractAbilityScore((char.abilities as any)?.[key]);
+          const archBonus = getArchetypeStatBonus(char.archetype_id)[key] || 0;
           const score = abilities[key] || 10;
           const mod = mods[key];
           const modFormatted = formatModifier(mod);
+          const bonusHint = archBonus > 0 ? ` (Dasar ${baseScore} + ${archBonus} Archetype)` : "";
           return `
-            <div class="ability-card" data-stat="${key}" data-mod="${mod}" title="Klik untuk melempar check ${key.toUpperCase()} d20">
+            <div class="ability-card" data-stat="${key}" data-mod="${mod}" title="Klik untuk melempar check ${key.toUpperCase()} d20${bonusHint}">
               <span class="ability-card-label">${key.toUpperCase()}</span>
               <div class="ability-card-mod" id="sheetMod${capitalize(key)}">${modFormatted}</div>
               <div class="ability-card-score" id="sheetScore${capitalize(key)}">${score}</div>
+              <div class="ability-card-sub" id="sheetSub${capitalize(key)}" style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;line-height:1;">
+                ${archBonus > 0 ? `${baseScore} <span style="color:var(--rose-light);font-weight:700;">+${archBonus}</span>` : ""}
+              </div>
             </div>
           `;
         }).join("")}
@@ -930,9 +938,14 @@ function renderFeaturesContent(char: Character): string {
 
   let html = "";
   if (curArchetype) {
+    const bonusEntries = Object.entries(curArchetype.stat_bonus || getArchetypeStatBonus(char.archetype_id));
+    const bonusText = bonusEntries.map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ");
     html += `
       <div class="card p-3 mb-3">
-        <h4 style="color:#60a5fa;margin-bottom:0.4rem;font-size:0.95rem;font-weight:800;">Fitur Archetype: ${escapeHtml(curArchetype.name)}</h4>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem;">
+          <h4 style="color:#60a5fa;margin:0;font-size:0.95rem;font-weight:800;">Fitur Archetype: ${escapeHtml(curArchetype.name)}</h4>
+          ${bonusText ? `<span style="font-size:0.75rem;background:rgba(225,29,72,0.15);color:var(--rose-light);border:1px solid rgba(225,29,72,0.3);padding:2px 8px;border-radius:4px;font-weight:700;">Bonus Stat: ${escapeHtml(bonusText)}</span>` : ""}
+        </div>
         <p class="text-sm" style="line-height:1.6;">${escapeHtml(curArchetype.perk_description || "Karakteristik kepribadian dan gaya masa muda khas anime.")}</p>
       </div>
     `;
@@ -1702,17 +1715,118 @@ async function alterVitalDirect(char: Character, type: 'phys' | 'composure', del
 }
 
 function updateDynamicElements(char: Character) {
+  const effective = calculateEffectiveStats(char);
   const vitals = char.vitals;
   const finances = char.finances;
+  const profBonus = effective.proficiencyBonus;
+  const mods = effective.modifiers;
+  const archBonusMap = getArchetypeStatBonus(char.archetype_id);
+  const statKeys: Array<keyof CharacterAbilities> = ["physique", "intelligent", "looks", "mind", "talent", "luck"];
+
+  // Identity & Badges
+  const nameEl = document.getElementById("sheetCharName");
+  if (nameEl) nameEl.textContent = char.name;
+  const avatarEl = document.getElementById("sheetAvatarImg") as HTMLImageElement | null;
+  if (avatarEl) {
+    avatarEl.src = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
+  }
+  const curArchetype = compArchetypes.find(a => a.id === char.archetype_id);
+  const archBadge = document.getElementById("sheetArchetypeBadge");
+  if (archBadge) archBadge.textContent = curArchetype ? curArchetype.name : char.archetype_id.toUpperCase();
+  const curSocial = compSocial.find(s => s.id === char.social_class_id);
+  const socialBadge = document.getElementById("sheetSocialBadge");
+  if (socialBadge) socialBadge.textContent = curSocial ? curSocial.name : char.social_class_id.toUpperCase();
+
+  // 6 Ability Score Cards
+  statKeys.forEach(key => {
+    const cap = capitalize(key);
+    const baseScore = extractAbilityScore((char.abilities as any)?.[key]);
+    const archBonus = archBonusMap[key] || 0;
+    const score = effective.abilities[key] || 10;
+    const mod = mods[key];
+
+    const modEl = document.getElementById(`sheetMod${cap}`);
+    const scoreEl = document.getElementById(`sheetScore${cap}`);
+    const subEl = document.getElementById(`sheetSub${cap}`);
+    if (modEl) modEl.textContent = formatModifier(mod);
+    if (scoreEl) scoreEl.textContent = String(score);
+    if (subEl) {
+      subEl.innerHTML = archBonus > 0 ? `${baseScore} <span style="color:var(--rose-light);font-weight:700;">+${archBonus}</span>` : "";
+    }
+    const cardEl = document.querySelector(`.ability-card[data-stat="${key}"]`) as HTMLElement | null;
+    if (cardEl) {
+      cardEl.dataset.mod = String(mod);
+    }
+  });
+
+  // Combat & Social AC, Initiative, Speed
+  const physAcEl = document.getElementById("sheetPhysAC");
+  if (physAcEl) physAcEl.textContent = String(10 + mods.physique);
+  const initEl = document.getElementById("sheetInitiative");
+  if (initEl) initEl.textContent = formatModifier(mods.physique);
+  const speedEl = document.getElementById("sheetSpeed");
+  if (speedEl) speedEl.textContent = effective.speed;
+  const socialAcEl = document.getElementById("sheetSocialAC");
+  if (socialAcEl) socialAcEl.textContent = String(10 + mods.mind + Math.max(0, mods.looks));
+
+  // Passive Senses
+  const passPercEl = document.getElementById("sheetPassivePerception");
+  if (passPercEl) passPercEl.textContent = String(effective.passivePerception);
+  const passInsEl = document.getElementById("sheetPassiveInsight");
+  if (passInsEl) passInsEl.textContent = String(effective.passiveInsight);
+  const passInvEl = document.getElementById("sheetPassiveInvestigation");
+  if (passInvEl) passInvEl.textContent = String(effective.passiveInvestigation);
+
+  // Saving Throws
+  const savesListEl = document.getElementById("sheetSavesList");
+  if (savesListEl) {
+    savesListEl.innerHTML = statKeys.map(key => {
+      const isProf = effective.proficientSaves.includes(key);
+      const saveTotal = mods[key] + (isProf ? profBonus : 0);
+      const saveSign = formatModifier(saveTotal);
+      const labelName = capitalize(key);
+      return `
+        <div class="save-item" data-save-stat="${key}" data-mod="${saveTotal}" data-name="${labelName}">
+          <div class="save-left">
+            <span class="prof-dot ${isProf ? 'filled' : ''}"></span>
+            <span class="save-name">${labelName} Save</span>
+          </div>
+          <span class="save-bonus">${saveSign}</span>
+        </div>
+      `;
+    }).join("");
+    savesListEl.querySelectorAll(".save-item").forEach((item: any) => {
+      item.addEventListener("click", () => {
+        const name = item.dataset.name || "Stat";
+        const mod = parseInt(item.dataset.mod || "0");
+        diceRollerModal.show("d20", mod, `${name} Saving Throw`);
+      });
+    });
+  }
+
+  // Skills Table
+  const skillsTableEl = document.getElementById("sheetSkillsTable");
+  if (skillsTableEl) {
+    skillsTableEl.innerHTML = renderSkillsRows(char, mods, profBonus);
+    skillsTableEl.querySelectorAll(".skill-row").forEach((row: any) => {
+      row.addEventListener("click", () => {
+        const skillName = row.dataset.skillName || "Skill";
+        const statName = row.dataset.statName || "";
+        const mod = parseInt(row.dataset.mod || "0");
+        diceRollerModal.show("d20", mod, `Check ${skillName} (${statName})`);
+      });
+    });
+  }
 
   // HP
   const curHpEl = document.getElementById("sheetPhysHpCurrent");
   const maxHpEl = document.getElementById("sheetPhysHpMax");
   const hpBarEl = document.getElementById("sheetPhysHpBar");
+  const displayHpMax = Math.max(vitals.physicalHpMax, effective.physicalHpMax);
   if (curHpEl) curHpEl.textContent = String(vitals.physicalHpCurrent);
-  if (maxHpEl) maxHpEl.textContent = String(vitals.physicalHpMax);
+  if (maxHpEl) maxHpEl.textContent = String(displayHpMax);
   if (hpBarEl) {
-    const hpPercent = Math.max(0, Math.min(100, Math.round((vitals.physicalHpCurrent / Math.max(1, vitals.physicalHpMax)) * 100)));
+    const hpPercent = Math.max(0, Math.min(100, Math.round((vitals.physicalHpCurrent / Math.max(1, displayHpMax)) * 100)));
     hpBarEl.style.width = `${hpPercent}%`;
   }
 
@@ -1720,10 +1834,11 @@ function updateDynamicElements(char: Character) {
   const curCompEl = document.getElementById("sheetComposureCurrent");
   const maxCompEl = document.getElementById("sheetComposureMax");
   const compBarEl = document.getElementById("sheetComposureBar");
+  const displayCompMax = Math.max(vitals.composureMax, effective.composureMax);
   if (curCompEl) curCompEl.textContent = String(vitals.composureCurrent);
-  if (maxCompEl) maxCompEl.textContent = String(vitals.composureMax);
+  if (maxCompEl) maxCompEl.textContent = String(displayCompMax);
   if (compBarEl) {
-    const compPercent = Math.max(0, Math.min(100, Math.round((vitals.composureCurrent / Math.max(1, vitals.composureMax)) * 100)));
+    const compPercent = Math.max(0, Math.min(100, Math.round((vitals.composureCurrent / Math.max(1, displayCompMax)) * 100)));
     compBarEl.style.width = `${compPercent}%`;
   }
 
@@ -1749,11 +1864,13 @@ function updateDynamicElements(char: Character) {
   const gradeBadge = document.getElementById("sheetGradeBadge");
   if (gradeBadge) gradeBadge.textContent = getLevelLabel(char.level);
   const profBadge = document.getElementById("sheetProfBonus");
-  if (profBadge) profBadge.textContent = `+${calculateProficiencyBonus(char.level)}`;
+  if (profBadge) profBadge.textContent = `+${profBonus}`;
 
-  // Refresh Moves List
+  // Refresh Moves & Features List
   const movesList = document.getElementById("sheetMovesList");
   if (movesList) movesList.innerHTML = renderMovesList(char, activeMoveFilter);
+  const featuresList = document.getElementById("sheetFeaturesList");
+  if (featuresList) featuresList.innerHTML = renderFeaturesContent(char);
 }
 
 // ----------------------------------------------------------------------------

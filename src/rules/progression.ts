@@ -95,6 +95,26 @@ export function extractAbilityScore(val: any): number {
 }
 
 /**
+ * Returns the innate ability score bonuses granted by a character's Archetype.
+ * E.g. Delinquent (+2 Physique, +1 Looks), Jock (+2 Physique, +1 Talent), Normies (+1 All), etc.
+ */
+export function getArchetypeStatBonus(archetypeId?: string): Partial<Record<AbilityKey, number>> {
+  if (!archetypeId) return {};
+  const normId = archetypeId.toLowerCase().trim();
+  const arch = FALLBACK_DD_DATA.archetypes.find((a: any) => a.id.toLowerCase() === normId);
+  return (arch?.statBonus || (arch as any)?.stat_bonus || {}) as Partial<Record<AbilityKey, number>>;
+}
+
+/**
+ * Returns the effective ability score (base score + archetype stat bonus) for a given ability key.
+ */
+export function getEffectiveAbilityScore(character: Partial<Character>, stat: AbilityKey): number {
+  const base = extractAbilityScore((character.abilities as any)?.[stat]);
+  const archBonus = getArchetypeStatBonus(character.archetype_id || (character as any)?.archetypeId);
+  return base + (archBonus[stat] || 0);
+}
+
+/**
  * Calculate HP gain for a specific level up.
  * Level 1: HitDieMax + Mod PHY + (Delinquent +2) + (BuiltDifferent +2)
  * Level 2..6: HitDieAvg + Mod PHY + (Delinquent +2) + (BuiltDifferent +2)
@@ -217,7 +237,15 @@ export function calculateEffectiveStats(
     luck: extractAbilityScore(character.abilities?.luck)
   };
 
-  const effectiveAbilities: CharacterAbilities = { ...baseScores };
+  const archBonus = getArchetypeStatBonus(character.archetype_id || (character as any)?.archetypeId);
+  const effectiveAbilities: CharacterAbilities = {
+    physique: baseScores.physique + (archBonus.physique || 0),
+    intelligent: baseScores.intelligent + (archBonus.intelligent || 0),
+    looks: baseScores.looks + (archBonus.looks || 0),
+    mind: baseScores.mind + (archBonus.mind || 0),
+    talent: baseScores.talent + (archBonus.talent || 0),
+    luck: baseScores.luck + (archBonus.luck || 0)
+  };
   const modifiers: Record<AbilityKey, number> = {} as any;
 
   const statKeys: AbilityKey[] = ["physique", "intelligent", "looks", "mind", "talent", "luck"];
@@ -595,8 +623,8 @@ export function previewLevelUp(
 
   const ekskul = resolveEkskulData(character.ekskul_id, compendiumEkskul);
   const hitDie = ekskul?.hit_die || "d8";
-  const physique = extractAbilityScore(character.abilities?.physique);
-  const mind = extractAbilityScore(character.abilities?.mind);
+  const physique = getEffectiveAbilityScore(character, "physique");
+  const mind = getEffectiveAbilityScore(character, "mind");
   const isDelinquent = character.archetype_id === "delinquent";
 
   const hasBuiltDifferent = (character.feats || []).some(f => f.featId === "built_different") || choices?.featId === "built_different";
@@ -893,7 +921,7 @@ export function checkFeatEligibility(
     }
     if (prereqs.minAbility) {
       for (const [stat, reqScore] of Object.entries(prereqs.minAbility)) {
-        const charScore = extractAbilityScore((character.abilities as any)?.[stat]);
+        const charScore = getEffectiveAbilityScore(character, stat as AbilityKey);
         if (charScore < reqScore!) {
           reasons.push(`Memerlukan nilai ${stat.toUpperCase()} minimal ${reqScore} (saat ini ${charScore}).`);
         }
@@ -1072,7 +1100,9 @@ export function takeFeat(
     } else if (feat.usage.countFormula === "pb") {
       maxUses = calculateProficiencyBonus(character.level);
     } else if (feat.usage.countFormula === "ability_mod") {
-      const score = extractAbilityScore(newAbilities[feat.usage.abilityKey || "intelligent"]);
+      const abilKey = (feat.usage.abilityKey || "intelligent") as AbilityKey;
+      const archBonus = getArchetypeStatBonus(character.archetype_id || (character as any)?.archetypeId);
+      const score = extractAbilityScore(newAbilities[abilKey]) + (archBonus[abilKey] || 0);
       maxUses = Math.max(1, calculateAbilityModifier(score));
     } else if (feat.usage.countFormula === "level") {
       maxUses = character.level;

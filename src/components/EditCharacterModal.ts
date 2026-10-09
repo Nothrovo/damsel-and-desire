@@ -8,6 +8,7 @@ import {
 import { ALL_FEATS } from "../data/featCompendium";
 import { isDmPinValid } from "../types";
 import { featPickerModal } from "./FeatPickerModal";
+import { getArchetypeStatBonus, calculateEffectiveStats } from "../rules/progression";
 import type {
   Character,
   ArchetypeCompendium,
@@ -132,15 +133,22 @@ export class EditCharacterModal {
 
         <!-- Ability Scores Section -->
         <div class="card p-3" style="background:rgba(255,255,255,0.02);">
-          <h4 style="margin:0 0 0.75rem 0;font-size:0.95rem;color:var(--text-primary);">Skor Atribut Dasar</h4>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.75rem;">
+            <h4 style="margin:0;font-size:0.95rem;color:var(--text-primary);">Skor Atribut Dasar</h4>
+            <span style="font-size:0.75rem;color:var(--text-muted);">Bonus Archetype ditambahkan otomatis ke total akhir</span>
+          </div>
           <div style="display:grid;grid-template-columns:repeat(6, 1fr);gap:0.5rem;">
             ${(["physique", "intelligent", "looks", "mind", "talent", "luck"] as const).map(stat => {
               const rawStat = (abilities as any)?.[stat];
               const score = typeof rawStat === "object" ? rawStat?.score : (rawStat ?? 10);
+              const bonus = getArchetypeStatBonus(char.archetype_id)[stat] || 0;
               return `
                 <div style="text-align:center;">
                   <label style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">${stat.slice(0, 3)}</label>
                   <input type="number" id="editCharStat_${stat}" class="input-text" min="3" max="24" value="${score}" style="width:100%;text-align:center;font-weight:700;">
+                  <div id="editCharStatPreview_${stat}" style="font-size:0.68rem;color:var(--text-muted);margin-top:3px;">
+                    ${bonus > 0 ? `<span style="color:var(--rose-light);font-weight:700;">+${bonus}</span> = <strong>${score + bonus}</strong>` : `Total: <strong>${score}</strong>`}
+                  </div>
                 </div>
               `;
             }).join("")}
@@ -209,10 +217,33 @@ export class EditCharacterModal {
       </div>
     `;
 
-    // Listen to changes to toggle dirty state
+    const refreshStatPreviews = () => {
+      const archSel = document.getElementById("editCharArchetypeSelect") as HTMLSelectElement | null;
+      const archId = archSel?.value || char.archetype_id;
+      const bonusMap = getArchetypeStatBonus(archId);
+      (["physique", "intelligent", "looks", "mind", "talent", "luck"] as const).forEach(stat => {
+        const inp = document.getElementById(`editCharStat_${stat}`) as HTMLInputElement | null;
+        const prev = document.getElementById(`editCharStatPreview_${stat}`);
+        const base = inp ? (parseInt(inp.value, 10) || 10) : 10;
+        const bonus = bonusMap[stat] || 0;
+        if (prev) {
+          prev.innerHTML = bonus > 0
+            ? `<span style="color:var(--rose-light);font-weight:700;">+${bonus}</span> = <strong>${base + bonus}</strong>`
+            : `Total: <strong>${base}</strong>`;
+        }
+      });
+    };
+
+    // Listen to changes to toggle dirty state and refresh previews
     bodyEl.querySelectorAll("input, select, textarea").forEach(el => {
-      el.addEventListener("input", () => this.markDirty());
-      el.addEventListener("change", () => this.markDirty());
+      el.addEventListener("input", () => {
+        this.markDirty();
+        refreshStatPreviews();
+      });
+      el.addEventListener("change", () => {
+        this.markDirty();
+        refreshStatPreviews();
+      });
     });
 
     // Retrain button click handlers
@@ -310,13 +341,34 @@ export class EditCharacterModal {
     };
 
     const updatedChangelog = [...(char.changelog || []), changelogEntry];
+    const nextArchId = archetypeSelect?.value || char.archetype_id;
+
+    // Recalculate vitals max if abilities or archetype changed
+    const candidateChar: Character = {
+      ...char,
+      archetype_id: nextArchId,
+      abilities: newAbilities
+    };
+    const effective = calculateEffectiveStats(candidateChar);
+    const oldHpMax = char.vitals?.physicalHpMax || effective.physicalHpMax;
+    const oldCompMax = char.vitals?.composureMax || effective.composureMax;
+    const newHpMax = effective.physicalHpMax;
+    const newCompMax = effective.composureMax;
+    const newVitals = {
+      ...char.vitals,
+      physicalHpMax: newHpMax,
+      physicalHpCurrent: Math.min(newHpMax, Math.max(1, (char.vitals?.physicalHpCurrent || oldHpMax) + (newHpMax - oldHpMax))),
+      composureMax: newCompMax,
+      composureCurrent: Math.min(newCompMax, Math.max(1, (char.vitals?.composureCurrent || oldCompMax) + (newCompMax - oldCompMax)))
+    };
 
     const updates: Partial<Character> = {
       name: newName,
       avatar_path: avatarInput ? avatarInput.value.trim() : char.avatar_path,
-      archetype_id: archetypeSelect?.value || char.archetype_id,
+      archetype_id: nextArchId,
       social_class_id: socialSelect?.value || char.social_class_id,
       abilities: newAbilities,
+      vitals: newVitals,
       backstory_fields: newBackstory,
       changelog: updatedChangelog
     };

@@ -2,7 +2,7 @@ import { supabase } from "./supabase";
 import type { Character, CharacterSecret, CalendarProgress } from "../types";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
 import { migrateCharacter, migrateCharacterToV3, ensureGradeFeatGrants } from "../rules/migration";
-import { calculateMaxHp, calculateMaxComposure } from "../rules/progression";
+import { calculateMaxHp, calculateMaxComposure, getArchetypeStatBonus } from "../rules/progression";
 
 const LOCAL_STORAGE_KEY = "damsel_and_desire_roster_v1";
 
@@ -274,8 +274,9 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
   const charLevel = payload.level || (payload.grade === 2 ? 2 : 1);
   const charGrade = charLevel <= 2 ? 10 : charLevel <= 4 ? 11 : 12;
   const isDelinquent = payload.archetypeId === "delinquent";
-  const phyScore = payload.baseAbilities?.physique || 10;
-  const mndScore = payload.baseAbilities?.mind || 10;
+  const archBonus = getArchetypeStatBonus(payload.archetypeId);
+  const phyScore = (payload.baseAbilities?.physique || 10) + (archBonus.physique || 0);
+  const mndScore = (payload.baseAbilities?.mind || 10) + (archBonus.mind || 0);
 
   const baseHp = calculateMaxHp(charLevel, hitDie, phyScore, isDelinquent);
   const baseComp = calculateMaxComposure(charLevel, mndScore);

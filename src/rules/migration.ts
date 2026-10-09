@@ -5,6 +5,8 @@ import {
   calculateMaxHp,
   calculateMaxComposure,
   resolveEkskulData,
+  extractAbilityScore,
+  getArchetypeStatBonus,
   MIN_LEVEL,
   MAX_LEVEL
 } from "./progression";
@@ -173,9 +175,13 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
   // 3. Vitals normalization
   const ekskul = resolveEkskulData(raw.ekskul_id || raw.ekskulId || "kendo");
   const hitDie = ekskul?.hit_die || "d8";
-  const physiqueScore = raw.abilities?.physique?.score ?? raw.baseAbilities?.physique ?? 10;
-  const mindScore = raw.abilities?.mind?.score ?? raw.baseAbilities?.mind ?? 10;
-  const isDelinquent = (raw.archetype_id || raw.archetypeId) === "delinquent";
+  const archId = raw.archetype_id || raw.archetypeId || "normies";
+  const archBonus = getArchetypeStatBonus(archId);
+  const basePhy = extractAbilityScore(raw.abilities?.physique ?? raw.baseAbilities?.physique ?? 10);
+  const baseMnd = extractAbilityScore(raw.abilities?.mind ?? raw.baseAbilities?.mind ?? 10);
+  const physiqueScore = basePhy + (archBonus.physique || 0);
+  const mindScore = baseMnd + (archBonus.mind || 0);
+  const isDelinquent = archId === "delinquent";
 
   const expectedRestDice = getRestDiceCountForLevel(level);
   const currentRestDice = raw.vitals?.restDiceTotal ?? raw.restDiceTotal ?? 1;
@@ -187,14 +193,16 @@ export function migrateCharacter(raw: any, options: MigrationOptions = {}): Migr
   const minHp = calculateMaxHp(level, hitDie, physiqueScore, isDelinquent);
   const rawHpMax = raw.vitals?.physicalHpMax ?? raw.physicalHpMax ?? minHp;
   const finalHpMax = Math.max(rawHpMax, minHp);
+  const hpDiff = Math.max(0, finalHpMax - rawHpMax);
   const rawHpCurrent = raw.vitals?.physicalHpCurrent ?? raw.physicalHpCurrent ?? finalHpMax;
-  const finalHpCurrent = Math.min(finalHpMax, Math.max(0, rawHpCurrent));
+  const finalHpCurrent = Math.min(finalHpMax, Math.max(0, rawHpCurrent + (rawHpCurrent === rawHpMax ? hpDiff : 0)));
 
   const minComp = calculateMaxComposure(level, mindScore);
   const rawCompMax = raw.vitals?.composureMax ?? raw.composureMax ?? minComp;
   const finalCompMax = Math.max(rawCompMax, minComp);
+  const compDiff = Math.max(0, finalCompMax - rawCompMax);
   const rawCompCurrent = raw.vitals?.composureCurrent ?? raw.composureCurrent ?? finalCompMax;
-  const finalCompCurrent = Math.min(finalCompMax, Math.max(0, rawCompCurrent));
+  const finalCompCurrent = Math.min(finalCompMax, Math.max(0, rawCompCurrent + (rawCompCurrent === rawCompMax ? compDiff : 0)));
 
   // 4. Feats & Grants normalization
   const targetSchemaVersion = options.targetSchemaVersion ?? (raw.schemaVersion && raw.schemaVersion >= 3 ? 3 : 2);

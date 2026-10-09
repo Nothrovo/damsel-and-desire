@@ -2,6 +2,7 @@ import { getItemDetails, ItemDefinition } from "../data/itemCompendium";
 import { diceRollerModal } from "./DiceRollerModal";
 import { characterStore } from "../store/characterStore";
 import { CharacterAbilities } from "../types";
+import { calculateEffectiveStats } from "../rules/progression";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -74,10 +75,10 @@ export class ItemDetailModal {
       const rc = this.currentItem.rollCheck;
       const char = characterStore.currentCharacter;
       let mod = 0;
-      if (char && char.abilities && rc.stat) {
+      if (char && rc.stat) {
         const statKey = rc.stat.toLowerCase() as keyof CharacterAbilities;
-        const score = char.abilities[statKey] ?? 10;
-        mod = Math.floor((score - 10) / 2);
+        const effective = calculateEffectiveStats(char);
+        mod = effective.modifiers[statKey] ?? 0;
       }
       this.hide();
       diceRollerModal.show(rc.die || "d20", mod, rc.label);
@@ -141,10 +142,10 @@ export class ItemDetailModal {
         rollSection.style.display = "block";
         const char = characterStore.currentCharacter;
         let modStr = "+0";
-        if (char && char.abilities && item.rollCheck.stat) {
+        if (char && item.rollCheck.stat) {
           const statKey = item.rollCheck.stat.toLowerCase() as keyof CharacterAbilities;
-          const score = char.abilities[statKey] ?? 10;
-          const mod = Math.floor((score - 10) / 2);
+          const effective = calculateEffectiveStats(char);
+          const mod = effective.modifiers[statKey] ?? 0;
           modStr = mod >= 0 ? `+${mod}` : `${mod}`;
         }
         rollBtnText.textContent = `🎲 Lempar ${item.rollCheck.label} (${item.rollCheck.die || "d20"} ${modStr})`;

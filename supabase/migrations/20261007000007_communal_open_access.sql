@@ -88,6 +88,7 @@ DECLARE
   v_abilities JSONB;
   v_skills JSONB;
   v_saves JSONB;
+  v_arch_bonus JSONB;
   v_cost INT := 0;
   v_phy INT; v_int INT; v_lok INT; v_mnd INT; v_tln INT; v_lck INT;
   v_mod_phy INT; v_mod_mnd INT;
@@ -160,9 +161,13 @@ BEGIN
     END IF;
   END IF;
 
-  -- Modifiers
-  v_mod_phy := floor((v_phy - 10) / 2.0)::int;
-  v_mod_mnd := floor((v_mnd - 10) / 2.0)::int;
+  -- Archetype Stat Bonus
+  SELECT stat_bonus INTO v_arch_bonus FROM public.archetypes WHERE id = v_archetype_id;
+  v_arch_bonus := COALESCE(v_arch_bonus, '{}'::jsonb);
+
+  -- Modifiers (including Archetype Stat Bonus)
+  v_mod_phy := floor(((v_phy + COALESCE((v_arch_bonus->>'physique')::int, 0)) - 10) / 2.0)::int;
+  v_mod_mnd := floor(((v_mnd + COALESCE((v_arch_bonus->>'mind')::int, 0)) - 10) / 2.0)::int;
 
   -- Hit Die from Ekskul
   SELECT hit_die INTO v_hit_die FROM public.ekskul WHERE id = v_ekskul_id;
@@ -176,7 +181,7 @@ BEGIN
   v_base_hp := GREATEST(1, v_die_max + v_mod_phy + v_delinq)
              + GREATEST(0, v_level - 1) * GREATEST(1, v_die_avg + v_mod_phy + v_delinq);
   v_base_composure := GREATEST(1, 10 + v_mod_mnd)
-                    + GREATEST(0, v_level - 1) * GREATEST(1, 5 + v_mod_mnd);
+                    + GREATEST(0, v_level - 1) * GREATEST(1, 4 + v_mod_mnd);
   v_rest_dice := CASE WHEN v_level <= 2 THEN 1 WHEN v_level <= 4 THEN 2 ELSE 3 END;
 
   -- Fetch Finances based on Social Class

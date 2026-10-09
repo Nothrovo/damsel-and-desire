@@ -286,6 +286,10 @@ function renderStep4Abilities(container: HTMLElement) {
   const isStd = draft.abilityMethod === "standard";
   const scoresObj: any = isStd ? draft.standardArrayAssigned : draft.pointBuyAssigned;
   const statKeys = ["physique", "intelligent", "looks", "mind", "talent", "luck"];
+  const curArch = compArchetypes.find(a => a.id === draft.archetypeId);
+  const archBonusMap: Record<string, number> = (curArch?.stat_bonus || (curArch as any)?.statBonus || {}) as any;
+  const archBonusSummary = Object.entries(archBonusMap).map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ");
+
   let pointBuyTotal = 0;
   if (!isStd) {
     try {
@@ -295,6 +299,11 @@ function renderStep4Abilities(container: HTMLElement) {
 
   container.innerHTML = `
     <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">Langkah 4: Alokasi Nilai Kemampuan (Abilities)</h2>
+    ${curArch ? `
+      <div style="background:rgba(225,29,72,0.08);border:1px solid rgba(225,29,72,0.3);padding:0.6rem 1rem;border-radius:var(--radius-sm);margin-bottom:1rem;font-size:0.85rem;color:var(--text-main);">
+        ✨ <strong>Bonus Archetype (${escapeHtml(curArch.name)}):</strong> <span style="color:var(--rose-light);font-weight:700;">${escapeHtml(archBonusSummary)}</span> <span style="color:var(--text-muted);font-size:0.78rem;">(Otomatis ditambahkan ke nilai akhir &amp; modifier)</span>
+      </div>
+    ` : ''}
     <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;">
       <button class="btn btn-sm ${isStd ? 'btn-primary' : 'btn-secondary'}" id="btnModeStandard">Standard Array [15, 14, 13, 12, 10, 8]</button>
       <button class="btn btn-sm ${!isStd ? 'btn-primary' : 'btn-secondary'}" id="btnModePointBuy">Point Buy (27 Poin)</button>
@@ -303,21 +312,30 @@ function renderStep4Abilities(container: HTMLElement) {
     ${!isStd ? `
       <div style="background:var(--bg-input);padding:0.75rem 1rem;border-radius:var(--radius-sm);margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.85rem;">Poin Terpakai: <strong style="color:${pointBuyTotal <= 27 ? 'var(--green-health)' : 'var(--rose-primary)'};font-size:1.1rem;">${pointBuyTotal}</strong> / 27</span>
-        <span style="font-size:0.75rem;color:var(--text-muted);">Rentang nilai: 8 - 15</span>
+        <span style="font-size:0.75rem;color:var(--text-muted);">Rentang nilai dasar: 8 - 15</span>
       </div>
     ` : ''}
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;">
       ${statKeys.map(k => {
         const val = scoresObj[k];
-        const mod = calculateAbilityModifier(val);
+        const bonus = archBonusMap[k] || 0;
+        const totalVal = val + bonus;
+        const mod = calculateAbilityModifier(totalVal);
         const modStr = mod >= 0 ? `+${mod}` : `${mod}`;
 
         return `
-          <div style="background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:1rem;display:flex;justify-content:space-between;align-items:center;">
+          <div style="background:var(--bg-surface);border:1px solid ${bonus > 0 ? 'rgba(225,29,72,0.4)' : 'var(--border-subtle)'};border-radius:var(--radius-sm);padding:1rem;display:flex;justify-content:space-between;align-items:center;">
             <div>
-              <strong style="font-size:1rem;text-transform:capitalize;">${k}</strong>
-              <div style="font-size:0.8rem;color:var(--amber-gold);">Mod: <strong>${modStr}</strong></div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <strong style="font-size:1rem;text-transform:capitalize;">${k}</strong>
+                ${bonus > 0 ? `<span style="font-size:0.7rem;background:rgba(225,29,72,0.18);color:var(--rose-light);padding:1px 6px;border-radius:4px;font-weight:700;">+${bonus} Arch</span>` : ''}
+              </div>
+              <div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">
+                Total: <strong style="color:var(--text-primary);font-size:0.95rem;">${totalVal}</strong>
+                ${bonus > 0 ? `<span style="font-size:0.72rem;">(${val} + ${bonus})</span>` : ''}
+                &bull; <span style="color:var(--amber-gold);">Mod: <strong>${modStr}</strong></span>
+              </div>
             </div>
 
             ${isStd ? `
