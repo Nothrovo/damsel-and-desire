@@ -1607,7 +1607,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Aquarius",
     "mbti": "ISTJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kisaragi_setsuna",
+    "avatar_url": "/portraits/kisaragi_setsuna.png",
     "stats": {
       "physique": 13,
       "intelligent": 16,
@@ -1869,7 +1869,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Gemini",
     "mbti": "ENFP",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=saegusa_koharu",
+    "avatar_url": "/portraits/saegusa_koharu.png",
     "stats": {
       "physique": 11,
       "intelligent": 15,
@@ -1999,7 +1999,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Pisces",
     "mbti": "ISTJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=tachibana_rin",
+    "avatar_url": "/portraits/tachibana_rin.png",
     "stats": {
       "physique": 17,
       "intelligent": 14,
@@ -2129,7 +2129,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Taurus",
     "mbti": "ESFJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=wakaba_hinata",
+    "avatar_url": "/portraits/wakaba_hinata.png",
     "stats": {
       "physique": 11,
       "intelligent": 13,
@@ -2562,7 +2562,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Leo",
     "mbti": "ESTP",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=saionji_kaede",
+    "avatar_url": "/portraits/saionji_kaede.png",
     "stats": {
       "physique": 17,
       "intelligent": 12,
@@ -2693,7 +2693,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Gemini",
     "mbti": "ENFJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=shiranui_mei",
+    "avatar_url": "/portraits/shiranui_mei.png",
     "stats": {
       "physique": 11,
       "intelligent": 16,
@@ -2823,7 +2823,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Virgo",
     "mbti": "INFJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=tsukishima_fumiko",
+    "avatar_url": "/portraits/tsukishima_fumiko.png",
     "stats": {
       "physique": 9,
       "intelligent": 17,

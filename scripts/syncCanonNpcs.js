@@ -71,7 +71,10 @@ function buildPayload(parsed, sortOrder) {
   }
 
   const categoryId = mapClassRoomToCategory(meta);
-  const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(meta.id)}`;
+  const portraitExists = fs.existsSync(`public/portraits/${meta.id}.png`);
+  const avatarUrl = portraitExists
+    ? `/portraits/${meta.id}.png`
+    : `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(meta.id)}`;
 
   const identityContent = {
     name: fullName,
