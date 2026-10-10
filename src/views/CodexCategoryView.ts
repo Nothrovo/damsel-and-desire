@@ -16,6 +16,7 @@ import { showToast } from "../components/Toast";
 import { router } from "../router/router";
 import { codexRealtime, triggerSakuraUnlockAnimation } from "../realtime/codexRealtime";
 import { codexCharacterEditorModal } from "../components/CodexCharacterEditorModal";
+import { getLoveInterestBySlug } from "../data/loveInterestCompendium";
 import type { CodexCategory, CodexCharacterCard, DmCodexCharacter } from "../types";
 
 let categoryRealtimeUnsub: (() => void) | null = null;
@@ -442,7 +443,12 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
     }
 
     // KARTU TERBUKA (ATAU DALAM MODE DM)
-    const avatar = c.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.slug || c.id}`;
+    const canonLi = c.slug ? getLoveInterestBySlug(c.slug) : undefined;
+    const avatar = (c.avatar_url && !c.avatar_url.includes("dicebear"))
+      ? c.avatar_url
+      : canonLi?.avatar_url
+      ? canonLi.avatar_url
+      : (c.slug ? `/portraits/${c.slug}.png` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.id}`);
     const revealedCount = (c.revealed_sections || []).length;
     const isActuallyLocked = isLocked || revealedCount === 0;
 

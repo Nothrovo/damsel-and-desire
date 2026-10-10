@@ -208,6 +208,9 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
         card.class_room = canon.class_room;
         if (canon.tagline && (!card.tagline || card.tagline === "???")) card.tagline = canon.tagline;
         if (canon.furigana && !card.furigana) card.furigana = canon.furigana;
+        if (canon.avatar_url && (!card.avatar_url || card.avatar_url.includes("dicebear"))) {
+          card.avatar_url = canon.avatar_url;
+        }
       }
     }
   }
@@ -232,6 +235,15 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
             idSec.content.club = canon.club;
             idSec.content.club_role = canon.club_role;
             idSec.content.class_room = canon.class_room;
+          }
+          const appSec = detail.sections?.find((s) => s.section_key === "appearance");
+          if (appSec && appSec.content) {
+            if (canon.avatar_url && (!appSec.content.avatar_url || appSec.content.avatar_url.includes("dicebear"))) {
+              appSec.content.avatar_url = canon.avatar_url;
+            }
+          }
+          if (canon.avatar_url && (!detail.avatar_url || detail.avatar_url.includes("dicebear"))) {
+            detail.avatar_url = canon.avatar_url;
           }
         }
       }
@@ -263,24 +275,40 @@ async function ensureCanonNpcsSyncedToDb(sessionToken: string, existingList: DmC
   for (const npc of CANON_SESSION1_NPCS) {
     const existing = existingMap.get(npc.slug);
     const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+    const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
 
-    // Jika sudah ada dan role & club sudah cocok dengan canon terbaru, lewati
-    if (existing && existing.role === identitySec?.role && existing.club === identitySec?.club) {
+    // Jika sudah ada dan role, club, serta avatar sudah cocok (bukan dicebear), lewati
+    const isOutdated =
+      !existing ||
+      existing.role !== identitySec?.role ||
+      existing.club !== identitySec?.club ||
+      !existing.avatar_url ||
+      existing.avatar_url.includes("dicebear") ||
+      (appearanceSec?.avatar_url && existing.avatar_url !== appearanceSec.avatar_url);
+
+    if (!isOutdated) {
       continue;
     }
 
     try {
       const payload = {
         slug: npc.slug,
+        categoryId: npc.categoryId,
         category_id: npc.categoryId,
+        sortOrder: npc.sortOrder,
         sort_order: npc.sortOrder,
+        visibilityMode: npc.visibilityMode,
         visibility_mode: npc.visibilityMode,
+        homeRoomId: npc.homeRoomId,
         home_room_id: npc.homeRoomId,
+        isLoveInterest: npc.isLoveInterest,
         is_love_interest: npc.isLoveInterest,
         sections: npc.sections.map((s) => ({
+          sectionKey: s.sectionKey,
           section_key: s.sectionKey,
           tier: s.tier,
           content: s.content,
+          lockedHint: s.lockedHint,
           locked_hint: s.lockedHint
         }))
       };
@@ -409,6 +437,9 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
           char.class_room = canon.class_room;
           if (canon.tagline) char.tagline = canon.tagline;
           if (canon.furigana) char.furigana = canon.furigana;
+          if (canon.avatar_url && (!char.avatar_url || char.avatar_url.includes("dicebear"))) {
+            char.avatar_url = canon.avatar_url;
+          }
         }
       }
     }
@@ -459,6 +490,15 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
           idSec.content.club = canon.club;
           idSec.content.club_role = canon.club_role;
           idSec.content.class_room = canon.class_room;
+        }
+        const appSec = data.sections?.find((s: any) => s.section_key === "appearance");
+        if (appSec && appSec.content) {
+          if (canon.avatar_url && (!appSec.content.avatar_url || appSec.content.avatar_url.includes("dicebear"))) {
+            appSec.content.avatar_url = canon.avatar_url;
+          }
+        }
+        if (canon.avatar_url && (!data.avatar_url || data.avatar_url.includes("dicebear"))) {
+          data.avatar_url = canon.avatar_url;
         }
       }
     }

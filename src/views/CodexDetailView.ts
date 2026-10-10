@@ -15,6 +15,7 @@ import { showToast } from "../components/Toast";
 import { router } from "../router/router";
 import { codexRealtime, triggerSakuraUnlockAnimation } from "../realtime/codexRealtime";
 import { codexCharacterEditorModal } from "../components/CodexCharacterEditorModal";
+import { getLoveInterestBySlug } from "../data/loveInterestCompendium";
 import type { CodexCharacterDetail } from "../types";
 
 let detailRealtimeUnsub: (() => void) | null = null;
@@ -168,7 +169,11 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
   const name = identity.name || char.name || "Karakter";
   const furigana = identity.furigana || char.furigana || "";
   const tagline = identity.tagline || char.tagline || "";
-  const avatar = appearance.avatar_url || char.avatar_url || `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.slug || char.id}`;
+  const canonLi = char.slug ? getLoveInterestBySlug(char.slug) : undefined;
+  let avatar = appearance.avatar_url || char.avatar_url;
+  if (!avatar || avatar.includes("dicebear")) {
+    avatar = canonLi?.avatar_url || (char.slug ? `/portraits/${char.slug}.png` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.id}`);
+  }
 
   container.innerHTML = `
     <!-- Top Back Link & Category -->
