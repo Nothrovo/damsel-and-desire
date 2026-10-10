@@ -133,6 +133,11 @@ export interface TargetSecret {
   status: string;
   affection: number; // 1-10
   secret: string;
+  slug?: string;
+  character_id?: string;
+  avatar_url?: string;
+  class_room?: string;
+  nickname?: string;
 }
 
 export interface CharacterSecret {
@@ -460,6 +465,13 @@ export type SchoolEventCategoryTag =
   | "Milestone"
   | "Momen Party";
 
+export interface SchoolCalendarNpcRef {
+  slug: string;
+  name: string;
+  role: string;
+  isNewCanon?: boolean;
+}
+
 export interface SchoolCalendarEventItem {
   id: string;
   monthId: SchoolCalendarMonthId;
@@ -469,6 +481,7 @@ export interface SchoolCalendarEventItem {
   category: SchoolEventCategoryTag;
   description: string;
   isKeyEvent?: boolean;
+  featuredNpcs?: SchoolCalendarNpcRef[];
 }
 
 export interface SchoolCalendarCustomEvent {

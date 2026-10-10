@@ -218,8 +218,14 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         title: "Upacara Penerimaan Siswa Baru (Nyūgakushiki) & Pembukaan (Shigyōshiki)",
         japaneseTerm: "入学式・始業式",
         category: "Wajib",
-        description: "Upacara resmi di aula megah akademi, pidato kepala sekolah tentang reputasi dan standar prestasi, serta pengenalan staf pengajar.",
-        isKeyEvent: true
+        description: "Razia kerapian seragam pagi di gerbang sakura oleh Komite Disiplin, upacara resmi di aula megah akademi, pidato kepala sekolah, serta sambutan Ketua OSIS & perwakilan siswa baru.",
+        isKeyEvent: true,
+        featuredNpcs: [
+          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Wakil Ketua OSIS & Komite Disiplin (11-2)", isNewCanon: true },
+          { slug: "kujou_reiko", name: "Kujou Reiko", role: "Kepala Sekolah & Ketua Yayasan" },
+          { slug: "asahina_tenka", name: "Asahina Tenka", role: "Ketua OSIS (11-1)" },
+          { slug: "shinonome_shion", name: "Shinonome Shion", role: "Perwakilan Siswa Baru Peringkat 1 (10-1)" }
+        ]
       },
       {
         id: "evt_apr_02",
@@ -228,7 +234,13 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         title: "Pembagian Kelas 10, Perkenalan Wali Kelas & Pemilihan Ketua Kelas",
         japaneseTerm: "クラス発表・HR",
         category: "Akademik",
-        description: "Melihat papan pengumuman kelas, menentukan tempat duduk sebangku, dan memilih pengurus komite kelas sementara."
+        description: "Melihat papan pengumuman pembagian kelas, pengarahan wali kelas di koridor Kelas 10, menentukan tempat duduk sebangku, dan memilih pengurus komite kelas.",
+        featuredNpcs: [
+          { slug: "tsukishima_reo", name: "Tsukishima Reo", role: "Wali Kelas 10-1 & Guru Bahasa Inggris" },
+          { slug: "saionji_kaede", name: "Saionji Kaede", role: "Wali Kelas 10-2 & Guru Olahraga", isNewCanon: true },
+          { slug: "shinonome_shion", name: "Shinonome Shion", role: "Ketua Kelas 10-1" },
+          { slug: "kurokawa_yuuto", name: "Kurokawa Yuuto", role: "Wakil Ketua Kelas 10-1" }
+        ]
       },
       {
         id: "evt_apr_03",
@@ -237,7 +249,12 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         title: "Orientasi Kampus, Pemeriksaan Kesehatan & Tes Kemampuan Awal",
         japaneseTerm: "実力テスト・健康診断",
         category: "Ujian",
-        description: "Tur fasilitas gedung klasik, perpustakaan besar, pengukuran fisik tahunan, dan ujian penempatan akademik pertama."
+        description: "Tur fasilitas gedung klasik & Perpustakaan Besar (pembagian kartu perpustakaan), pengukuran fisik tahunan di ruang UKS (Hokenshitsu), tes kebugaran lapangan, dan ujian penempatan akademik pertama.",
+        featuredNpcs: [
+          { slug: "shiranui_mei", name: "dr. Shiranui Mei", role: "Dokter/Perawat UKS (Hokenshitsu)", isNewCanon: true },
+          { slug: "tsukishima_fumiko", name: "Tsukishima Fumiko", role: "Staf Pustakawan Utama & Arsip Akademik", isNewCanon: true },
+          { slug: "saionji_kaede", name: "Saionji Kaede", role: "Koordinator Tes Fisik Lapangan", isNewCanon: true }
+        ]
       },
       {
         id: "evt_apr_04",
@@ -246,8 +263,14 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         title: "Pekan Pengenalan & Perekrutan Klub (Club Recruitment)",
         japaneseTerm: "新入部員勧誘",
         category: "Ekskul",
-        description: "Klub olahraga mengadakan seleksi uji tanding, sementara klub musik, drama, seni, dan literatur menggelar demonstrasi panggung untuk memikat siswa baru.",
-        isKeyEvent: true
+        description: "Klub olahraga dan bela diri mengadakan demonstrasi tanding di gymnasium, sementara klub drama, musik, dan budaya menggelar pertunjukan panggung untuk memikat siswa baru.",
+        isKeyEvent: true,
+        featuredNpcs: [
+          { slug: "tachibana_rin", name: "Tachibana Rin", role: "Ketua Klub Kendo (12-1)", isNewCanon: true },
+          { slug: "saegusa_koharu", name: "Saegusa Koharu", role: "Ketua Klub Drama (12-1)", isNewCanon: true },
+          { slug: "yukimura_shizuku", name: "Yukimura Shizuku", role: "Wakil Ketua Klub Kyūdō (11-1)" },
+          { slug: "minami_hoshino", name: "Minami Hoshino", role: "Vokalis Light Music Club (10-1)" }
+        ]
       },
       {
         id: "evt_apr_05",
@@ -256,7 +279,12 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         title: "Pendaftaran Resmi Ekskul & Adaptasi Rutinitas Sepulang Sekolah",
         japaneseTerm: "入部届提出",
         category: "Slice of Life",
-        description: "Menyerahkan formulir klub, bertemu mentor senior (Senpai), dan memulai jadwal piket serta latihan sore."
+        description: "Menyerahkan formulir pendaftaran klub (Nyūbu Todoke) ke meja OSIS, sambutan hangat di ruang klub & ruang tata boga, serta memulai jadwal piket kebersihan (Seisō) dan latihan sore.",
+        featuredNpcs: [
+          { slug: "wakaba_hinata", name: "Wakaba Hinata", role: "Ketua Klub Memasak (12-2)", isNewCanon: true },
+          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Wakil Ketua OSIS — Verifikasi Formulir Klub (11-2)", isNewCanon: true },
+          { slug: "tsukishima_reo", name: "Tsukishima Reo", role: "Wali Kelas 10-1 — Jadwal Piket Sore" }
+        ]
       }
     ]
   },

@@ -34,13 +34,13 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_S
 function mapClassRoomToCategory(meta) {
   const gradeStr = String(meta?.grade || "").toLowerCase();
   const cr = String(meta?.class_room || "").toLowerCase();
-  if (gradeStr.includes("faculty") || cr.includes("faculty") || cr.includes("guru") || cr.includes("staf") || cr.includes("kepala sekolah") || cr.includes("principal")) {
+  if (gradeStr.includes("faculty") || cr.includes("faculty") || cr.includes("guru") || cr.includes("staf") || cr.includes("kepala sekolah") || cr.includes("principal") || cr.includes("uks") || cr.includes("perpustakaan")) {
     return "faculty";
   }
-  if (cr.includes("11-1") || cr.includes("2-1")) return "class_2_1";
-  if (cr.includes("11-2") || cr.includes("2-2")) return "class_2_2";
   if (cr.includes("12-1") || cr.includes("3-1")) return "class_3_1";
   if (cr.includes("12-2") || cr.includes("3-2")) return "class_3_2";
+  if (cr.includes("11-1") || cr.includes("2-1")) return "class_2_1";
+  if (cr.includes("11-2") || cr.includes("2-2")) return "class_2_2";
   if (cr.includes("10-1") || cr.includes("1-1")) return "class_1_1";
   if (cr.includes("10-2") || cr.includes("1-2")) return "class_1_2";
   return "other";

@@ -23,6 +23,7 @@ import {
 import { supabase } from "../api/supabase";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { dmAuthModal } from "../components/DmAuthModal";
+import { router } from "../router/router";
 import { showToast } from "../components/Toast";
 import type {
   SchoolCalendarMonth,
@@ -521,6 +522,34 @@ function renderMonthlyDetailTab(month: SchoolCalendarMonth): string {
                     <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.45;margin:0;">
                       ${escapeHtml(ev.description)}
                     </p>
+                    ${
+                      ev.featuredNpcs && ev.featuredNpcs.length > 0
+                        ? `
+                      <div style="margin-top:0.55rem;padding-top:0.45rem;border-top:1px dashed var(--border-subtle);display:flex;flex-wrap:wrap;align-items:center;gap:0.4rem;">
+                        <span style="font-size:0.7rem;font-weight:700;color:var(--amber-gold);text-transform:uppercase;letter-spacing:0.03em;">
+                          👤 Canon NPC &amp; Love Interest:
+                        </span>
+                        ${ev.featuredNpcs
+                          .map(
+                            (npc) => `
+                          <button
+                            type="button"
+                            class="cal-npc-codex-link"
+                            data-npc-slug="${escapeHtml(npc.slug)}"
+                            title="Buka profil ${escapeHtml(npc.name)} (${escapeHtml(npc.role)}) di Kamus Karakter"
+                            style="background:${npc.isNewCanon ? "rgba(225,29,72,0.14)" : "var(--bg-card)"};border:1px solid ${npc.isNewCanon ? "rgba(225,29,72,0.45)" : "var(--border-subtle)"};color:${npc.isNewCanon ? "var(--rose-light)" : "var(--text-main)"};border-radius:var(--radius-full);padding:2px 9px;font-size:0.73rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s ease;"
+                          >
+                            <span>${npc.isNewCanon ? "💖" : "📖"}</span>
+                            <span>${escapeHtml(npc.name)}</span>
+                            <span style="font-weight:400;font-size:0.68rem;color:var(--text-muted);">• ${escapeHtml(npc.role)}</span>
+                          </button>
+                        `
+                          )
+                          .join("")}
+                      </div>
+                    `
+                        : ""
+                    }
                   </div>
                 </div>
               `;
@@ -958,7 +987,7 @@ function attachCalendarEvents(selectedMonth: SchoolCalendarMonth) {
   document.querySelectorAll(".cal-event-check-row").forEach((row) => {
     row.addEventListener("click", async (e) => {
       const target = e.target as HTMLElement;
-      if (target.closest(".cal-delete-custom-btn")) return;
+      if (target.closest(".cal-delete-custom-btn") || target.closest(".cal-npc-codex-link")) return;
 
       const eventId = row.getAttribute("data-event-id");
       if (!eventId) return;
@@ -966,6 +995,17 @@ function attachCalendarEvents(selectedMonth: SchoolCalendarMonth) {
       const nextState = applyToggleEventDone(calendarState, eventId);
       calendarState = await saveSchoolCalendarState(nextState);
       renderCalendarDOM();
+    });
+  });
+
+  // 9b. Canon NPC Codex Links inside Event Cards
+  document.querySelectorAll(".cal-npc-codex-link").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const slug = btn.getAttribute("data-npc-slug");
+      if (slug) {
+        router.navigate(`/codex/c/${slug}`);
+      }
     });
   });
 

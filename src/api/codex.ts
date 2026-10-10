@@ -1,11 +1,136 @@
 import { supabase } from "./supabase";
+import { CANON_SESSION1_NPCS } from "../data/canonSession1Npcs";
 import type {
   CodexCategory,
   CodexCharacterCard,
   CodexCharacterDetail,
+  CodexSectionDetail,
+  CodexSectionKey,
   DmCodexCharacter,
   DmRevealLogEntry
 } from "../types";
+
+const LOCAL_CANON_REVEALS_KEY = "dnd_canon_session1_reveals_v1";
+
+function getLocalCanonRevealsMap(): Record<string, string[]> {
+  try {
+    const raw = localStorage.getItem(LOCAL_CANON_REVEALS_KEY);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch {
+    // ignore storage errors
+  }
+  const initial: Record<string, string[]> = {};
+  for (const npc of CANON_SESSION1_NPCS) {
+    initial[npc.slug] = ["identity", "appearance"];
+  }
+  return initial;
+}
+
+function saveLocalCanonRevealsMap(map: Record<string, string[]>): void {
+  try {
+    localStorage.setItem(LOCAL_CANON_REVEALS_KEY, JSON.stringify(map));
+  } catch {
+    // ignore
+  }
+}
+
+function getCanonNpcByIdOrSlug(idOrSlug: string) {
+  return CANON_SESSION1_NPCS.find(
+    (c) => c.slug === idOrSlug || c.id === idOrSlug
+  );
+}
+
+function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSections: string[]): CodexCharacterCard | null {
+  if (!revealedSections || revealedSections.length === 0) {
+    if ((npc.visibilityMode as string) === "hidden") return null;
+    return {
+      id: npc.id,
+      category_id: npc.categoryId,
+      sort_order: npc.sortOrder,
+      locked: true,
+      is_love_interest: npc.isLoveInterest
+    };
+  }
+
+  const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+  const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
+  const hasIdentity = revealedSections.includes("identity");
+  const hasAppearance = revealedSections.includes("appearance");
+
+  return {
+    id: npc.id,
+    slug: npc.slug,
+    category_id: npc.categoryId,
+    sort_order: npc.sortOrder,
+    locked: false,
+    is_love_interest: npc.isLoveInterest,
+    name: hasIdentity ? (identitySec?.name || "???") : "???",
+    furigana: hasIdentity ? (identitySec?.furigana || "") : "",
+    tagline: hasIdentity ? (identitySec?.tagline || "") : "",
+    avatar_url: hasAppearance ? (appearanceSec?.avatar_url || "") : "",
+    class_room: hasIdentity ? (identitySec?.class_room || "") : "",
+    role: hasIdentity ? (identitySec?.role || "") : "",
+    club: hasIdentity ? (identitySec?.club || "") : "",
+    home_room_id: hasIdentity ? npc.homeRoomId : null,
+    revealed_sections: revealedSections
+  };
+}
+
+function buildCanonDetail(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSections: string[]): CodexCharacterDetail | null {
+  if (!revealedSections || revealedSections.length === 0) {
+    if ((npc.visibilityMode as string) === "hidden") return null;
+    return {
+      id: npc.id,
+      category_id: npc.categoryId,
+      sort_order: npc.sortOrder,
+      locked: true,
+      is_love_interest: npc.isLoveInterest
+    };
+  }
+
+  const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+  const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
+  const hasIdentity = revealedSections.includes("identity");
+  const hasAppearance = revealedSections.includes("appearance");
+
+  const sections: CodexSectionDetail[] = npc.sections
+    .filter((s) => s.sectionKey !== "dm_notes")
+    .sort((a, b) => a.tier - b.tier || a.sectionKey.localeCompare(b.sectionKey))
+    .map((sec) => {
+      const isRevealed = revealedSections.includes(sec.sectionKey);
+      if (isRevealed) {
+        return {
+          section_key: sec.sectionKey as CodexSectionKey,
+          tier: sec.tier,
+          locked: false,
+          content: sec.content as Record<string, any>
+        };
+      }
+      return {
+        section_key: sec.sectionKey as CodexSectionKey,
+        tier: sec.tier,
+        locked: true,
+        locked_hint: sec.lockedHint || "Terkunci oleh Game Master."
+      };
+    });
+
+  return {
+    id: npc.id,
+    slug: npc.slug,
+    category_id: npc.categoryId,
+    sort_order: npc.sortOrder,
+    locked: false,
+    is_love_interest: npc.isLoveInterest,
+    name: hasIdentity ? (identitySec?.name || "???") : "???",
+    furigana: hasIdentity ? (identitySec?.furigana || "") : "",
+    tagline: hasIdentity ? (identitySec?.tagline || "") : "",
+    avatar_url: hasAppearance ? (appearanceSec?.avatar_url || "") : "",
+    home_room_id: hasIdentity ? npc.homeRoomId : null,
+    sections
+  };
+}
 
 export const DEFAULT_CODEX_CATEGORIES: CodexCategory[] = [
   { id: "class_1_1", name: "Kelas 1-1", description: "Siswa-siswi tahun pertama kelas 1-1 (Grade 10)", sort_order: 1, show_totals: false, default_visibility_mode: "placeholder" },
@@ -42,17 +167,37 @@ export async function fetchCodexCategories(): Promise<CodexCategory[]> {
 }
 
 export async function fetchCodexList(categoryId?: string): Promise<CodexCharacterCard[]> {
+  let remoteList: CodexCharacterCard[] = [];
   try {
     const { data, error } = await supabase.rpc("list_codex", {
       p_category_id: categoryId || null
     });
 
     if (error) throw error;
-    return (data || []) as CodexCharacterCard[];
+    remoteList = (data || []) as CodexCharacterCard[];
   } catch (e: any) {
     console.error("Gagal memanggil list_codex:", e);
-    return [];
   }
+
+  const existingSlugs = new Set(remoteList.map((c) => c.slug).filter(Boolean));
+  const localRevealsMap = getLocalCanonRevealsMap();
+
+  for (const npc of CANON_SESSION1_NPCS) {
+    if (existingSlugs.has(npc.slug)) continue;
+    const matchesCategory =
+      !categoryId ||
+      npc.categoryId === categoryId ||
+      (categoryId === "love_interest" && npc.isLoveInterest);
+    if (!matchesCategory) continue;
+
+    const revealed = localRevealsMap[npc.slug] ?? ["identity", "appearance"];
+    const card = buildCanonCard(npc, revealed);
+    if (card) {
+      remoteList.push(card);
+    }
+  }
+
+  return remoteList;
 }
 
 export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharacterDetail | null> {
@@ -61,17 +206,67 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
       p_id_or_slug: idOrSlug
     });
 
-    if (error) throw error;
-    return (data || null) as CodexCharacterDetail | null;
+    if (!error && data) {
+      return data as CodexCharacterDetail;
+    }
   } catch (e: any) {
     console.error("Gagal memanggil get_codex_character:", e);
-    return null;
   }
+
+  const canonNpc = getCanonNpcByIdOrSlug(idOrSlug);
+  if (canonNpc) {
+    const localRevealsMap = getLocalCanonRevealsMap();
+    const revealed = localRevealsMap[canonNpc.slug] ?? ["identity", "appearance"];
+    return buildCanonDetail(canonNpc, revealed);
+  }
+
+  return null;
 }
 
 // ----------------------------------------------------------------------------
 // DM APIs (Privileged with Session Token)
 // ----------------------------------------------------------------------------
+
+async function ensureCanonNpcsSyncedToDb(sessionToken: string, existingSlugs: Set<string>): Promise<boolean> {
+  let anySynced = false;
+  const localRevealsMap = getLocalCanonRevealsMap();
+
+  for (const npc of CANON_SESSION1_NPCS) {
+    if (existingSlugs.has(npc.slug)) continue;
+    try {
+      const payload = {
+        slug: npc.slug,
+        category_id: npc.categoryId,
+        sort_order: npc.sortOrder,
+        visibility_mode: npc.visibilityMode,
+        home_room_id: npc.homeRoomId,
+        is_love_interest: npc.isLoveInterest,
+        sections: npc.sections.map((s) => ({
+          section_key: s.sectionKey,
+          tier: s.tier,
+          content: s.content,
+          locked_hint: s.lockedHint
+        }))
+      };
+      const res = await dmUpsertCharacter(sessionToken, payload);
+      if (res.success && res.id) {
+        anySynced = true;
+        const revealed = localRevealsMap[npc.slug] ?? ["identity", "appearance"];
+        for (const secKey of revealed) {
+          await supabase.rpc("dm_set_reveal", {
+            p_session_token: sessionToken,
+            p_character_id: res.id,
+            p_section_key: secKey,
+            p_revealed: true
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("Gagal sinkronisasi otomatis NPC canon ke DB:", npc.slug, err);
+    }
+  }
+  return anySynced;
+}
 
 export async function dmLogin(password: string): Promise<{ success: boolean; session_token?: string; expires_at?: string; error?: string }> {
   try {
@@ -128,7 +323,48 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
       p_session_token: sessionToken
     });
     if (error) throw error;
-    return (data || []) as DmCodexCharacter[];
+    let list = (data || []) as DmCodexCharacter[];
+    const existingSlugs = new Set(list.map((c) => c.slug));
+
+    // Otomatis sinkronkan 7 karakter Canon NPC Sesi 1 ke Supabase jika belum ada di DB
+    const synced = await ensureCanonNpcsSyncedToDb(sessionToken, existingSlugs);
+    if (synced) {
+      const { data: refreshed } = await supabase.rpc("dm_list_all", {
+        p_session_token: sessionToken
+      });
+      if (refreshed) {
+        list = refreshed as DmCodexCharacter[];
+      }
+    }
+
+    const finalSlugs = new Set(list.map((c) => c.slug));
+    const localRevealsMap = getLocalCanonRevealsMap();
+    for (const npc of CANON_SESSION1_NPCS) {
+      if (finalSlugs.has(npc.slug)) continue;
+      const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+      const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
+      const dmNotesSec = npc.sections.find((s) => s.sectionKey === "dm_notes")?.content as Record<string, any> | undefined;
+      list.push({
+        id: npc.id,
+        slug: npc.slug,
+        category_id: npc.categoryId,
+        sort_order: npc.sortOrder,
+        visibility_mode: npc.visibilityMode as any,
+        is_love_interest: npc.isLoveInterest,
+        name: identitySec?.name || npc.slug,
+        furigana: identitySec?.furigana || "",
+        tagline: identitySec?.tagline || "",
+        avatar_url: appearanceSec?.avatar_url || "",
+        class_room: identitySec?.class_room || "",
+        role: identitySec?.role || "",
+        club: identitySec?.club || "",
+        home_room_id: npc.homeRoomId,
+        revealed_sections: localRevealsMap[npc.slug] ?? ["identity", "appearance"],
+        dm_notes: dmNotesSec?.notes || ""
+      });
+    }
+
+    return list;
   } catch (e: any) {
     console.error("Gagal memanggil dm_list_all:", e);
     throw e;
@@ -136,6 +372,29 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
 }
 
 export async function dmGetCharacter(sessionToken: string, characterId: string): Promise<any> {
+  const localNpc = getCanonNpcByIdOrSlug(characterId);
+  if (localNpc && characterId.startsWith("canon_")) {
+    const localRevealsMap = getLocalCanonRevealsMap();
+    const revealed = localRevealsMap[localNpc.slug] ?? ["identity", "appearance"];
+    return {
+      id: localNpc.id,
+      slug: localNpc.slug,
+      category_id: localNpc.categoryId,
+      sort_order: localNpc.sortOrder,
+      visibility_mode: localNpc.visibilityMode,
+      home_room_id: localNpc.homeRoomId,
+      is_love_interest: localNpc.isLoveInterest,
+      revealed_sections: revealed,
+      sections: localNpc.sections.map((s) => ({
+        section_key: s.sectionKey,
+        tier: s.tier,
+        revealed: revealed.includes(s.sectionKey),
+        content: s.content,
+        locked_hint: s.lockedHint
+      }))
+    };
+  }
+
   try {
     const { data, error } = await supabase.rpc("dm_get_character", {
       p_session_token: sessionToken,
@@ -155,6 +414,17 @@ export async function dmSetReveal(
   sectionKey: string,
   revealed: boolean
 ): Promise<boolean> {
+  const localNpc = getCanonNpcByIdOrSlug(characterId);
+  if (localNpc && characterId.startsWith("canon_")) {
+    const map = getLocalCanonRevealsMap();
+    const current = new Set(map[localNpc.slug] ?? ["identity", "appearance"]);
+    if (revealed) current.add(sectionKey);
+    else current.delete(sectionKey);
+    map[localNpc.slug] = Array.from(current);
+    saveLocalCanonRevealsMap(map);
+    return true;
+  }
+
   try {
     const { data, error } = await supabase.rpc("dm_set_reveal", {
       p_session_token: sessionToken,
@@ -176,6 +446,21 @@ export async function dmSetTierReveal(
   tier: number,
   revealed: boolean
 ): Promise<boolean> {
+  const localNpc = getCanonNpcByIdOrSlug(characterId);
+  if (localNpc && characterId.startsWith("canon_")) {
+    const map = getLocalCanonRevealsMap();
+    const current = new Set(map[localNpc.slug] ?? ["identity", "appearance"]);
+    for (const sec of localNpc.sections) {
+      if (sec.tier === tier && sec.sectionKey !== "dm_notes") {
+        if (revealed) current.add(sec.sectionKey);
+        else current.delete(sec.sectionKey);
+      }
+    }
+    map[localNpc.slug] = Array.from(current);
+    saveLocalCanonRevealsMap(map);
+    return true;
+  }
+
   try {
     const { data, error } = await supabase.rpc("dm_set_tier_reveal", {
       p_session_token: sessionToken,
@@ -192,6 +477,17 @@ export async function dmSetTierReveal(
 }
 
 export async function dmIntroduce(sessionToken: string, characterId: string): Promise<boolean> {
+  const localNpc = getCanonNpcByIdOrSlug(characterId);
+  if (localNpc && characterId.startsWith("canon_")) {
+    const map = getLocalCanonRevealsMap();
+    const current = new Set(map[localNpc.slug] ?? []);
+    current.add("identity");
+    current.add("appearance");
+    map[localNpc.slug] = Array.from(current);
+    saveLocalCanonRevealsMap(map);
+    return true;
+  }
+
   try {
     const { data, error } = await supabase.rpc("dm_introduce", {
       p_session_token: sessionToken,
@@ -206,6 +502,22 @@ export async function dmIntroduce(sessionToken: string, characterId: string): Pr
 }
 
 export async function dmLockAll(sessionToken: string, characterId?: string): Promise<boolean> {
+  if (characterId && characterId.startsWith("canon_")) {
+    const localNpc = getCanonNpcByIdOrSlug(characterId);
+    if (localNpc) {
+      const map = getLocalCanonRevealsMap();
+      map[localNpc.slug] = [];
+      saveLocalCanonRevealsMap(map);
+      return true;
+    }
+  } else if (!characterId) {
+    const map = getLocalCanonRevealsMap();
+    for (const npc of CANON_SESSION1_NPCS) {
+      map[npc.slug] = [];
+    }
+    saveLocalCanonRevealsMap(map);
+  }
+
   try {
     const { data, error } = await supabase.rpc("dm_lock_all", {
       p_session_token: sessionToken,

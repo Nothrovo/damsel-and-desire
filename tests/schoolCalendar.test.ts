@@ -54,6 +54,34 @@ describe("School Calendar Data & Worldbuilding (Calender Sekolah.txt)", () => {
     expect(SCHOOL_DAILY_ROUTINES).toHaveLength(6);
     expect(YEAR_TWO_PREVIEW.pillars).toHaveLength(3);
   });
+
+  it("links all 5 April (Session 1) events to Canon NPCs and validates all 7 new Canon NPC profiles", async () => {
+    const { CANON_SESSION1_NPCS } = await import("../src/data/canonSession1Npcs");
+    expect(CANON_SESSION1_NPCS).toHaveLength(7);
+
+    const expectedSlugs = [
+      "kisaragi_setsuna",
+      "saionji_kaede",
+      "shiranui_mei",
+      "tsukishima_fumiko",
+      "tachibana_rin",
+      "saegusa_koharu",
+      "wakaba_hinata"
+    ];
+    expect(CANON_SESSION1_NPCS.map((n) => n.slug)).toEqual(expectedSlugs);
+
+    for (const npc of CANON_SESSION1_NPCS) {
+      expect(npc.isLoveInterest).toBe(true);
+      expect(npc.sections).toHaveLength(8);
+    }
+
+    const aprilMonth = SCHOOL_CALENDAR_MONTHS.find((m) => m.id === "april")!;
+    expect(aprilMonth.events).toHaveLength(5);
+    for (const ev of aprilMonth.events) {
+      expect(ev.featuredNpcs).toBeDefined();
+      expect(ev.featuredNpcs!.length).toBeGreaterThanOrEqual(3);
+    }
+  });
 });
 
 describe("Progressive Calendar Tracking & State Transitions", () => {

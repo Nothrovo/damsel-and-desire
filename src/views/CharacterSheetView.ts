@@ -38,6 +38,13 @@ import { subclassSelectModal } from "../components/SubclassSelectModal";
 import { editCharacterModal } from "../components/EditCharacterModal";
 import { featPickerModal } from "../components/FeatPickerModal";
 import { achievementAwardModal } from "../components/AchievementAwardModal";
+import { addLoveInterestModal } from "../components/AddLoveInterestModal";
+import { loveInterestDetailModal } from "../components/LoveInterestDetailModal";
+import {
+  findLoveInterestByName,
+  getLoveInterestBySlug,
+  getCurrentMilestone
+} from "../data/loveInterestCompendium";
 import { ALL_FEATS } from "../data/featCompendium";
 import { ALL_ACHIEVEMENTS } from "../data/achievementCompendium";
 import {
@@ -766,6 +773,8 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
       ${editCharacterModal.render()}
       ${featPickerModal.render()}
       ${achievementAwardModal.render()}
+      ${addLoveInterestModal.render()}
+      ${loveInterestDetailModal.render()}
 
     </div>
   `;
@@ -997,6 +1006,15 @@ function renderTargetsList(char: Character): string {
   }
 
   return targets.map((t, idx) => {
+    const li = (t.slug ? getLoveInterestBySlug(t.slug) : null) || findLoveInterestByName(t.name);
+    const avatarUrl =
+      t.avatar_url ||
+      li?.avatar_url ||
+      `/portraits/${li?.slug || ''}.png` ||
+      `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(t.name)}`;
+    const currentMilestone = li ? getCurrentMilestone(li, t.affection || 1) : null;
+    const milestoneTitle = currentMilestone ? currentMilestone.title : null;
+
     let heartsHtml = "";
     for (let h = 1; h <= 10; h++) {
       heartsHtml += `
@@ -1005,17 +1023,48 @@ function renderTargetsList(char: Character): string {
     }
 
     return `
-      <div class="target-card">
-        <div class="target-card-header">
-          <span class="target-name">${escapeHtml(t.name || 'Target Asmara')}</span>
-          <span class="target-status-badge">${escapeHtml(t.status || 'Crush')}</span>
+      <div class="target-card clickable-target-card" data-target-idx="${idx}" title="Ketuk untuk melihat detail &amp; panduan romansa">
+        <div class="target-card-avatar-wrap">
+          <img
+            src="${avatarUrl}"
+            alt="${escapeHtml(t.name)}"
+            class="target-card-avatar"
+            onerror="this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(t.name)}'"
+          />
+          ${(t.class_room || li?.class_room) ? `<span class="target-card-class-badge">${escapeHtml(t.class_room || li!.class_room)}</span>` : ''}
         </div>
-        <div class="target-heart-meter">
-          ${heartsHtml}
-          <span style="font-size:0.85rem;font-weight:800;color:var(--rose-light);margin-left:0.5rem;">(${t.affection || 0}/10)</span>
-        </div>
-        <div class="target-secret-box">
-          <strong>Event Flag &amp; Rahasia:</strong> ${escapeHtml(t.secret || 'Belum ada catatan rahasia.')}
+
+        <div class="target-card-content">
+          <div class="target-card-header">
+            <div class="target-card-title-wrap">
+              <span class="target-name">${escapeHtml(li?.name || t.name || 'Target Asmara')}</span>
+              ${li?.furigana ? `<span class="target-furigana-label">${escapeHtml(li.furigana)}</span>` : ''}
+              ${li?.archetype ? `<span class="target-archetype-tag">${escapeHtml(li.archetype)}</span>` : ''}
+            </div>
+            <div class="target-card-actions">
+              <span class="target-status-badge">${escapeHtml(t.status || 'Crush')}</span>
+              <button type="button" class="btn-inspect-target" data-target-idx="${idx}" title="Buka Detail Romansa">
+                🔍 Detail
+              </button>
+            </div>
+          </div>
+
+          <div class="target-heart-meter">
+            <span class="heart-meter-caption">Meteran Hati:</span>
+            <div class="heart-meter-dots">
+              ${heartsHtml}
+            </div>
+            <span class="heart-meter-counter">(${t.affection || 0}/10 ♥)</span>
+            ${milestoneTitle ? `<span class="target-milestone-preview">• ${escapeHtml(milestoneTitle)}</span>` : ''}
+          </div>
+
+          <div class="target-secret-box">
+            <strong>Event Flag &amp; Rahasia:</strong> ${escapeHtml(t.secret || 'Belum ada catatan rahasia.')}
+          </div>
+
+          <div class="target-card-hint">
+            <span>👆 Ketuk kotak kartu untuk melihat panduan romansa, hadiah favorit &amp; progres</span>
+          </div>
         </div>
       </div>
     `;
@@ -1475,31 +1524,19 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     showToast("🔒 Mode DM dikunci kembali.", "info");
   });
 
-  document.getElementById("btnAddTarget")?.addEventListener("click", async () => {
-    const name = prompt("Nama Target Romansa / Gebetan / Rival Baru:");
-    if (!name) return;
-    const status = prompt("Status Hubungan (contoh: Secret Crush, Rival, Teman Sebangku):", "Secret Crush");
-    const secret = prompt("Catatan Rahasia / Momen Berkesan:", "");
-
-    if (!char.targets) char.targets = [];
-    char.targets.push({
-      name: name.trim(),
-      status: (status || "Secret Crush").trim(),
-      affection: 1,
-      secret: (secret || "").trim()
-    });
-
-    try {
-      await saveTargets(char);
-      const targetsContainer = document.getElementById("sheetTargetsList");
-      if (targetsContainer) {
-        targetsContainer.innerHTML = renderTargetsList(char);
-        attachTargetHeartEvents(container, char);
+  document.getElementById("btnAddTarget")?.addEventListener("click", () => {
+    addLoveInterestModal.open(char, async () => {
+      try {
+        await saveTargets(char);
+        const targetsContainer = document.getElementById("sheetTargetsList");
+        if (targetsContainer) {
+          targetsContainer.innerHTML = renderTargetsList(char);
+          attachTargetHeartEvents(container, char);
+        }
+      } catch (err: any) {
+        showToast(`Gagal menyimpan target: ${err.message}`, "error");
       }
-      showToast(`Target baru ditambahkan: ${name}`, "success");
-    } catch (err: any) {
-      showToast(`Gagal menyimpan target: ${err.message}`, "error");
-    }
+    });
   });
 
   // 17. Progression, Feat & DM Modals
@@ -1674,10 +1711,66 @@ function renderInventoryLists(char: Character) {
 }
 
 function attachTargetHeartEvents(container: HTMLElement, char: Character) {
+  const openTargetDetail = (targetIdx: number) => {
+    loveInterestDetailModal.open(
+      char,
+      targetIdx,
+      async () => {
+        try {
+          await saveTargets(char);
+          const targetsContainer = document.getElementById("sheetTargetsList");
+          if (targetsContainer) {
+            targetsContainer.innerHTML = renderTargetsList(char);
+            attachTargetHeartEvents(container, char);
+          }
+        } catch (err: any) {
+          showToast(`Gagal menyimpan perubahan target: ${err.message}`, "error");
+        }
+      },
+      async () => {
+        try {
+          await saveTargets(char);
+          const targetsContainer = document.getElementById("sheetTargetsList");
+          if (targetsContainer) {
+            targetsContainer.innerHTML = renderTargetsList(char);
+            attachTargetHeartEvents(container, char);
+          }
+        } catch (err: any) {
+          showToast(`Gagal menghapus target: ${err.message}`, "error");
+        }
+      }
+    );
+  };
+
+  // Card Tap to open detail modal
+  container.querySelectorAll(".clickable-target-card").forEach((card: any) => {
+    card.addEventListener("click", (e: any) => {
+      // Jangan buka modal jika klik berasal dari dot hati atau tombol inspeksi eksplisit
+      if (e.target.closest(".heart-dot") || e.target.closest(".btn-inspect-target")) return;
+      const targetIdx = parseInt(card.dataset.targetIdx, 10);
+      if (!isNaN(targetIdx)) {
+        openTargetDetail(targetIdx);
+      }
+    });
+  });
+
+  // Explicit inspect button
+  container.querySelectorAll(".btn-inspect-target").forEach((btn: any) => {
+    btn.addEventListener("click", (e: any) => {
+      e.stopPropagation();
+      const targetIdx = parseInt(btn.dataset.targetIdx, 10);
+      if (!isNaN(targetIdx)) {
+        openTargetDetail(targetIdx);
+      }
+    });
+  });
+
+  // Heart dots click (cepat tanpa buka modal)
   container.querySelectorAll(".heart-dot").forEach((dot: any) => {
     dot.addEventListener("click", async (e: any) => {
-      const targetIdx = parseInt(dot.dataset.targetIdx);
-      const heartVal = parseInt(dot.dataset.heartVal);
+      e.stopPropagation();
+      const targetIdx = parseInt(dot.dataset.targetIdx, 10);
+      const heartVal = parseInt(dot.dataset.heartVal, 10);
 
       if (char.targets && char.targets[targetIdx]) {
         char.targets[targetIdx].affection = heartVal;
