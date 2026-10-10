@@ -564,10 +564,12 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
     container.querySelectorAll(".btn-dm-quick-introduce").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const charId = btn.getAttribute("data-char-id");
+        const card = btn.closest(".codex-character-card");
+        const slug = card?.getAttribute("data-char-slug") || undefined;
         const token = dmAuthStore.getToken();
         if (charId && token) {
           try {
-            await dmIntroduce(token, charId);
+            await dmIntroduce(token, charId, slug);
             showToast("🌸 Berhasil membuka Tier 1 untuk karakter ini!", "success");
             await loadCategoryData(currentCategoryId);
           } catch (e: any) {
@@ -580,10 +582,12 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
     container.querySelectorAll(".btn-dm-quick-lock").forEach((btn) => {
       btn.addEventListener("click", async () => {
         const charId = btn.getAttribute("data-char-id");
+        const card = btn.closest(".codex-character-card");
+        const slug = card?.getAttribute("data-char-slug") || undefined;
         const token = dmAuthStore.getToken();
         if (charId && token) {
           try {
-            await dmLockAll(token, charId);
+            await dmLockAll(token, charId, slug);
             showToast("🔒 Karakter berhasil dikunci kembali.", "info");
             await loadCategoryData(currentCategoryId);
           } catch (e: any) {

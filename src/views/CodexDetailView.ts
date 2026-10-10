@@ -498,7 +498,7 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
     document.getElementById("dmBtnIntroduce")?.addEventListener("click", async () => {
       if (token && charId) {
         try {
-          await dmIntroduce(token, charId);
+          await dmIntroduce(token, charId, char.slug);
           showToast("🌸 Tier 1 berhasil diperkenalkan ke pemain!", "success");
           await loadCharacterDetail(params.id, params);
         } catch (e: any) {
@@ -534,7 +534,7 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
     document.getElementById("dmBtnLockAll")?.addEventListener("click", async () => {
       if (token && charId) {
         try {
-          await dmLockAll(token, charId);
+          await dmLockAll(token, charId, char.slug);
           showToast("🔒 Seluruh informasi karakter ini dikunci kembali.", "info");
           await loadCharacterDetail(params.id, params);
         } catch (e: any) {
