@@ -38,8 +38,8 @@ BEGIN
       -- Update section appearance untuk menyinkronkan avatar_url foto ID asli
       UPDATE public.codex_character_sections
       SET content = content || jsonb_build_object(
-        'avatar_url', '/portraits/' || v_slug || '.png',
-        'images', jsonb_build_array(jsonb_build_object('path', '/portraits/' || v_slug || '.png', 'caption', 'ID Portrait'))
+        'avatar_url', 'https://oavkhnjigdqacvqfkzpf.supabase.co/storage/v1/object/public/codex-assets/portraits/' || v_slug || '.png',
+        'images', jsonb_build_array(jsonb_build_object('path', 'https://oavkhnjigdqacvqfkzpf.supabase.co/storage/v1/object/public/codex-assets/portraits/' || v_slug || '.png', 'caption', 'ID Portrait'))
       ),
       updated_at = now()
       WHERE character_id = v_char_id AND section_key = 'appearance';

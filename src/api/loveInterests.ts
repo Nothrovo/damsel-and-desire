@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 import { dmAuthStore } from "../store/dmAuthStore";
-import { dmListAll, dmGetCharacter, fetchCodexList, fetchCodexCharacter } from "./codex";
+import { dmListAll, dmGetCharacter, fetchCodexList, fetchCodexCharacter, resolvePortraitUrl } from "./codex";
 import {
   CANON_LOVE_INTERESTS,
   getAllLoveInterests,
@@ -66,9 +66,7 @@ function normalizeDbToLoveInterest(dbChar: any): LoveInterestDefinition {
   };
 
   const avatarUrl =
-    appearance.avatar_url ||
-    dbChar.avatar_url ||
-    `/portraits/${slug}.png` ||
+    resolvePortraitUrl(appearance.avatar_url || dbChar.avatar_url, slug) ||
     `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(slug)}`;
 
   return {

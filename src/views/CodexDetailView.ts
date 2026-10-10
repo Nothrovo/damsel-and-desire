@@ -5,7 +5,8 @@ import {
   dmSetTierReveal,
   dmIntroduce,
   dmLockAll,
-  dmUpsertCharacter
+  dmUpsertCharacter,
+  resolvePortraitUrl
 } from "../api/codex";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { dmAuthModal } from "../components/DmAuthModal";
@@ -169,11 +170,7 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
   const name = identity.name || char.name || "Karakter";
   const furigana = identity.furigana || char.furigana || "";
   const tagline = identity.tagline || char.tagline || "";
-  const canonLi = char.slug ? getLoveInterestBySlug(char.slug) : undefined;
-  let avatar = appearance.avatar_url || char.avatar_url;
-  if (!avatar || avatar.includes("dicebear")) {
-    avatar = canonLi?.avatar_url || (char.slug ? `/portraits/${char.slug}.png` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.id}`);
-  }
+  const avatar = resolvePortraitUrl(appearance.avatar_url || char.avatar_url, char.slug) || `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.slug || char.id}`;
 
   container.innerHTML = `
     <!-- Top Back Link & Category -->
@@ -228,7 +225,7 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
         <!-- Portrait Gallery Column -->
         <div style="background:#0d111a;padding:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;">
           <div style="width:100%;max-width:260px;aspect-ratio:3/4;border-radius:var(--radius-md);overflow:hidden;border:2px solid var(--amber-gold);box-shadow:0 8px 24px rgba(0,0,0,0.6);position:relative;cursor:zoom-in;" id="mainPortraitWrapper">
-            <img src="${avatar}" alt="${name}" id="mainPortraitImg" style="width:100%;height:100%;object-fit:cover;" />
+            <img src="${avatar}" alt="${name}" id="mainPortraitImg" style="width:100%;height:100%;object-fit:cover;" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=${char.slug || char.id}';}" />
             <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;font-size:0.7rem;padding:3px 8px;border-radius:var(--radius-full);">
               🔍 Ketuk untuk Perbesar
             </div>

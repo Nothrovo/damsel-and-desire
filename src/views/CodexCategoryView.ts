@@ -6,7 +6,8 @@ import {
   dmLockAll,
   dmBatchIntroduce,
   dmBatchSetTier,
-  dmBatchLockAll
+  dmBatchLockAll,
+  resolvePortraitUrl
 } from "../api/codex";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { dmAuthModal } from "../components/DmAuthModal";
@@ -443,12 +444,7 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
     }
 
     // KARTU TERBUKA (ATAU DALAM MODE DM)
-    const canonLi = c.slug ? getLoveInterestBySlug(c.slug) : undefined;
-    const avatar = (c.avatar_url && !c.avatar_url.includes("dicebear"))
-      ? c.avatar_url
-      : canonLi?.avatar_url
-      ? canonLi.avatar_url
-      : (c.slug ? `/portraits/${c.slug}.png` : `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.id}`);
+    const avatar = resolvePortraitUrl(c.avatar_url, c.slug) || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.slug || c.id}`;
     const revealedCount = (c.revealed_sections || []).length;
     const isActuallyLocked = isLocked || revealedCount === 0;
 
@@ -464,7 +460,7 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
 
         <!-- Image & Badges -->
         <div style="position:relative;height:240px;background:#0d111a;overflow:hidden;">
-          <img src="${avatar}" alt="${c.name || 'Avatar'}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;" class="card-portrait" />
+          <img src="${avatar}" alt="${c.name || 'Avatar'}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.3s ease;" class="card-portrait" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://api.dicebear.com/7.x/adventurer/svg?seed=${c.slug || c.id}';}" />
           <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,0.95) 0%, rgba(17,24,39,0.1) 60%, transparent 100%);"></div>
 
           <!-- Top Badges -->

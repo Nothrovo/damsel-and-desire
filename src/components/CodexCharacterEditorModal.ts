@@ -2,7 +2,8 @@ import {
   DEFAULT_CODEX_CATEGORIES,
   dmUpsertCharacter,
   dmDeleteCharacter,
-  dmUploadCharacterImage
+  dmUploadCharacterImage,
+  resolvePortraitUrl
 } from "../api/codex";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { getLoveInterestBySlug } from "../data/loveInterestCompendium";
@@ -468,12 +469,7 @@ class CodexCharacterEditorModal {
     this.setVal("edStatLck", String(stats.luck ?? 10));
 
     // Populate Tab 2
-    const canonLi = char.slug ? getLoveInterestBySlug(char.slug) : undefined;
-    let avatarUrl = appearance.avatar_url || char.avatar_url || "";
-    if (!avatarUrl || avatarUrl.includes("dicebear")) {
-      if (canonLi?.avatar_url) avatarUrl = canonLi.avatar_url;
-      else if (char.slug) avatarUrl = `/portraits/${char.slug}.png`;
-    }
+    const avatarUrl = resolvePortraitUrl(appearance.avatar_url || char.avatar_url, char.slug);
     this.setVal("edAvatarUrl", avatarUrl);
     const preview = document.getElementById("edAvatarPreview") as HTMLImageElement;
     if (preview) {

@@ -43,6 +43,31 @@ function getCanonNpcByIdOrSlug(idOrSlug: string) {
   );
 }
 
+export const SUPABASE_STORAGE_PORTRAITS_URL = "https://oavkhnjigdqacvqfkzpf.supabase.co/storage/v1/object/public/codex-assets/portraits";
+
+export function resolvePortraitUrl(rawUrl?: string | null, slug?: string): string {
+  if (!rawUrl && !slug) {
+    return "";
+  }
+
+  // 1. If rawUrl is empty or DiceBear, fallback to Supabase Storage if slug is provided
+  if (!rawUrl || rawUrl.includes("dicebear")) {
+    if (slug) {
+      return `${SUPABASE_STORAGE_PORTRAITS_URL}/${slug}.png`;
+    }
+    return rawUrl || "";
+  }
+
+  // 2. If rawUrl is relative (/portraits/... or portraits/...)
+  if (rawUrl.startsWith("/portraits/") || rawUrl.startsWith("portraits/")) {
+    const filename = rawUrl.replace(/^\/?portraits\//, "");
+    return `${SUPABASE_STORAGE_PORTRAITS_URL}/${filename}`;
+  }
+
+  // 3. Absolute URL
+  return rawUrl;
+}
+
 function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSections: string[]): CodexCharacterCard | null {
   if (!revealedSections || revealedSections.length === 0) {
     if ((npc.visibilityMode as string) === "hidden") return null;
@@ -70,7 +95,7 @@ function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSecti
     name: hasIdentity ? (identitySec?.name || "???") : "???",
     furigana: hasIdentity ? (identitySec?.furigana || "") : "",
     tagline: hasIdentity ? (identitySec?.tagline || "") : "",
-    avatar_url: hasAppearance ? (appearanceSec?.avatar_url || "") : "",
+    avatar_url: hasAppearance ? resolvePortraitUrl(appearanceSec?.avatar_url, npc.slug) : "",
     class_room: hasIdentity ? (identitySec?.class_room || "") : "",
     role: hasIdentity ? (identitySec?.role || "") : "",
     club: hasIdentity ? (identitySec?.club || "") : "",
@@ -127,7 +152,7 @@ function buildCanonDetail(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSec
     name: hasIdentity ? (identitySec?.name || "???") : "???",
     furigana: hasIdentity ? (identitySec?.furigana || "") : "",
     tagline: hasIdentity ? (identitySec?.tagline || "") : "",
-    avatar_url: hasAppearance ? (appearanceSec?.avatar_url || "") : "",
+    avatar_url: hasAppearance ? resolvePortraitUrl(appearanceSec?.avatar_url, npc.slug) : "",
     home_room_id: hasIdentity ? npc.homeRoomId : null,
     sections
   };
@@ -201,6 +226,7 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
   // Harmonisasi card dengan definisi canon compendium resmi
   for (const card of remoteList) {
     if (card.slug && !card.locked) {
+      card.avatar_url = resolvePortraitUrl(card.avatar_url, card.slug);
       const canon = getLoveInterestBySlug(card.slug);
       if (canon) {
         card.role = canon.role;
@@ -208,9 +234,6 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
         card.class_room = canon.class_room;
         if (canon.tagline && (!card.tagline || card.tagline === "???")) card.tagline = canon.tagline;
         if (canon.furigana && !card.furigana) card.furigana = canon.furigana;
-        if (canon.avatar_url && (!card.avatar_url || card.avatar_url.includes("dicebear"))) {
-          card.avatar_url = canon.avatar_url;
-        }
       }
     }
   }
@@ -227,6 +250,11 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
     if (!error && data) {
       const detail = data as CodexCharacterDetail;
       if (detail.slug) {
+        detail.avatar_url = resolvePortraitUrl(detail.avatar_url, detail.slug);
+        const appSec = detail.sections?.find((s) => s.section_key === "appearance");
+        if (appSec && appSec.content) {
+          appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, detail.slug);
+        }
         const canon = getLoveInterestBySlug(detail.slug);
         if (canon) {
           const idSec = detail.sections?.find((s) => s.section_key === "identity");
@@ -235,15 +263,6 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
             idSec.content.club = canon.club;
             idSec.content.club_role = canon.club_role;
             idSec.content.class_room = canon.class_room;
-          }
-          const appSec = detail.sections?.find((s) => s.section_key === "appearance");
-          if (appSec && appSec.content) {
-            if (canon.avatar_url && (!appSec.content.avatar_url || appSec.content.avatar_url.includes("dicebear"))) {
-              appSec.content.avatar_url = canon.avatar_url;
-            }
-          }
-          if (canon.avatar_url && (!detail.avatar_url || detail.avatar_url.includes("dicebear"))) {
-            detail.avatar_url = canon.avatar_url;
           }
         }
       }
@@ -307,7 +326,13 @@ async function ensureCanonNpcsSyncedToDb(sessionToken: string, existingList: DmC
           sectionKey: s.sectionKey,
           section_key: s.sectionKey,
           tier: s.tier,
-          content: s.content,
+          content: s.sectionKey === "appearance" && s.content
+            ? {
+                ...s.content,
+                avatar_url: resolvePortraitUrl((s.content as any).avatar_url, npc.slug),
+                images: [{ path: resolvePortraitUrl((s.content as any).avatar_url, npc.slug), caption: "ID Portrait" }]
+              }
+            : s.content,
           lockedHint: s.lockedHint,
           locked_hint: s.lockedHint
         }))
@@ -430,6 +455,7 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
     // Harmonisasi dengan definisi canon compendium resmi
     for (const char of list) {
       if (char.slug) {
+        char.avatar_url = resolvePortraitUrl(char.avatar_url, char.slug);
         const canon = getLoveInterestBySlug(char.slug);
         if (canon) {
           char.role = canon.role;
@@ -437,9 +463,6 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
           char.class_room = canon.class_room;
           if (canon.tagline) char.tagline = canon.tagline;
           if (canon.furigana) char.furigana = canon.furigana;
-          if (canon.avatar_url && (!char.avatar_url || char.avatar_url.includes("dicebear"))) {
-            char.avatar_url = canon.avatar_url;
-          }
         }
       }
     }
@@ -482,6 +505,11 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
     });
     if (error) throw error;
     if (data && data.slug) {
+      data.avatar_url = resolvePortraitUrl(data.avatar_url, data.slug);
+      const appSec = data.sections?.find((s: any) => s.section_key === "appearance");
+      if (appSec && appSec.content) {
+        appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, data.slug);
+      }
       const canon = getLoveInterestBySlug(data.slug);
       if (canon) {
         const idSec = data.sections?.find((s: any) => s.section_key === "identity");
@@ -490,15 +518,6 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
           idSec.content.club = canon.club;
           idSec.content.club_role = canon.club_role;
           idSec.content.class_room = canon.class_room;
-        }
-        const appSec = data.sections?.find((s: any) => s.section_key === "appearance");
-        if (appSec && appSec.content) {
-          if (canon.avatar_url && (!appSec.content.avatar_url || appSec.content.avatar_url.includes("dicebear"))) {
-            appSec.content.avatar_url = canon.avatar_url;
-          }
-        }
-        if (canon.avatar_url && (!data.avatar_url || data.avatar_url.includes("dicebear"))) {
-          data.avatar_url = canon.avatar_url;
         }
       }
     }
