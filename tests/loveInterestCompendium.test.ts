@@ -32,7 +32,9 @@ describe("Love Interest Compendium & Dynamic Resolver", () => {
     expect(bySlug).toBeDefined();
     expect(bySlug?.name).toContain("Miruam Solari");
     expect(bySlug?.class_room).toBe("11-1");
-    expect(bySlug?.club).toBe("kendo");
+    expect(bySlug?.club).toContain("kendo");
+    expect(bySlug?.club).toContain("student_council");
+    expect(bySlug?.role).toContain("Wakil Ketua OSIS");
 
     const byName = findLoveInterestByName("Miruam Solari");
     expect(byName?.slug).toBe("miruam_solari");

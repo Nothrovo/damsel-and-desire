@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { CANON_SESSION1_NPCS } from "../data/canonSession1Npcs";
+import { getLoveInterestBySlug } from "../data/loveInterestCompendium";
 import type {
   CodexCategory,
   CodexCharacterCard,
@@ -197,6 +198,20 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     }
   }
 
+  // Harmonisasi card dengan definisi canon compendium resmi
+  for (const card of remoteList) {
+    if (card.slug && !card.locked) {
+      const canon = getLoveInterestBySlug(card.slug);
+      if (canon) {
+        card.role = canon.role;
+        card.club = canon.club;
+        card.class_room = canon.class_room;
+        if (canon.tagline && (!card.tagline || card.tagline === "???")) card.tagline = canon.tagline;
+        if (canon.furigana && !card.furigana) card.furigana = canon.furigana;
+      }
+    }
+  }
+
   return remoteList;
 }
 
@@ -207,7 +222,20 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
     });
 
     if (!error && data) {
-      return data as CodexCharacterDetail;
+      const detail = data as CodexCharacterDetail;
+      if (detail.slug) {
+        const canon = getLoveInterestBySlug(detail.slug);
+        if (canon) {
+          const idSec = detail.sections?.find((s) => s.section_key === "identity");
+          if (idSec && idSec.content) {
+            idSec.content.role = canon.role;
+            idSec.content.club = canon.club;
+            idSec.content.club_role = canon.club_role;
+            idSec.content.class_room = canon.class_room;
+          }
+        }
+      }
+      return detail;
     }
   } catch (e: any) {
     console.error("Gagal memanggil get_codex_character:", e);
@@ -227,12 +255,20 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
 // DM APIs (Privileged with Session Token)
 // ----------------------------------------------------------------------------
 
-async function ensureCanonNpcsSyncedToDb(sessionToken: string, existingSlugs: Set<string>): Promise<boolean> {
+async function ensureCanonNpcsSyncedToDb(sessionToken: string, existingList: DmCodexCharacter[]): Promise<boolean> {
   let anySynced = false;
   const localRevealsMap = getLocalCanonRevealsMap();
+  const existingMap = new Map(existingList.map((c) => [c.slug, c]));
 
   for (const npc of CANON_SESSION1_NPCS) {
-    if (existingSlugs.has(npc.slug)) continue;
+    const existing = existingMap.get(npc.slug);
+    const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+
+    // Jika sudah ada dan role & club sudah cocok dengan canon terbaru, lewati
+    if (existing && existing.role === identitySec?.role && existing.club === identitySec?.club) {
+      continue;
+    }
+
     try {
       const payload = {
         slug: npc.slug,
@@ -324,10 +360,9 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
     });
     if (error) throw error;
     let list = (data || []) as DmCodexCharacter[];
-    const existingSlugs = new Set(list.map((c) => c.slug));
 
-    // Otomatis sinkronkan 7 karakter Canon NPC Sesi 1 ke Supabase jika belum ada di DB
-    const synced = await ensureCanonNpcsSyncedToDb(sessionToken, existingSlugs);
+    // Otomatis sinkronkan karakter Canon Sesi 1 ke Supabase jika belum ada atau outdated di DB
+    const synced = await ensureCanonNpcsSyncedToDb(sessionToken, list);
     if (synced) {
       const { data: refreshed } = await supabase.rpc("dm_list_all", {
         p_session_token: sessionToken
@@ -362,6 +397,20 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
         revealed_sections: localRevealsMap[npc.slug] ?? ["identity", "appearance"],
         dm_notes: dmNotesSec?.notes || ""
       });
+    }
+
+    // Harmonisasi dengan definisi canon compendium resmi
+    for (const char of list) {
+      if (char.slug) {
+        const canon = getLoveInterestBySlug(char.slug);
+        if (canon) {
+          char.role = canon.role;
+          char.club = canon.club;
+          char.class_room = canon.class_room;
+          if (canon.tagline) char.tagline = canon.tagline;
+          if (canon.furigana) char.furigana = canon.furigana;
+        }
+      }
     }
 
     return list;
@@ -401,6 +450,18 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
       p_character_id: characterId
     });
     if (error) throw error;
+    if (data && data.slug) {
+      const canon = getLoveInterestBySlug(data.slug);
+      if (canon) {
+        const idSec = data.sections?.find((s: any) => s.section_key === "identity");
+        if (idSec && idSec.content) {
+          idSec.content.role = canon.role;
+          idSec.content.club = canon.club;
+          idSec.content.club_role = canon.club_role;
+          idSec.content.class_room = canon.class_room;
+        }
+      }
+    }
     return data;
   } catch (e: any) {
     console.error("Gagal memanggil dm_get_character:", e);

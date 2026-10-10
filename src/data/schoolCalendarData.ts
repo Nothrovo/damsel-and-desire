@@ -221,10 +221,11 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         description: "Razia kerapian seragam pagi di gerbang sakura oleh Komite Disiplin, upacara resmi di aula megah akademi, pidato kepala sekolah, serta sambutan Ketua OSIS & perwakilan siswa baru.",
         isKeyEvent: true,
         featuredNpcs: [
-          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Wakil Ketua OSIS & Komite Disiplin (11-2)", isNewCanon: true },
+          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Sekretaris OSIS & Komite Disiplin (11-2)", isNewCanon: true },
+          { slug: "miruam_solari", name: "Miruam Solari", role: "Wakil Ketua OSIS & Ketua Klub Kendo (11-1)" },
           { slug: "kujou_reiko", name: "Kujou Reiko", role: "Kepala Sekolah & Ketua Yayasan" },
           { slug: "asahina_tenka", name: "Asahina Tenka", role: "Ketua OSIS (11-1)" },
-          { slug: "shinonome_shion", name: "Shinonome Shion", role: "Perwakilan Siswa Baru Peringkat 1 (10-1)" }
+          { slug: "kazuki_ren", name: "Kazuki Ren", role: "Perwakilan Siswa Baru (10-1)" }
         ]
       },
       {
@@ -236,10 +237,10 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         category: "Akademik",
         description: "Melihat papan pengumuman pembagian kelas, pengarahan wali kelas di koridor Kelas 10, menentukan tempat duduk sebangku, dan memilih pengurus komite kelas.",
         featuredNpcs: [
-          { slug: "tsukishima_reo", name: "Tsukishima Reo", role: "Wali Kelas 10-1 & Guru Bahasa Inggris" },
+          { slug: "hasumi_chihiro", name: "Hasumi Chihiro", role: "Wali Kelas 10-1 & Guru Sastra Jepang" },
           { slug: "saionji_kaede", name: "Saionji Kaede", role: "Wali Kelas 10-2 & Guru Olahraga", isNewCanon: true },
-          { slug: "shinonome_shion", name: "Shinonome Shion", role: "Ketua Kelas 10-1" },
-          { slug: "kurokawa_yuuto", name: "Kurokawa Yuuto", role: "Wakil Ketua Kelas 10-1" }
+          { slug: "shinohara_kotone", name: "Shinohara Kotone", role: "Siswa Kelas 10-1 (Kandidat Komite)" },
+          { slug: "kirishima_iori", name: "Kirishima Iori", role: "Siswa Kelas 10-1" }
         ]
       },
       {
@@ -266,10 +267,11 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         description: "Klub olahraga dan bela diri mengadakan demonstrasi tanding di gymnasium, sementara klub drama, musik, dan budaya menggelar pertunjukan panggung untuk memikat siswa baru.",
         isKeyEvent: true,
         featuredNpcs: [
-          { slug: "tachibana_rin", name: "Tachibana Rin", role: "Ketua Klub Kendo (12-1)", isNewCanon: true },
+          { slug: "tachibana_rin", name: "Tachibana Rin", role: "Senior Kapten Klub Kendo & Mentor Dojo (12-1)", isNewCanon: true },
+          { slug: "miruam_solari", name: "Miruam Solari", role: "Ketua Klub Kendo & Wakil Ketua OSIS (11-1)" },
           { slug: "saegusa_koharu", name: "Saegusa Koharu", role: "Ketua Klub Drama (12-1)", isNewCanon: true },
-          { slug: "yukimura_shizuku", name: "Yukimura Shizuku", role: "Wakil Ketua Klub Kyūdō (11-1)" },
-          { slug: "minami_hoshino", name: "Minami Hoshino", role: "Vokalis Light Music Club (10-1)" }
+          { slug: "shinohara_kotone", name: "Shinohara Kotone", role: "Klub Musik / Calon Idol (10-1)" },
+          { slug: "kirishima_iori", name: "Kirishima Iori", role: "Klub Band / Pangeran Gitar (10-1)" }
         ]
       },
       {
@@ -282,8 +284,9 @@ export const SCHOOL_CALENDAR_MONTHS: SchoolCalendarMonth[] = [
         description: "Menyerahkan formulir pendaftaran klub (Nyūbu Todoke) ke meja OSIS, sambutan hangat di ruang klub & ruang tata boga, serta memulai jadwal piket kebersihan (Seisō) dan latihan sore.",
         featuredNpcs: [
           { slug: "wakaba_hinata", name: "Wakaba Hinata", role: "Ketua Klub Memasak (12-2)", isNewCanon: true },
-          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Wakil Ketua OSIS — Verifikasi Formulir Klub (11-2)", isNewCanon: true },
-          { slug: "tsukishima_reo", name: "Tsukishima Reo", role: "Wali Kelas 10-1 — Jadwal Piket Sore" }
+          { slug: "miruam_solari", name: "Miruam Solari", role: "Wakil Ketua OSIS & Ketua Klub Kendo — Pengesahan Pendaftaran (11-1)" },
+          { slug: "kisaragi_setsuna", name: "Kisaragi Setsuna", role: "Sekretaris OSIS — Verifikasi Formulir Klub (11-2)", isNewCanon: true },
+          { slug: "hasumi_chihiro", name: "Hasumi Chihiro", role: "Wali Kelas 10-1 — Pengawasan Piket Sore" }
         ]
       }
     ]
