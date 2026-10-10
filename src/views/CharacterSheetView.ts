@@ -21,6 +21,7 @@ import {
 } from "../api/gameRpc";
 import { characterStore } from "../store/characterStore";
 import { router } from "../router/router";
+import { uploadAvatar } from "../api/storage";
 import { exportCharacterJson, triggerPrintCharacterSheet } from "../services/exporter";
 import {
   calculateAbilityModifier,
@@ -359,21 +360,70 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
         <!-- COLUMN 1: CREST, SAVING THROWS & PASSIVES  -->
         <!-- ========================================== -->
         <div class="sheet-col col-left">
-          <!-- Crest Card -->
-          <div class="card crest-card">
-            <div class="crest-frame">
-              <svg viewBox="0 0 100 100" class="crest-svg">
-                <polygon points="50,5 90,25 90,75 50,95 10,75 10,25" fill="none" stroke="currentColor" stroke-width="3"/>
-                <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4,3"/>
-                <path d="M50,30 L62,42 L50,54 L38,42 Z" fill="currentColor"/>
-                <circle cx="50" cy="65" r="5" fill="currentColor"/>
-              </svg>
+          <!-- Housen Student ID Card (Kartu Tanda Siswa & Pasfoto Pelajar) -->
+          <div class="card student-id-card">
+            <div class="id-card-header">
+              <div class="id-school-emblem" title="鳳仙学園 (Housen Gakuen)">鳳仙</div>
+              <div class="id-school-info">
+                <div class="id-school-name">鳳仙学園 高等部</div>
+                <div class="id-card-title">STUDENT ID CARD / 学生証</div>
+              </div>
             </div>
-            <div class="prof-bonus-pill">
-              <span class="prof-title">PROFICIENCY</span>
-              <span class="prof-value" id="sheetProfBonus">+${profBonus}</span>
+
+            <div class="id-card-content">
+              <div class="id-photo-container" id="idPhotoContainer" title="Klik atau seret foto ke sini untuk mengganti Pasfoto ID (Maks 2MB)">
+                <img id="studentIdPhotoImg" src="${avatar}" alt="${escapeHtml(char.name)}">
+                <div class="id-photo-overlay">
+                  <span class="id-photo-overlay-icon">📷</span>
+                  <span class="id-photo-overlay-text">Ganti Foto</span>
+                </div>
+                <div class="id-photo-loading" id="idPhotoLoading" style="display:none;">
+                  <span class="spinner-sm"></span>
+                  <span style="font-size:0.65rem;color:white;margin-top:4px;">Mengunggah...</span>
+                </div>
+                <div class="id-stamp-badge">学園認可</div>
+              </div>
+
+              <div class="id-card-details">
+                <div class="id-field">
+                  <span class="id-field-label">NO. INDUK SISWA</span>
+                  <span class="id-field-val">HA-${char.id.slice(0, 8).toUpperCase()}</span>
+                </div>
+                <div class="id-field">
+                  <span class="id-field-label">NAMA SISWA</span>
+                  <span class="id-field-val id-student-name">${escapeHtml(char.name)}</span>
+                </div>
+                <div class="id-field-row">
+                  <div class="id-field">
+                    <span class="id-field-label">TINGKAT</span>
+                    <span class="id-field-val">Kelas ${char.grade || 10}-1</span>
+                  </div>
+                  <div class="id-field">
+                    <span class="id-field-label">PROFICIENCY</span>
+                    <span class="id-field-val" id="sheetProfBonus" style="color:var(--rose-light);font-weight:700;">+${profBonus}</span>
+                  </div>
+                </div>
+                <div class="id-field">
+                  <span class="id-field-label">EKSKUL / KLUB</span>
+                  <span class="id-field-val text-truncate">${escapeHtml(ekskulName)}</span>
+                </div>
+              </div>
+            </div>
+
+            <input type="file" id="idPhotoFileInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
+
+            <div class="id-card-actions">
+              <button class="btn btn-secondary btn-xs" id="btnTriggerIdUpload" type="button">
+                📷 Unggah Pasfoto ID
+              </button>
+              ${char.avatar_path ? `
+                <button class="btn btn-ghost btn-xs text-muted" id="btnResetIdPhoto" type="button" title="Kembalikan ke avatar default">
+                  Reset
+                </button>
+              ` : ''}
             </div>
           </div>
+
 
           <!-- Saving Throws Box (6 Stat Saves) -->
           <div class="card p-3">
@@ -1279,6 +1329,101 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   // 1. Toolbar Actions
   document.getElementById("btnExportCharJson")?.addEventListener("click", () => exportCharacterJson(char));
   document.getElementById("btnPrintCharSheet")?.addEventListener("click", () => triggerPrintCharacterSheet());
+
+  // 1b. Housen Student ID Photo Upload & Handling
+  const photoInput = document.getElementById("idPhotoFileInput") as HTMLInputElement | null;
+  const photoContainer = document.getElementById("idPhotoContainer");
+  const triggerBtn = document.getElementById("btnTriggerIdUpload");
+  const resetBtn = document.getElementById("btnResetIdPhoto");
+  const photoLoading = document.getElementById("idPhotoLoading");
+  const studentPhotoImg = document.getElementById("studentIdPhotoImg") as HTMLImageElement | null;
+  const sheetAvatarImg = document.getElementById("sheetAvatarImg") as HTMLImageElement | null;
+
+  const handleFileUpload = async (file: File) => {
+    try {
+      if (photoLoading) photoLoading.style.display = "flex";
+      showToast("Sedang mengunggah pasfoto ke server Supabase...", "info");
+
+      const publicUrl = await uploadAvatar(file, char.owner_id || char.id || "player");
+
+      // Update UI preview immediately
+      if (studentPhotoImg) studentPhotoImg.src = publicUrl;
+      if (sheetAvatarImg) sheetAvatarImg.src = publicUrl;
+
+      // Update database and characterStore
+      await characterStore.runOptimisticUpdate(
+        (draft) => {
+          draft.avatar_path = publicUrl;
+        },
+        () => updateCharacterDirect(char.id, { avatar_path: publicUrl }, char.version)
+      );
+
+      showToast("Pasfoto ID berhasil diperbarui & tersimpan permanen!", "success");
+
+      const current = characterStore.currentCharacter;
+      if (current) {
+        renderDndBeyondSheet(container, current);
+        attachSheetEvents(container, current);
+      }
+    } catch (err: any) {
+      showToast(`Gagal mengunggah pasfoto: ${err.message}`, "error");
+      const fallback = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
+      if (studentPhotoImg) studentPhotoImg.src = fallback;
+      if (sheetAvatarImg) sheetAvatarImg.src = fallback;
+    } finally {
+      if (photoLoading) photoLoading.style.display = "none";
+      if (photoInput) photoInput.value = "";
+    }
+  };
+
+  photoContainer?.addEventListener("click", () => photoInput?.click());
+  triggerBtn?.addEventListener("click", () => photoInput?.click());
+
+  photoInput?.addEventListener("change", (e: any) => {
+    const file = e.target?.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  });
+
+  // Drag-and-drop for ID photo
+  photoContainer?.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    photoContainer.classList.add("dragover");
+  });
+  photoContainer?.addEventListener("dragleave", () => {
+    photoContainer.classList.remove("dragover");
+  });
+  photoContainer?.addEventListener("drop", (e) => {
+    e.preventDefault();
+    photoContainer.classList.remove("dragover");
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  });
+
+  resetBtn?.addEventListener("click", async () => {
+    if (!confirm("Kembalikan pasfoto ID ke avatar acak bawaan?")) return;
+    try {
+      showToast("Mereset pasfoto...", "info");
+      await characterStore.runOptimisticUpdate(
+        (draft) => {
+          draft.avatar_path = "";
+        },
+        () => updateCharacterDirect(char.id, { avatar_path: "" }, char.version)
+      );
+
+      showToast("Pasfoto ID telah direset.", "success");
+      const current = characterStore.currentCharacter;
+      if (current) {
+        renderDndBeyondSheet(container, current);
+        attachSheetEvents(container, current);
+      }
+    } catch (err: any) {
+      showToast(`Gagal mereset pasfoto: ${err.message}`, "error");
+    }
+  });
 
   // 2. Banner Actions: Rest Controls & Heart Inspiration
   document.getElementById("btnShortRest")?.addEventListener("click", async () => {

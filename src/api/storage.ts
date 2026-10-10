@@ -12,26 +12,49 @@ export async function uploadAvatar(file: File, userId: string): Promise<string> 
     throw new Error("Ukuran berkas melebihi batas maksimal 2MB.");
   }
 
-  const fileExt = file.name.split(".").pop() || "png";
-  const fileName = `${userId}_${Date.now()}.${fileExt}`;
-  const filePath = `avatars/${fileName}`;
+  const fileExt = (file.name.split(".").pop() || "png").toLowerCase();
+  const fileName = `player_${userId}_${Date.now()}.${fileExt}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, {
+  // Coba unggah ke bucket codex-assets (default di Supabase) atau avatars
+  const primaryBucket = "codex-assets";
+  const primaryPath = `player-avatars/${fileName}`;
+
+  let finalBucket = primaryBucket;
+  let finalPath = primaryPath;
+
+  const { error: primaryError } = await supabase.storage
+    .from(primaryBucket)
+    .upload(primaryPath, file, {
       cacheControl: "3600",
-      upsert: true
+      upsert: true,
+      contentType: file.type
     });
 
-  if (uploadError) {
-    // If bucket does not exist or storage is not set up, provide clear error
-    console.warn("Storage upload error:", uploadError);
-    throw new Error(`Gagal mengunggah foto ke storage: ${uploadError.message}`);
+  if (primaryError) {
+    // Jika bucket primary gagal (misal bucket not found), fallback ke bucket 'avatars'
+    const fallbackBucket = "avatars";
+    const fallbackPath = `${fileName}`;
+    const { error: fallbackError } = await supabase.storage
+      .from(fallbackBucket)
+      .upload(fallbackPath, file, {
+        cacheControl: "3600",
+        upsert: true,
+        contentType: file.type
+      });
+
+    if (fallbackError) {
+      console.warn("Storage upload error:", primaryError, fallbackError);
+      throw new Error(`Gagal mengunggah foto ke storage: ${primaryError.message || fallbackError.message}`);
+    }
+
+    finalBucket = fallbackBucket;
+    finalPath = fallbackPath;
   }
 
   const { data } = supabase.storage
-    .from("avatars")
-    .getPublicUrl(filePath);
+    .from(finalBucket)
+    .getPublicUrl(finalPath);
 
   return data.publicUrl;
 }
+

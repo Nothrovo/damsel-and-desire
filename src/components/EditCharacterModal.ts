@@ -1,4 +1,5 @@
 import { updateCharacterDirect } from "../api/characters";
+import { uploadAvatar } from "../api/storage";
 import { characterStore } from "../store/characterStore";
 import { showToast } from "./Toast";
 import {
@@ -111,10 +112,20 @@ export class EditCharacterModal {
               <input type="text" id="editCharNameInput" class="input-text" value="${escapeAttr(char.name)}" style="width:100%;">
             </div>
             <div class="form-group">
-              <label style="font-size:0.8rem;color:var(--text-muted);">URL Avatar:</label>
-              <input type="text" id="editCharAvatarInput" class="input-text" value="${escapeAttr(char.avatar_path || '')}" style="width:100%;" placeholder="https://...">
+              <label style="font-size:0.8rem;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;">
+                <span>Foto Avatar / Pasfoto ID:</span>
+                <span id="editModalUploadStatus" style="font-size:0.7rem;color:var(--rose-light);display:none;">Mengunggah...</span>
+              </label>
+              <div style="display:flex;gap:0.5rem;">
+                <input type="text" id="editCharAvatarInput" class="input-text" value="${escapeAttr(char.avatar_path || '')}" style="flex:1;" placeholder="https://...">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnEditModalUploadAvatar" style="white-space:nowrap;">
+                  📁 Unggah
+                </button>
+                <input type="file" id="editModalFileInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none;">
+              </div>
             </div>
           </div>
+
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-top:0.75rem;">
             <div class="form-group">
               <label style="font-size:0.8rem;color:var(--text-muted);">Klub Ekskul:</label>
@@ -256,6 +267,36 @@ export class EditCharacterModal {
         this.markDirty();
         refreshStatPreviews();
       });
+    });
+
+    // Avatar upload handlers
+    const modalFileInput = document.getElementById("editModalFileInput") as HTMLInputElement | null;
+
+    const btnUpload = document.getElementById("btnEditModalUploadAvatar");
+    const avatarInput = document.getElementById("editCharAvatarInput") as HTMLInputElement | null;
+    const uploadStatus = document.getElementById("editModalUploadStatus");
+
+    btnUpload?.addEventListener("click", () => {
+      modalFileInput?.click();
+    });
+
+    modalFileInput?.addEventListener("change", async (e: any) => {
+      const file = e.target?.files?.[0];
+      if (!file) return;
+
+      try {
+        if (uploadStatus) uploadStatus.style.display = "inline";
+        showToast("Mengunggah pasfoto baru...", "info");
+        const url = await uploadAvatar(file, char.owner_id || char.id || "player");
+        if (avatarInput) avatarInput.value = url;
+        this.markDirty();
+        showToast("Pasfoto berhasil diunggah! Klik 'Simpan Perubahan' untuk mengonfirmasi.", "success");
+      } catch (err: any) {
+        showToast(`Gagal mengunggah foto: ${err.message}`, "error");
+      } finally {
+        if (uploadStatus) uploadStatus.style.display = "none";
+        if (modalFileInput) modalFileInput.value = "";
+      }
     });
 
     // Retrain button click handlers
