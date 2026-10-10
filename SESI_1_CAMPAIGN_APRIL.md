@@ -44,37 +44,37 @@ Setiap hari di Pekan Pertama (Senin s/d Jumat) dirancang dengan format **3 Slot 
 * **SELASA (Hari 2):** Gerbang Pagi ➔ Ruang Kelas 10-1 *(Homeroom Jikoshōkai bersama Chihiro-sensei & Teman Sekelas)* ➔ Atap/Kantin *(Makan Siang Bento bersama Shiori, Kotone/Iori, atau Airi/Riki/Takeru)* ➔ Koridor Lt. 1 *(Insiden Kerumunan Papan Buletin: Menyelamatkan Momoi Yuzu / Dukungan Kanzaki Takeru bersama Kaede-sensei)* ➔ Gerbang Keluar *(Pulang)*.
 * **RABU (Hari 3):** Ruang Kelas 10-1 *(Jitsuryoku Test diawasi Chihiro-sensei & Mengimbangi Skor Logika Takamine Ryo)* ➔ Perpustakaan Besar *(Mengembalikan Kartu Anggota Terselip milik Kurokawa Shiori / Kazuki Ren)* ➔ Ruang UKS *(Pemeriksaan dr. Mei & Menyapa Hoshina Nayu)* ➔ Lapangan Olahraga *(Uji Kebugaran bersama Kumada Riki & Sorotan Tajam Miruam Solari)* ➔ Gerbang Keluar *(Pulang)*.
 * **KAMIS (Hari 4):** Gerbang Dalam *(Banjir Brosur Kotone, Iori & Nayu)* ➔ Gymnasium & Dojo *(Panggung Ekskul: Uji Ketangkasan Bela Diri di Hadapan Miruam Solari & Rin; Duet Panggung bersama Shinohara Kotone / Jamming Iori)* ➔ Area Stand 16 Klub *(Keliling Stand 3 AP)* ➔ Gerbang Keluar *(Pulang)*.
-* **JUMAT (Hari 5):** Ruang Kelas 10-1 *(Formulir Nyūbu Todoke & Konseling Kopi Santai Chihiro-sensei)* ➔ Ruang Kelas 10-1 *(Piket Senja Intim bersama Sahabat Sekelas 10-1 Pilihan)* ➔ Ruang OSIS *(Verifikasi Berkas: Menghadap Ketua OSIS Asahina Tenka / Wakil Ketua OSIS Miruam Solari)* ➔ Depan Lab Boga & Gerbang Senja *(Tartlet Manis & Pulang Bareng Menuju Stasiun bersama Karakter Ber-ID Photo: Yuzu/Ren/Airi/Shiori)* ➔ Gerbang Keluar *(Masuk Weekend Phase)*.
+* **JUMAT (Hari 5):** Ruang Kelas 10-1 *(Formulir Nyūbu Todoke & Konseling Kopi Santai Chihiro-sensei)* ➔ Ruang Kelas 10-1 *(Piket Senja Intim bersama Sahabat Sekelas 10-1 Pilihan)* ➔ Ruang OSIS *(Verifikasi Berkas: Menghadap Ketua OSIS Asahina Tenka / Wakil Ketua OSIS Miruam Solari)* ➔ Depan Lab Boga & Gerbang Senja *(Tartlet Manis & Pulang Bareng Menuju Stasiun bersama Karakter Teman: Yuzu/Ren/Airi/Shiori)* ➔ Gerbang Keluar *(Masuk Weekend Phase)*.
 
 ---
 
 ## 👥 2. Roster Lengkap 21 Karakter Canon Sekolah
 
-Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen Academy. Sesuai panduan sesi, seluruh core event yang memberikan **+1 Affection Seed** mengutamakan **14 Karakter yang telah memiliki foto tampilan resmi (*ID Photo*)**:
+Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen Academy:
 
-| Kategori / Kelompok | Nama Karakter & Kanji | Posisi / Peran Canon di Sekolah | Status Visual | File Profil Canon |
-| :--- | :--- | :--- | :--- | :--- |
-| **Presidium OSIS** | **Asahina Tenka** *(朝比奈 天華)* | Ketua OSIS (Kelas 11-1) | 📸 **ID Photo** | [ASAHINA TENKA (朝比奈 天華).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-1/Tenka/ASAHINA%20TENKA%20%28%E6%9C%9D%E6%AF%94%E5%A5%88%20%E5%A4%A9%E8%8F%AF%29.md) |
-| **Presidium OSIS & Kendo** | **Miruam Solari** *(ミリアム・ソラリ)* | **Wakil Ketua OSIS & Ketua Klub Kendo** (Double Ekskul, Kelas 11-1) | 📸 **ID Photo** | [MIRUAM SOLARI (ミリアム・ソラリ).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-1/Miruam/MIRUAM%20SOLARI%20%28%E3%83%9F%E3%83%AA%E3%82%A2%E3%83%A0%E3%83%BB%E3%82%BD%E3%83%A9%E3%83%AA%29.md) |
-| **Presidium OSIS** | **Kisaragi Setsuna** *(如月 刹那)* | **Sekretaris OSIS & Ketua Komite Disiplin** (Kelas 11-2) | *Non-ID (NPC)* | [KISARAGI SETSUNA (如月 刹那).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-2/Setsuna/KISARAGI%20SETSUNA%20%28%E5%A6%82%E6%9C%88%20%E5%88%B9%E9%82%A3%29.md) |
-| **Ketua Ekskul Senior** | **Tachibana Rin** *(橘 凛)* | **Senior Kapten Klub Kendo & Mentor Dojo** (Kelas 12-1) | *Non-ID (NPC)* | [TACHIBANA RIN (橘 凛).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-1/Rin/TACHIBANA%20RIN%20%28%E6%A9%98%20%E5%87%9B%29.md) |
-| **Ketua Ekskul Senior** | **Saegusa Koharu** *(三枝 小春)* | Ketua Klub Drama (Kelas 12-1) | *Non-ID (NPC)* | [SAEGUSA KOHARU (三枝 小春).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-1/Koharu/SAEGUSA%20KOHARU%20%28%E4%B8%89%E6%9E%9D%20%E5%B0%8F%E6%98%A5%29.md) |
-| **Ketua Ekskul Senior** | **Wakaba Hinata** *(若葉 日向)* | Ketua Klub Memasak (Kelas 12-2) | *Non-ID (NPC)* | [WAKABA HINATA (若葉 日向).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-2/Hinata/WAKABA%20HINATA%20%28%E8%8B%A5%E8%91%89%20%E6%97%A5%E5%90%91%29.md) |
-| **Dewan Guru & Staf** | **Kujou Reiko** *(九条 麗子)* | Kepala Sekolah & Ketua Dewan Yayasan | 📸 **ID Photo** | [KUJOU REIKO (九条 麗子).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Reiko/KUJOU%20REIKO%20%28%E4%B9%9D%E6%9D%A1%20%E9%BA%97%E5%AD%90%29.md) |
-| **Dewan Guru & Staf** | **Hasumi Chihiro** *(蓮見 千尋)* | **Wali Kelas 10-1** & Guru Sastra Jepang | 📸 **ID Photo** | [HASUMI CHIHIRO (蓮見 千尋).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Chihiro/HASUMI%20CHIHIRO%20%28%E8%93%AE%E8%A6%8B%20%E5%8D%83%E5%B0%8B%29.md) |
-| **Dewan Guru & Staf** | **Saionji Kaede** *(西園寺 楓)* | Wali Kelas 10-2 & Guru Olahraga | *Non-ID (NPC)* | [SAIONJI KAEDE (西園寺 楓).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Kaede/SAIONJI%20KAEDE%20%28%E8%A5%BF%E5%9C%92%E5%AF%BA%20%E6%A5%93%29.md) |
-| **Dewan Guru & Staf** | **dr. Shiranui Mei** *(不知火 芽衣)* | Dokter UKS (*Hokenshitsu*) & Konselor Kesehatan | *Non-ID (NPC)* | [SHIRANUI MEI (不知火 芽衣).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Mei/SHIRANUI%20MEI%20%28%E4%B8%8D%E7%9F%A5%E7%81%AB%20%E8%8A%BD%E8%A1%A3%29.md) |
-| **Dewan Guru & Staf** | **Tsukishima Fumiko** *(月島 文子)* | Staf Pustakawan Utama & Pengawas Arsip | *Non-ID (NPC)* | [TSUKISHIMA FUMIKO (月島 文子).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Fumiko/TSUKISHIMA%20FUMIKO%20%28%E6%9C%88%E5%B3%B6%20%E6%96%87%E5%AD%90%29.md) |
-| **Teman Sekelas 10-1** | **Shinohara Kotone** *(篠原 琴音)* | Calon Idol & Vokalis Populer | 📸 **ID Photo** | [SHINOHARA KOTONE (篠原 琴音).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Kotone/SHINOHARA%20KOTONE%20%28%E7%AF%A0%E5%8E%9F%20%E7%90%B4%E9%9F%B3%29.md) |
-| **Teman Sekelas 10-1** | **Kazuki Ren** *(風城 蓮)* | Siswa Suci Kuil / Karismatik Lembut | 📸 **ID Photo** | [KAZUKI REN (風城 蓮).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Ren/KAZUKI%20REN%20%28%E9%A2%A8%E5%9F%8E%20%E8%93%AE%29.md) |
-| **Teman Sekelas 10-1** | **Kurokawa Shiori** *(黒川 詩織)* | Kutubuku Melankolis & Pencinta Sastra | 📸 **ID Photo** | [KUROKAWA SHIORI (黒川 詩織).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Shiori/KUROKAWA%20SHIORI%20%28%E9%BB%92%E5%B7%9D%20%E8%A9%A9%E7%B9%94%29.md) |
-| **Teman Sekelas 10-1** | **Kumada Riki** *(熊田 力)* | Atlet Judo / Pencinta Ramen yang Hangat | 📸 **ID Photo** | [KUMADA RIKI (熊田 力).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Riki/KUMADA%20RIKI%20%28%E7%86%8A%E7%94%B0%20%E5%8A%9B%29.md) |
-| **Teman Sekelas 10-1** | **Takamine Ryo** *(高峰 涼)* | Gamer Sinis & Peretas Jenius | 📸 **ID Photo** | [TAKAMINE RYO (高峰 涼).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Ryo/TAKAMINE%20RYO%20%28%E9%AB%98%E5%B3%B0%20%E6%B6%BC%29.md) |
-| **Teman Sekelas 10-1** | **Sendou Airi** *(仙道 愛莉)* | Gyaru Ceria, Modis & Trendsetter | 📸 **ID Photo** | [SENDOU AIRI (仙道 愛莉).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Airi/SENDOU%20AIRI%20%28%E4%BB%99%E9%81%93%20%E6%84%9B%E8%8E%89%29.md) |
-| **Teman Sekelas 10-1** | **Hoshina Nayu** *(星名 那由)* | Cenayang Misterius & Gadis Okultisme | 📸 **ID Photo** | [HOSHINA NAYU (星名 那由).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Nayu/HOSHINA%20NAYU%20%28%E6%98%9F%E5%90%8D%20%E9%82%A3%E7%94%B1%29.md) |
-| **Teman Sekelas 10-1** | **Kirishima Iori** *(桐島 伊織)* | Gitaris Playful Prince / Flirtatious | 📸 **ID Photo** | [KIRISHIMA IORI (桐島 伊織).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Iori/KIRISHIMA%20IORI%20%28%E6%A1%90%E5%B3%B6%20%E4%BC%8A%E7%B9%94%29.md) |
-| **Teman Sekelas 10-1** | **Momoi Yuzu** *(桃井 柚)* | Siswi Mungil Manis & Penggemar Permen | 📸 **ID Photo** | [MOMOI YUZU (桃井 柚).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Yuzu/MOMOI%20YUZU%20%28%E6%A1%83%E4%BA%95%20%E6%9F%9A%29.md) |
-| **Teman Sekelas 10-1** | **Kanzaki Takeru** *(神崎 尊)* | Berandalan Tangguh Berhati Emas | 📸 **ID Photo** | [KANZAKI TAKERU (神崎 尊).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Takeru/KANZAKI%20TAKERU%20%28%E7%A5%9E%E5%B4%8E%20%E5%B0%8A%29.md) |
+| Kategori / Kelompok | Nama Karakter & Kanji | Posisi / Peran Canon di Sekolah | File Profil Canon |
+| :--- | :--- | :--- | :--- |
+| **Presidium OSIS** | **Asahina Tenka** *(朝比奈 天華)* | Ketua OSIS (Kelas 11-1) | [ASAHINA TENKA (朝比奈 天華).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-1/Tenka/ASAHINA%20TENKA%20%28%E6%9C%9D%E6%AF%94%E5%A5%88%20%E5%A4%A9%E8%8F%AF%29.md) |
+| **Presidium OSIS & Kendo** | **Miruam Solari** *(ミリアム・ソラリ)* | **Wakil Ketua OSIS & Ketua Klub Kendo** (Double Ekskul, Kelas 11-1) | [MIRUAM SOLARI (ミリアム・ソラリ).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-1/Miruam/MIRUAM%20SOLARI%20%28%E3%83%9F%E3%83%AA%E3%82%A2%E3%83%A0%E3%83%BB%E3%82%BD%E3%83%A9%E3%83%AA%29.md) |
+| **Presidium OSIS** | **Kisaragi Setsuna** *(如月 刹那)* | **Sekretaris OSIS & Ketua Komite Disiplin** (Kelas 11-2) | [KISARAGI SETSUNA (如月 刹那).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2011-2/Setsuna/KISARAGI%20SETSUNA%20%28%E5%A6%82%E6%9C%88%20%E5%88%B9%E9%82%A3%29.md) |
+| **Ketua Ekskul Senior** | **Tachibana Rin** *(橘 凛)* | **Senior Kapten Klub Kendo & Mentor Dojo** (Kelas 12-1) | [TACHIBANA RIN (橘 凛).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-1/Rin/TACHIBANA%20RIN%20%28%E6%A9%98%20%E5%87%9B%29.md) |
+| **Ketua Ekskul Senior** | **Saegusa Koharu** *(三枝 小春)* | Ketua Klub Drama (Kelas 12-1) | [SAEGUSA KOHARU (三枝 小春).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-1/Koharu/SAEGUSA%20KOHARU%20%28%E4%B8%89%E6%9E%9D%20%E5%B0%8F%E6%98%A5%29.md) |
+| **Ketua Ekskul Senior** | **Wakaba Hinata** *(若葉 日向)* | Ketua Klub Memasak (Kelas 12-2) | [WAKABA HINATA (若葉 日向).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2012-2/Hinata/WAKABA%20HINATA%20%28%E8%8B%A5%E8%91%89%20%E6%97%A5%E5%90%91%29.md) |
+| **Dewan Guru & Staf** | **Kujou Reiko** *(九条 麗子)* | Kepala Sekolah & Ketua Dewan Yayasan | [KUJOU REIKO (九条 麗子).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Reiko/KUJOU REIKO%20%28%E4%B9%9D%E6%9D%A1%20%E9%BA%97%E5%AD%90%29.md) |
+| **Dewan Guru & Staf** | **Hasumi Chihiro** *(蓮見 千尋)* | **Wali Kelas 10-1** & Guru Sastra Jepang | [HASUMI CHIHIRO (蓮見 千尋).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Chihiro/HASUMI%20CHIHIRO%20%28%E8%93%AE%E8%A6%8B%20%E5%8D%83%E5%B0%8B%29.md) |
+| **Dewan Guru & Staf** | **Saionji Kaede** *(西園寺 楓)* | Wali Kelas 10-2 & Guru Olahraga | [SAIONJI KAEDE (西園寺 楓).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Kaede/SAIONJI%20KAEDE%20%28%E8%A5%BF%E5%9C%92%E5%AF%BA%20%E6%A5%93%29.md) |
+| **Dewan Guru & Staf** | **dr. Shiranui Mei** *(不知火 芽衣)* | Dokter UKS (*Hokenshitsu*) & Konselor Kesehatan | [SHIRANUI MEI (不知火 芽衣).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Mei/SHIRANUI%20MEI%20%28%E4%B8%8D%E7%9F%A5%E7%81%AB%20%E8%8A%BD%E8%A1%A3%29.md) |
+| **Dewan Guru & Staf** | **Tsukishima Fumiko** *(月島 文子)* | Staf Pustakawan Utama & Pengawas Arsip | [TSUKISHIMA FUMIKO (月島 文子).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Faculty/Fumiko/TSUKISHIMA%20FUMIKO%20%28%E6%9C%88%E5%B3%B6%20%E6%96%87%E5%AD%90%29.md) |
+| **Teman Sekelas 10-1** | **Shinohara Kotone** *(篠原 琴音)* | Calon Idol & Vokalis Populer | [SHINOHARA KOTONE (篠原 琴音).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Kotone/SHINOHARA%20KOTONE%20%28%E7%AF%A0%E5%8E%9F%20%E7%90%B4%E9%9F%B3%29.md) |
+| **Teman Sekelas 10-1** | **Kazuki Ren** *(風城 蓮)* | Siswa Suci Kuil / Karismatik Lembut | [KAZUKI REN (風城 蓮).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Ren/KAZUKI%20REN%20%28%E9%A2%A8%E5%9F%8E%20%E8%93%AE%29.md) |
+| **Teman Sekelas 10-1** | **Kurokawa Shiori** *(黒川 詩織)* | Kutubuku Melankolis & Pencinta Sastra | [KUROKAWA SHIORI (黒川 詩織).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Shiori/KUROKAWA%20SHIORI%20%28%E9%BB%92%E5%B7%9D%20%E8%A9%A9%E7%B9%94%29.md) |
+| **Teman Sekelas 10-1** | **Kumada Riki** *(熊田 力)* | Atlet Judo / Pencinta Ramen yang Hangat | [KUMADA RIKI (熊田 力).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Riki/KUMADA%20RIKI%20%28%E7%86%8A%E7%94%B0%20%E5%8A%9B%29.md) |
+| **Teman Sekelas 10-1** | **Takamine Ryo** *(高峰 涼)* | Gamer Sinis & Peretas Jenius | [TAKAMINE RYO (高峰 涼).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Ryo/TAKAMINE%20RYO%20%28%E9%AB%98%E5%B3%B0%20%E6%B6%BC%29.md) |
+| **Teman Sekelas 10-1** | **Sendou Airi** *(仙道 愛莉)* | Gyaru Ceria, Modis & Trendsetter | [SENDOU AIRI (仙道 愛莉).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Airi/SENDOU%20AIRI%20%28%E4%BB%99%E9%81%93%20%E6%84%9B%E8%8E%89%29.md) |
+| **Teman Sekelas 10-1** | **Hoshina Nayu** *(星名 那由)* | Cenayang Misterius & Gadis Okultisme | [HOSHINA NAYU (星名 那由).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Nayu/HOSHINA%20NAYU%20%28%E6%98%9F%E5%90%8D%20%E9%82%A3%E7%94%B1%29.md) |
+| **Teman Sekelas 10-1** | **Kirishima Iori** *(桐島 伊織)* | Gitaris Playful Prince / Flirtatious | [KIRISHIMA IORI (桐島 伊織).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Iori/KIRISHIMA%20IORI%20%28%E6%A1%90%E5%B3%B6%20%E4%BC%8A%E7%B9%94%29.md) |
+| **Teman Sekelas 10-1** | **Momoi Yuzu** *(桃井 柚)* | Siswi Mungil Manis & Penggemar Permen | [MOMOI YUZU (桃井 柚).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Yuzu/MOMOI%20YUZU%20%28%E6%A1%83%E4%BA%95%20%E6%9F%9A%29.md) |
+| **Teman Sekelas 10-1** | **Kanzaki Takeru** *(神崎 尊)* | Berandalan Tangguh Berhati Emas | [KANZAKI TAKERU (神崎 尊).md](file:///home/nothrovo/Documents/Obsidian%20Vault/DND/Damsel%20and%20Desire/Characters/Love%20Interests/Class%2010-1/Takeru/KANZAKI%20TAKERU%20%28%E7%A5%9E%E5%B4%8E%20%E5%B0%8A%29.md) |
 
 ---
 
@@ -83,7 +83,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌅 Slot Pagi (07:30 - 08:30) — Razia Gerbang & Insiden Koridor Sepi
 * **Lokasi:** Gerbang Utama Housen Academy (Terowongan Pohon Sakura Mekar) ➔ Loker Sepatu Pintu Masuk (*Getabako*) ➔ Koridor Gedung Klasik.
-* **Karakter Terlibat:** **Kisaragi Setsuna** (Sekretaris OSIS / Komite Disiplin), **Sendou Airi** (has ID Photo), **Kurokawa Shiori** (has ID Photo), **Kanzaki Takeru** (has ID Photo), **Kumada Riki** (has ID Photo).
+* **Karakter Terlibat:** **Kisaragi Setsuna** (Sekretaris OSIS / Komite Disiplin), **Sendou Airi**, **Kurokawa Shiori**, **Kanzaki Takeru**, **Kumada Riki**.
 * **Deskripsi Adegan:**
   * Di bawah hujan kelopak sakura yang gugur, para pemain melangkah memasuki gerbang megah Housen Academy. Tepat di bibir gerbang, berdiri siswi berkacamata perak tipis dengan kuncir ekor kuda dan ban lengan **風紀委員 (Komite Disiplin)**—**Kisaragi Setsuna**—yang sedang menertibkan kedatangan siswa baru dengan jam saku peraknya.
   * Memasuki area loker sepatu (*Getabako*), gyaru modis **Sendou Airi** sedang menata tali sepatu dan pita seragamnya sambil menyapa siswa baru dengan senyuman ramah penuh gaya.
@@ -101,7 +101,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### ☀️ Slot Siang (10:00 - 12:30) — Upacara Akbar di Auditorium Megah
 * **Lokasi:** Auditorium Utama Housen Academy (Aula Gotik Megah).
-* **Karakter Terlibat:** **Kujou Reiko** (Kepala Sekolah - has ID Photo), **Asahina Tenka** (Ketua OSIS - has ID Photo), **Miruam Solari** (Wakil Ketua OSIS & Ketua Klub Kendo - has ID Photo), **Kazuki Ren** (Perwakilan Siswa Baru - has ID Photo).
+* **Karakter Terlibat:** **Kujou Reiko** (Kepala Sekolah), **Asahina Tenka** (Ketua OSIS), **Miruam Solari** (Wakil Ketua OSIS & Ketua Klub Kendo), **Kazuki Ren** (Perwakilan Siswa Baru).
 * **Deskripsi Adegan:**
   * Ribuan siswa baru berbaris rapi di auditorium megah berlampu kristal. Di atas panggung marmer, Kepala Sekolah **Kujou Reiko** tampil dengan setelan jas putih gading tanpa dasi, menyampaikan wejangan aristokratis yang tajam: *"Jadilah sosok yang tak tergantikan, atau kalian hanya akan tenggelam dalam deretan angka rata-rata."*
   * Ketua OSIS **Asahina Tenka** menyampaikan pidato sambutan Dewan Siswa yang memancarkan kehangatan seorang pelindung, didampingi oleh **Wakil Ketua OSIS Miruam Solari** yang menyilangkan tangan dengan pandangan elang rubi yang dingin dan menuntut standar keunggulan tertinggi.
@@ -146,7 +146,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### ☀️ Slot Siang (12:00 - 13:30) — Pemilihan Komite Kelas & Makan Siang di Atap
 * **Lokasi:** Ruang Kelas 10-1 ➔ Atap Sekolah (*Rooftop*) / Kafetaria Utama.
-* **Karakter Terlibat:** **Shinohara Kotone** (ID), **Kazuki Ren** (ID), **Kirishima Iori** (ID), **Kurokawa Shiori** (ID), **Takamine Ryo** (ID), **Kumada Riki** (ID), **Sendou Airi** (ID), **Kanzaki Takeru** (ID).
+* **Karakter Terlibat:** **Shinohara Kotone**, **Kazuki Ren**, **Kirishima Iori**, **Kurokawa Shiori**, **Takamine Ryo**, **Kumada Riki**, **Sendou Airi**, **Kanzaki Takeru**.
 * **Deskripsi Adegan:**
   * Pemilihan pengurus kelas 10-1. **Shinohara Kotone** mengajukan diri dengan antusias memimpin kelas, didukung teman-temannya. Pemain dapat mencalonkan diri menjadi Ketua / Wakil / Seksi Komite Kelas.
   * **Jam Makan Siang Pertama:** Pemain membawa bekal (*Bento*). Tiga spot interaksi terbuka:
@@ -166,7 +166,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌇 Slot Sore (15:30 - 17:00) — Insiden Kerumunan Papan Pengumuman & Peluit Koridor
 * **Lokasi:** Koridor Utama Lantai 1 dekat Papan Pengumuman Sekolah ➔ Gerbang Keluar.
-* **Karakter Terlibat:** **Saionji Kaede** (Guru Olahraga - Non-ID), **Momoi Yuzu** (ID), **Kanzaki Takeru** (ID), **Hasumi Chihiro** (ID).
+* **Karakter Terlibat:** **Saionji Kaede** (Guru Olahraga), **Momoi Yuzu**, **Kanzaki Takeru**, **Hasumi Chihiro**.
 * **Deskripsi Adegan:**
   * Sepulang kelas, ratusan murid berdesak-desakan di depan papan buletin untuk melihat silabus akademik. Siswi bertubuh mungil seperti **Momoi Yuzu** nyaris terjepit kerumunan sambil memegangi kantong permen lolipopnya yang hampir jatuh berserakan.
   * Di sisi lain kerumunan, si berandalan berhati emas **Kanzaki Takeru** berdiri tegap menahan desakan murid senior agar tidak menginjak barang-barang yang terjatuh.
@@ -189,7 +189,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌅 Slot Pagi (08:30 - 11:30) — Tes Kemampuan Awal Tertulis (*Jitsuryoku Test*)
 * **Lokasi:** Ruang Kelas 10-1.
-* **Karakter Terlibat:** **Hasumi Chihiro** (Wali Kelas & Pengawas Ujian - ID), **Takamine Ryo** (ID), **Kurokawa Shiori** (ID).
+* **Karakter Terlibat:** **Hasumi Chihiro** (Wali Kelas & Pengawas Ujian), **Takamine Ryo**, **Kurokawa Shiori**.
 * **Deskripsi Adegan:**
   * Ujian penempatan akademik standar Housen Academy berlangsung hening dan mencekam. Chihiro-sensei duduk di meja guru menopang dagu sambil menyeruput kopi kaleng hitamnya dengan mata sayu mengantuk.
   * Di sudut belakang, si gamer sinis **Takamine Ryo** menyelesaikan lembar soal dengan kecepatan luar biasa, memutar penanya dengan jari-jemarinya yang lincah tanpa menoleh sedikit pun.
@@ -204,7 +204,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### ☀️ Slot Siang (12:30 - 14:00) — Rahasia Perpustakaan Besar & Insiden Kartu Terselip
 * **Lokasi:** Perpustakaan Besar Sayap Timur (Bangunan Tiga Lantai Bernuansa Kayu Ek Klasik).
-* **Karakter Terlibat:** **Tsukishima Fumiko** (Staf Pustakawan - Non-ID), **Kurokawa Shiori** (ID), **Kazuki Ren** (ID).
+* **Karakter Terlibat:** **Tsukishima Fumiko** (Staf Pustakawan), **Kurokawa Shiori**, **Kazuki Ren**.
 * **Deskripsi Adegan:**
   * Perpustakaan besar bernuansa kayu ek tua beraroma vanila kertas antik dan lavender kering yang menenangkan.
   * Di balik meja sirkulasi kayu berukir, staf pustakawan berkacamata **Tsukishima Fumiko** sedang mengurus arsip katalog baru.
@@ -221,7 +221,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌇 Slot Sore (14:30 - 17:00) — Pemeriksaan Ruang UKS & Tes Kebugaran Lapangan
 * **Lokasi:** Ruang UKS Sayap Selatan ➔ Lapangan Atletik Terbuka ➔ Gerbang Keluar.
-* **Karakter Terlibat:** **dr. Shiranui Mei** (Dokter UKS - Non-ID), **Hoshina Nayu** (ID), **Kumada Riki** (ID), **Miruam Solari** (Wakil Ketua OSIS & Ketua Kendo - ID).
+* **Karakter Terlibat:** **dr. Shiranui Mei** (Dokter UKS), **Hoshina Nayu**, **Kumada Riki**, **Miruam Solari** (Wakil Ketua OSIS & Ketua Kendo).
 * **Deskripsi Adegan:**
   * Di balik tirai putih UKS beraroma chamomile, dokter sekolah **dr. Shiranui Mei** memeriksa kesehatan pemain secara singkat dengan stetoskop dingin dan gaya bicaranya yang menggoda (*dr. Mei memberikan permen glukosa & Kartu Dispensasi Istirahat*).
   * Di ranjang sebelah yang tertutup tirai tipis, siswi cenayang misterius **Hoshina Nayu** tampak sedang meringkuk tertidur lelap sambil memeluk boneka jimatnya akibat begadang semalaman meneliti kartu tarot dan bermain game RPG. Pemain dapat merapikan selimutnya atau meletakkan minuman hangat di samping mejanya (**+1 Affection Seed Hoshina Nayu** jika berinteraksi lembut).
@@ -241,7 +241,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌅 Slot Pagi (07:30 - 09:00) — Koridor Badai Brosur Ekskul
 * **Lokasi:** Halaman Utama Depan Gymnasium & Lorong Loker Siswa.
-* **Karakter Terlibat:** **Shinohara Kotone** (ID), **Kirishima Iori** (ID), **Hoshina Nayu** (ID), **Kumada Riki** (ID).
+* **Karakter Terlibat:** **Shinohara Kotone**, **Kirishima Iori**, **Hoshina Nayu**, **Kumada Riki**.
 * **Deskripsi Adegan:**
   * Kampus Housen berubah menjadi karnaval mini yang semarak dengan spanduk klub raksasa warna-warni.
   * **Shinohara Kotone** membagikan brosur Klub Vokal / Idol dengan senyuman berkilau penuh energi menyapa setiap murid yang lewat.
@@ -257,11 +257,11 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 ### ☀️ Slot Siang (11:00 - 14:30) — Panggung Demonstrasi Akbar di Gymnasium & Dojo
 * **Lokasi:** Panggung Auditorium Utama & Gelanggang Bela Diri (*Budo Dojo*).
 * **Karakter Terlibat:**
-  * **Tachibana Rin** (Senior Kapten Kendo - Non-ID)
-  * **Miruam Solari** (Ketua Klub Kendo & Wakil Ketua OSIS - ID)
-  * **Shinohara Kotone** (Bintang Panggung Vokal - ID)
-  * **Kirishima Iori** (Gitaris Utama Band - ID)
-  * **Saegusa Koharu** (Ketua Drama - Non-ID)
+  * **Tachibana Rin** (Senior Kapten Kendo)
+  * **Miruam Solari** (Ketua Klub Kendo & Wakil Ketua OSIS)
+  * **Shinohara Kotone** (Bintang Panggung Vokal)
+  * **Kirishima Iori** (Gitaris Utama Band)
+  * **Saegusa Koharu** (Ketua Drama)
 * **Deskripsi Adegan Spektakuler:**
   1. **Tantangan Matras Kendo di Hadapan Miruam Solari (*One-Strike Challenge*):**
      * Di gelanggang dojo, Kapten Senior **Tachibana Rin** mengacungkan pedang bambu (*shinai*)-nya menantang siswa baru ke matras.
@@ -292,7 +292,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### 🌅 Slot Pagi (08:00 - 10:00) — Distribusi Formulir Pendaftaran (*Nyūbu Todoke*) & Kopi Chihiro-sensei
 * **Lokasi:** Ruang Kelas 10-1.
-* **Karakter Terlibat:** **Hasumi Chihiro** (Wali Kelas 10-1 - ID), seluruh teman sekelas.
+* **Karakter Terlibat:** **Hasumi Chihiro** (Wali Kelas 10-1), seluruh teman sekelas.
 * **Deskripsi Adegan:**
   * Chihiro-sensei membagikan lembar formulir resmi pendaftaran ekskul (*Nyūbu Todoke*): *"Batas pengumpulan jam lima sore ini di meja presidium OSIS. Pilih ekskul yang kalian mau jalani dengan sungguh-sungguh, jangan ikut-ikutan biar ga nyesel."*
   * Sambil memegang kaleng kopi hitamnya yang mulai mendingin di meja guru, Chihiro-sensei mendengarkan pertanyaan para murid tentang masa depan kegiatan sekolah.
@@ -305,7 +305,7 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 
 ### ☀️ Slot Siang (12:00 - 13:30) — Diskusi Makan Siang Penentuan Komitmen
 * **Lokasi:** Koridor Jendela Kaca Lantai 2 / Area Taman Dalam.
-* **Karakter Terlibat:** Sahabat sekelas ber-ID photo pilihan pemain (Kotone, Ren, Shiori, Airi, Riki, Ryo, Nayu, Iori, Yuzu, Takeru).
+* **Karakter Terlibat:** Sahabat sekelas pilihan pemain (Kotone, Ren, Shiori, Airi, Riki, Ryo, Nayu, Iori, Yuzu, Takeru).
 * **Deskripsi Adegan:**
   * Sesi santai di mana para pemain mematangkan pilihan klub mereka bersama teman sekelas sebelum menyerahkan berkas resmi ke ruang OSIS.
 
@@ -314,15 +314,15 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 ### 🌇 Slot Sore (15:30 - 17:30) — Tiga Momen Puncak Penutup Pekan Pertama
 * **Lokasi:** Ruang Kelas 10-1 (Piket Sore) ➔ Markas Besar Ruang OSIS ➔ Depan Lab Tata Boga & Gerbang Senja.
 * **Karakter Terlibat:**
-  * **Teman Sekelas 10-1 Pilihan** (Seluruh 10 Karakter memiliki ID Photo)
-  * **Asahina Tenka** (Ketua OSIS - ID)
-  * **Miruam Solari** (Wakil Ketua OSIS & Ketua Klub Kendo - ID)
-  * **Kisaragi Setsuna** (Sekretaris OSIS - Non-ID)
-  * **Wakaba Hinata** (Ketua Klub Memasak - Non-ID)
+  * **Teman Sekelas 10-1 Pilihan** (Seluruh 10 Karakter)
+  * **Asahina Tenka** (Ketua OSIS)
+  * **Miruam Solari** (Wakil Ketua OSIS & Ketua Klub Kendo)
+  * **Kisaragi Setsuna** (Sekretaris OSIS)
+  * **Wakaba Hinata** (Ketua Klub Memasak)
 
 #### 🧹 Momen 5A — Piket Kebersihan Sore (*Seisō*) di Bawah Cahaya Senja Keemasan
 * Bel pulang sekolah berbunyi. Para pemain menjalankan giliran piket kebersihan pertama mereka—menyapu lantai kelas kayu, membersihkan papan tulis, dan mengunci jendela di bawah cahaya matahari terbenam yang memantul keemasan di kaca jendela.
-* Pemain memilih **1 Teman Sekelas Kelas 10-1 (Karakter Ber-ID Photo)** untuk menemani piket berdua dalam suasana hangat dan intim.
+* Pemain memilih **1 Teman Sekelas Kelas 10-1** untuk menemani piket berdua dalam suasana hangat dan intim.
 * **Efek Mekanik:** Percakapan akrab saat piket memberikan **+1 Affection Seed kepada Teman Sekelas 10-1 Pilihan Pemain**.
 
 #### 🏛️ Momen 5B — Verifikasi Berkas di Markas Besar OSIS (Tenka vs Miruam)
@@ -342,11 +342,11 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 #### 🥧 Momen 5C — Sambutan Tartlet Manis & Pulang Bersama di Gerbang Senja
 * Saat keluar dari Ruang OSIS menyusuri koridor senja, aroma harum mentega panggang dan vanila menuntun pemain ke depan Ruang Tata Boga (*Cooking Lab*).
 * **Wakaba Hinata** (Ketua Klub Memasak) menyambut ramah membagikan *Welcome Tartlet* stroberi hangat sebagai hadiah perayaan atas keberhasilan siswa baru melewati pekan pertama di SMA (*memulihkan Composure & HP penuh*).
-* Membawa tartlet manis tersebut, para pemain menuju loker sepatu dan berpapasan dengan teman sekelas ber-ID photo di gerbang keluar sekolah. Pemain dapat memilih **1 Karakter Teman Sekelas (Kotone, Ren, Shiori, Airi, Yuzu, Takeru, dll.)** untuk diajak berjalan pulang bersama menuju stasiun kereta di bawah temaram lampu jalan musim semi.
+* Membawa tartlet manis tersebut, para pemain menuju loker sepatu dan berpapasan dengan teman sekelas di gerbang keluar sekolah. Pemain dapat memilih **1 Karakter Teman Sekelas (Kotone, Ren, Shiori, Airi, Yuzu, Takeru, dll.)** untuk diajak berjalan pulang bersama menuju stasiun kereta di bawah temaram lampu jalan musim semi.
 * **🎲 Peluang Uji Mekanik Dadu (Momen 5C):**
   * **Check 5B (Percakapan Manis di Bawah Senja Menuju Stasiun):**
     * *Mind (Empathy) DC 11* atau *Looks (Charm) DC 11*: Mengiringi perjalanan pulang dengan obrolan tulus tentang suka-duka minggu pertama sekolah.
-    * *Sukses:* Karakter teman ber-ID photo tersebut tersenyum manis memerah tersipu, membagikan tartlet bersama pemain di peron stasiun: *"Minggu pertama ini terasa luar biasa... karena aku bisa menjalaninya bareng kamu."* (**+1 Affection Seed Karakter Teman Ber-ID Photo Pilihan**).
+    * *Sukses:* Karakter teman pilihan tersebut tersenyum manis memerah tersipu, membagikan tartlet bersama pemain di peron stasiun: *"Minggu pertama ini terasa luar biasa... karena aku bisa menjalaninya bareng kamu."* (**+1 Affection Seed Karakter Teman Pilihan**).
 
 ---
 
@@ -355,12 +355,12 @@ Seluruh karakter yang hadir di dokumen ini adalah **21 Karakter Resmi** Housen A
 Setelah Momen 5C berakhir, Pekan Pertama (Senin–Jumat) resmi ditutup. DM memandu pemain menuju **Fase Akhir Pekan (*Weekend Phase: Sabtu & Minggu*)**:
 
 1. **Rekapitulasi Bibit Afeksi (Affection Seeds):**
-   * Pemain yang berhasil mengumpulkan **2 Seed** pada salah satu dari **14 Karakter Ber-ID Photo** di pekan ini langsung mekar menjadi **1 ♥ (Heart Meter Resmi Terbuka)**, membuka jendela status relasi dan event dialog privat khusus.
+   * Pemain yang berhasil mengumpulkan **2 Seed** pada salah satu dari **14 Karakter Utama** di pekan ini langsung mekar menjadi **1 ♥ (Heart Meter Resmi Terbuka)**, membuka jendela status relasi dan event dialog privat khusus.
    * *14 Karakter Target Afeksi Utama:*
      * **Siswa Kelas 10-1:** Shinohara Kotone, Kazuki Ren, Kurokawa Shiori, Kumada Riki, Takamine Ryo, Sendou Airi, Hoshina Nayu, Kirishima Iori, Momoi Yuzu, Kanzaki Takeru.
      * **Presidium OSIS & Senior 11-1:** Asahina Tenka, Miruam Solari.
      * **Dewan Guru / Staf:** Hasumi Chihiro, Kujou Reiko.
 2. **Fitur Pesan Singkat Akhir Pekan (LIME App Messaging):**
-   * Di hari Sabtu dan Minggu, pemain dapat mengirimkan **1 Pesan Teks (Chat)** via smartphone mereka kepada Love Interest ber-ID photo yang telah didekati (misal: Kotone, Ren, Shiori, Airi, Miruam, Tenka, atau Chihiro-sensei).
+   * Di hari Sabtu dan Minggu, pemain dapat mengirimkan **1 Pesan Teks (Chat)** via smartphone mereka kepada Love Interest yang telah didekati (misal: Kotone, Ren, Shiori, Airi, Miruam, Tenka, atau Chihiro-sensei).
 3. **Pemulihan Penuh & Jurus Klub:**
    * Seluruh **Physical HP** dan **Composure** pemain pulih 100% setelah beristirahat di akhir pekan. Klub ekstrakurikuler yang telah disahkan di Ruang OSIS pada Hari Jumat kini resmi aktif memberikan **Jurus Klub (Club Moves)** untuk sesi-sesi berikutnya!
