@@ -46,6 +46,8 @@ class CharacterStore {
       }
       if (updatedData && updatedData.finances) {
         this.currentCharacter.finances = updatedData.finances;
+      } else if (updatedData && typeof updatedData.newSavingsAmount === "number" && this.currentCharacter.finances) {
+        this.currentCharacter.finances.savingsAmount = updatedData.newSavingsAmount;
       }
       if (updatedData && updatedData.newVersion) {
         this.currentCharacter.version = updatedData.newVersion;

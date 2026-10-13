@@ -26,6 +26,7 @@ import {
   takeFeat
 } from "../rules/progression";
 import { ensureGradeFeatGrants } from "../rules/migration";
+import { getArchetypeReworkData, getSocialClassReworkData } from "../rules/combatActions";
 import { ALL_FEATS } from "../data/featCompendium";
 import { showToast } from "../components/Toast";
 import { renderBuilderSkeleton } from "../components/Skeleton";
@@ -593,17 +594,78 @@ function renderStep1Ekskul(container: HTMLElement) {
 function renderStep2Social(container: HTMLElement) {
   container.innerHTML = `
     <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">Langkah 2: Social Class (Latar Belakang Ekonomi)</h2>
-    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">Menentukan uang saku harian, saldo tabungan awal, serta paket peralatan sekolah.</p>
+    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">
+      Menentukan modal uang saku harian, saldo tabungan awal, hak istimewa sosial/jaringan (Privilege), keuntungan mekanik (Class Perks), serta kelemahan sosial (Drawback) di lingkungan sekolah.
+    </p>
     
-    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1rem;">
-      ${compSocial.map(s => `
-        <div class="card-option ${draft.socialClassId === s.id ? 'active' : ''}" data-social="${s.id}" style="border:1px solid ${draft.socialClassId === s.id ? 'var(--rose-primary)' : 'var(--border-subtle)'};background:var(--bg-surface);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;">
-          <h3 style="margin:0 0 4px 0;font-size:1.05rem;">${s.name}</h3>
-          <div style="font-size:0.8rem;color:var(--amber-gold);margin-bottom:6px;">Uang Jajan: <strong>${s.daily_allowance}</strong></div>
-          <div style="font-size:0.8rem;color:var(--green-health);margin-bottom:8px;">Tabungan Awal: <strong>${s.initial_savings}</strong></div>
-          <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">${s.description || ''}</p>
-        </div>
-      `).join("")}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:1.25rem;">
+      ${compSocial.map(s => {
+        const isSelected = draft.socialClassId === s.id;
+        const rework = getSocialClassReworkData(s.id);
+        const privilege = s.privilege || rework?.privilege;
+        const perks = s.perks || rework?.perks || [];
+        const drawback = s.drawback || rework?.drawback;
+
+        return `
+          <div class="card-option social-card-option ${isSelected ? 'active' : ''}" data-social="${s.id}" style="border:1px solid ${isSelected ? 'var(--rose-primary)' : 'var(--border-subtle)'};background:var(--bg-surface);border-radius:var(--radius-sm);padding:1.15rem;cursor:pointer;display:flex;flex-direction:column;gap:0.75rem;position:relative;transition:all var(--transition-fast);box-shadow:${isSelected ? '0 0 16px var(--rose-glow)' : 'none'};">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <h3 style="margin:0;font-size:1.1rem;color:var(--text-main);font-weight:800;">${escapeHtml(s.name)}</h3>
+                <span style="font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Tier: ${escapeHtml(s.tier || s.id)}</span>
+              </div>
+              ${isSelected ? `<span class="badge" style="background:var(--rose-primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;font-weight:700;">✓ TERPILIH</span>` : ''}
+            </div>
+
+            <!-- Financial Metrics -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;">
+              <div>
+                <span style="display:block;font-size:0.68rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Uang Jajan</span>
+                <strong style="font-size:0.95rem;color:var(--amber-gold);">${escapeHtml(s.daily_allowance)}</strong>
+              </div>
+              <div>
+                <span style="display:block;font-size:0.68rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Tabungan Awal</span>
+                <strong style="font-size:0.95rem;color:var(--green-health);">${escapeHtml(s.initial_savings)}</strong>
+              </div>
+            </div>
+
+            ${privilege ? `
+              <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:var(--amber-gold);text-transform:uppercase;display:flex;align-items:center;gap:4px;margin-bottom:3px;">
+                  🏛️ Hak Istimewa &amp; Jaringan (Privilege)
+                </div>
+                <p style="font-size:0.78rem;color:var(--text-main);margin:0;line-height:1.45;">${escapeHtml(privilege)}</p>
+              </div>
+            ` : ''}
+
+            ${perks.length > 0 ? `
+              <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:var(--rose-light);text-transform:uppercase;letter-spacing:0.5px;">
+                  ✨ Keuntungan Mekanik (Class Perks):
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.45rem;">
+                  ${perks.map((p: any) => `
+                    <div style="background:var(--bg-input);border-left:3px solid var(--rose-primary);border-radius:0 var(--radius-xs) var(--radius-xs) 0;padding:0.45rem 0.65rem;">
+                      <div style="font-size:0.78rem;font-weight:700;color:#fff;">
+                        ${escapeHtml(p.name)} ${p.cost ? `<span style="font-size:0.68rem;color:var(--amber-gold);font-weight:normal;">(${escapeHtml(p.cost)})</span>` : ''}
+                      </div>
+                      <div style="font-size:0.74rem;color:var(--text-dim);line-height:1.4;margin-top:2px;">${escapeHtml(p.effect)}</div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            ` : ''}
+
+            ${drawback ? `
+              <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-xs);padding:0.5rem 0.75rem;margin-top:auto;">
+                <div style="font-size:0.7rem;font-weight:800;color:#fca5a5;text-transform:uppercase;display:flex;align-items:center;gap:4px;margin-bottom:2px;">
+                  ⚠️ Kelemahan Sosial (Drawback)
+                </div>
+                <p style="font-size:0.74rem;color:#fecdd3;margin:0;line-height:1.4;">${escapeHtml(drawback)}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 
@@ -621,17 +683,78 @@ function renderStep2Social(container: HTMLElement) {
 function renderStep3Archetype(container: HTMLElement) {
   container.innerHTML = `
     <h2 style="font-family:var(--font-heading);margin-bottom:0.5rem;">Langkah 3: Archetype (Spesies / Kepribadian Anime)</h2>
-    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">Memberikan bonus stat kemampuan alami dan 3 Archetype Moves unik.</p>
+    <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:1.5rem;">
+      Memberikan bonus stat kemampuan alami (+3 Poin Stat), bonus roll/damage khusus, fokus keuntungan sosial, serta 3 Unique Traits bertema anime SMA Housen.
+    </p>
     
-    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1rem;">
-      ${compArchetypes.map(a => `
-        <div class="card-option ${draft.archetypeId === a.id ? 'active' : ''}" data-arch="${a.id}" style="border:1px solid ${draft.archetypeId === a.id ? 'var(--rose-primary)' : 'var(--border-subtle)'};background:var(--bg-surface);border-radius:var(--radius-sm);padding:1rem;cursor:pointer;">
-          <h3 style="margin:0 0 4px 0;font-size:1.05rem;">${a.name}</h3>
-          <div style="font-size:0.75rem;color:var(--amber-gold);margin-bottom:6px;">${a.tagline || ''}</div>
-          <div style="font-size:0.8rem;color:var(--rose-light);margin-bottom:8px;">Bonus: ${Object.entries(a.stat_bonus || {}).map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ")}</div>
-          <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">${a.perk_description || ''}</p>
-        </div>
-      `).join("")}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(340px, 1fr));gap:1.25rem;">
+      ${compArchetypes.map(a => {
+        const isSelected = draft.archetypeId === a.id;
+        const rework = getArchetypeReworkData(a.id);
+        const rollBonus = a.roll_bonus || rework?.rollBonus;
+        const socialFocus = a.social_focus || rework?.socialFocus;
+        const traits = a.unique_traits || rework?.uniqueTraits || [];
+        const statBonusMap = a.stat_bonus || rework?.statBonus || getArchetypeStatBonus(a.id) || {};
+        const statBonusBadges = Object.entries(statBonusMap).map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ");
+
+        return `
+          <div class="card-option archetype-card-option ${isSelected ? 'active' : ''}" data-arch="${a.id}" style="border:1px solid ${isSelected ? 'var(--rose-primary)' : 'var(--border-subtle)'};background:var(--bg-surface);border-radius:var(--radius-sm);padding:1.15rem;cursor:pointer;display:flex;flex-direction:column;gap:0.75rem;position:relative;transition:all var(--transition-fast);box-shadow:${isSelected ? '0 0 16px var(--rose-glow)' : 'none'};">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <h3 style="margin:0;font-size:1.1rem;color:var(--text-main);font-weight:800;">${escapeHtml(a.name)}</h3>
+                <div style="font-size:0.75rem;color:var(--amber-gold);margin-top:2px;font-style:italic;">${escapeHtml(a.tagline || '')}</div>
+              </div>
+              ${isSelected ? `<span class="badge" style="background:var(--rose-primary);color:#fff;font-size:0.7rem;padding:2px 8px;border-radius:4px;font-weight:700;">✓ TERPILIH</span>` : ''}
+            </div>
+
+            <!-- +3 Stat Points Badge -->
+            <div style="background:rgba(225,29,72,0.1);border:1px solid rgba(225,29,72,0.3);border-radius:var(--radius-xs);padding:0.5rem 0.75rem;display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">⚡ +3 Stat Points:</span>
+              <span style="font-size:0.85rem;font-weight:800;color:var(--rose-light);">${escapeHtml(statBonusBadges)}</span>
+            </div>
+
+            <!-- Roll & Damage Bonus -->
+            ${rollBonus ? `
+              <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.55rem 0.75rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:#60a5fa;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:4px;">
+                  🎯 Bonus Roll &amp; Damage: ${escapeHtml(rollBonus.name)}
+                </div>
+                <p style="font-size:0.75rem;color:var(--text-dim);margin:0;line-height:1.4;">${escapeHtml(rollBonus.description)}</p>
+              </div>
+            ` : ''}
+
+            <!-- Social Focused Perk -->
+            ${socialFocus ? `
+              <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.55rem 0.75rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:#c084fc;text-transform:uppercase;margin-bottom:3px;display:flex;align-items:center;gap:4px;">
+                  🗣️ Fokus Interaksi Sosial: ${escapeHtml(socialFocus.name)}
+                </div>
+                <p style="font-size:0.75rem;color:var(--text-dim);margin:0;line-height:1.4;">${escapeHtml(socialFocus.description)}</p>
+              </div>
+            ` : ''}
+
+            <!-- 3 Unique Traits -->
+            ${traits.length > 0 ? `
+              <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:auto;">
+                <div style="font-size:0.72rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">
+                  ⚡ 3 Unique Traits:
+                </div>
+                <div style="display:flex;flex-direction:column;gap:0.4rem;">
+                  ${traits.map((t: any) => `
+                    <div style="background:var(--bg-input);border-radius:var(--radius-xs);padding:0.45rem 0.65rem;border:1px solid var(--border-card);">
+                      <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong style="font-size:0.78rem;color:var(--text-main);">${escapeHtml(t.name)}</strong>
+                        <span style="font-size:0.65rem;background:rgba(255,255,255,0.08);color:var(--amber-gold);padding:1px 6px;border-radius:3px;font-weight:700;">${escapeHtml(t.cost)}</span>
+                      </div>
+                      <div style="font-size:0.72rem;color:var(--text-dim);line-height:1.35;margin-top:3px;">${escapeHtml(t.effect)}</div>
+                    </div>
+                  `).join("")}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 
@@ -1372,6 +1495,48 @@ function renderStep7Review(container: HTMLElement) {
           <div><strong>Saving Throws:</strong> ${effective.proficientSaves.map(s => s.toUpperCase()).join(", ")}</div>
           <div><strong>Keahlian (Skills):</strong> ${effective.proficientSkills.map(s => s.toUpperCase()).join(", ") || '-'}</div>
         </div>
+
+        <!-- Archetype Traits & Social Class Highlights -->
+        ${(() => {
+          const archRw = getArchetypeReworkData(draft.archetypeId);
+          const socRw = getSocialClassReworkData(draft.socialClassId);
+          const rollBonus = archObj?.roll_bonus || archRw?.rollBonus;
+          const socialFocus = archObj?.social_focus || archRw?.socialFocus;
+          const traits = archObj?.unique_traits || archRw?.uniqueTraits || [];
+          const privilege = socObj?.privilege || socRw?.privilege;
+          const perks = socObj?.perks || socRw?.perks || [];
+          const drawback = socObj?.drawback || socRw?.drawback;
+
+          return `
+            <div style="border-top:1px solid var(--border-subtle);padding-top:0.75rem;display:flex;flex-direction:column;gap:0.6rem;">
+              <div style="background:var(--bg-card);border:1px solid rgba(225,29,72,0.25);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:var(--rose-light);text-transform:uppercase;margin-bottom:3px;">
+                  🎭 Archetype Traits (${escapeHtml(archObj?.name || draft.archetypeId)})
+                </div>
+                ${rollBonus ? `<div style="font-size:0.74rem;color:var(--text-main);">🎯 <strong>${escapeHtml(rollBonus.name)}:</strong> <span style="color:var(--text-dim);">${escapeHtml(rollBonus.description)}</span></div>` : ''}
+                ${socialFocus ? `<div style="font-size:0.74rem;color:var(--text-main);margin-top:2px;">🗣️ <strong>${escapeHtml(socialFocus.name)}:</strong> <span style="color:var(--text-dim);">${escapeHtml(socialFocus.description)}</span></div>` : ''}
+                ${traits.length > 0 ? `
+                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
+                    ${traits.map(t => `<span class="badge" style="background:rgba(255,255,255,0.06);color:var(--amber-gold);font-size:0.68rem;padding:1px 6px;">${escapeHtml(t.name)} (${escapeHtml(t.cost)})</span>`).join("")}
+                  </div>
+                ` : ''}
+              </div>
+
+              <div style="background:var(--bg-card);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;">
+                <div style="font-size:0.72rem;font-weight:800;color:var(--amber-gold);text-transform:uppercase;margin-bottom:3px;">
+                  🏛️ Hak &amp; Perks Sosial (${escapeHtml(socObj?.name || draft.socialClassId)})
+                </div>
+                ${privilege ? `<div style="font-size:0.74rem;color:var(--text-main);line-height:1.35;">💼 <strong>Privilege:</strong> <span style="color:var(--text-dim);">${escapeHtml(privilege)}</span></div>` : ''}
+                ${perks.length > 0 ? `
+                  <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">
+                    ${perks.map(p => `<span class="badge" style="background:rgba(225,29,72,0.12);color:var(--rose-light);font-size:0.68rem;padding:1px 6px;">${escapeHtml(p.name)}</span>`).join("")}
+                  </div>
+                ` : ''}
+                ${drawback ? `<div style="font-size:0.72rem;color:#fca5a5;margin-top:4px;line-height:1.35;">⚠️ <strong>Drawback:</strong> ${escapeHtml(drawback)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        })()}
 
         ${!isEditMode ? `
           <div style="border-top:1px solid var(--border-subtle);padding-top:0.75rem;font-size:0.78rem;color:var(--text-muted);">

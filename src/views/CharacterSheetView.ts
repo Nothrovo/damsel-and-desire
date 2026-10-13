@@ -61,6 +61,12 @@ import {
   getArchetypeStatBonus,
   useFeatAction
 } from "../rules/progression";
+import {
+  STANDARD_COMBAT_ACTIONS,
+  calculateCombatSaveDC,
+  getArchetypeReworkData,
+  getSocialClassReworkData
+} from "../rules/combatActions";
 import { renderSheetSkeleton } from "../components/Skeleton";
 import { showToast } from "../components/Toast";
 import {
@@ -79,7 +85,9 @@ import {
 
 interface MoveItem {
   name: string;
-  category: "basic_combat" | "basic_social" | "club_move" | "subclass_move" | "archetype_move";
+  category: "basic_combat" | "basic_social" | "club_move" | "subclass_move" | "archetype_move" | string;
+  actionType?: "action" | "bonus_action" | "reaction" | "free_action";
+  cost?: string;
   type: string;
   range: string;
   check: string;
@@ -646,13 +654,39 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
 
             <!-- TAB 1: ACTIONS & MOVES -->
             <div class="tab-pane" id="tabPaneActions" style="${activeTab === 'actions' ? 'display:block;' : 'display:none;'}">
+              <!-- Action Economy Quick Overview Banner -->
+              <div class="action-economy-banner mb-3" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));gap:0.75rem;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);padding:0.75rem 1rem;">
+                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                  <span style="font-size:1.15rem;background:rgba(225,29,72,0.15);padding:4px 6px;border-radius:4px;border:1px solid rgba(225,29,72,0.3);">⚔️</span>
+                  <div>
+                    <strong style="display:block;font-size:0.78rem;color:#fda4af;text-transform:uppercase;letter-spacing:0.5px;">Action (1/Giliran)</strong>
+                    <span style="font-size:0.72rem;color:var(--text-muted);line-height:1.35;">Serangan Fisik (1d4+Mod), Shove, Dodge (+2 AC), Help, Disengage, Jurus Klub</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                  <span style="font-size:1.15rem;background:rgba(245,158,11,0.15);padding:4px 6px;border-radius:4px;border:1px solid rgba(245,158,11,0.3);">⚡</span>
+                  <div>
+                    <strong style="display:block;font-size:0.78rem;color:#fde68a;text-transform:uppercase;letter-spacing:0.5px;">Bonus Action (1/Giliran)</strong>
+                    <span style="font-size:0.72rem;color:var(--text-muted);line-height:1.35;">Social Remark (sindiran/rayuan vs DC Mind), Gunakan Barang/Konsumsi</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                  <span style="font-size:1.15rem;background:rgba(139,92,246,0.15);padding:4px 6px;border-radius:4px;border:1px solid rgba(139,92,246,0.3);">🛡️</span>
+                  <div>
+                    <strong style="display:block;font-size:0.78rem;color:#c4b5fd;text-transform:uppercase;letter-spacing:0.5px;">Reaction (1/Ronde)</strong>
+                    <span style="font-size:0.72rem;color:var(--text-muted);line-height:1.35;">Opportunity Attack (pukul musuh kabur tanpa Disengage), Tanggapan reflek</span>
+                  </div>
+                </div>
+              </div>
+
               <div class="moves-filter-bar">
                 <button class="filter-pill ${activeMoveFilter === 'all' ? 'active' : ''}" data-filter="all">ALL</button>
-                <button class="filter-pill ${activeMoveFilter === 'basic_combat' ? 'active' : ''}" data-filter="basic_combat">BASIC COMBAT</button>
-                <button class="filter-pill ${activeMoveFilter === 'basic_social' ? 'active' : ''}" data-filter="basic_social">BASIC SOCIAL</button>
+                <button class="filter-pill ${activeMoveFilter === 'action' ? 'active' : ''}" data-filter="action">⚔️ ACTION</button>
+                <button class="filter-pill ${activeMoveFilter === 'bonus_action' ? 'active' : ''}" data-filter="bonus_action">⚡ BONUS ACTION</button>
+                <button class="filter-pill ${activeMoveFilter === 'reaction' ? 'active' : ''}" data-filter="reaction">🛡️ REACTION</button>
                 <button class="filter-pill ${activeMoveFilter === 'club_move' ? 'active' : ''}" data-filter="club_move">CLUB MOVES</button>
-                <button class="filter-pill ${activeMoveFilter === 'subclass_move' ? 'active' : ''}" data-filter="subclass_move">SUBCLASS MOVES</button>
-                <button class="filter-pill ${activeMoveFilter === 'archetype_move' ? 'active' : ''}" data-filter="archetype_move">ARCHETYPE MOVES</button>
+                <button class="filter-pill ${activeMoveFilter === 'subclass_move' ? 'active' : ''}" data-filter="subclass_move">SUBCLASS</button>
+                <button class="filter-pill ${activeMoveFilter === 'archetype_move' ? 'active' : ''}" data-filter="archetype_move">ARCHETYPE</button>
               </div>
               <div class="moves-list" id="sheetMovesList">
                 ${renderMovesList(char, activeMoveFilter)}
@@ -670,7 +704,7 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                   <span class="fin-label">TABUNGAN / REKENING</span>
                   <div style="display:flex;align-items:center;gap:0.5rem;">
                     <span class="fin-val" id="sheetDisplayMoneySavings">¥${finances.savingsAmount.toLocaleString()}</span>
-                    <button class="btn btn-xs btn-secondary" id="btnManageSavings" title="Kelola Tabungan (+/- Rupiah)" style="padding:0.18rem 0.5rem;font-size:0.75rem;font-weight:700;">💳 + / −</button>
+                    <button class="btn btn-xs btn-secondary" id="btnManageSavings" title="Kelola Tabungan &amp; Koin (+/- Yen / Rp)" style="padding:0.18rem 0.5rem;font-size:0.75rem;font-weight:700;">💳 + / −</button>
                   </div>
                 </div>
                 <div class="fin-item">
@@ -866,12 +900,23 @@ function renderMovesList(char: Character, filter: string): string {
 
   let moves: MoveItem[] = [];
 
+  const resolveActionType = (costStr?: string, defaultType: "action" | "bonus_action" | "reaction" = "action"): "action" | "bonus_action" | "reaction" => {
+    if (!costStr) return defaultType;
+    const lower = costStr.toLowerCase();
+    if (lower.includes("bonus")) return "bonus_action";
+    if (lower.includes("reaction")) return "reaction";
+    return "action";
+  };
+
   // Basic Actions
   compBasicActions.forEach(b => {
+    const actType = (b as any).action_type || (b as any).actionType || resolveActionType(b.cost, "action");
     moves.push({
       name: b.name,
       category: b.category as any,
-      type: (b as any).type || (b.category === "basic_combat" ? "Action (Physical)" : "Action (Social)"),
+      actionType: actType,
+      cost: b.cost || "Action",
+      type: `${b.cost || 'Action'} [${b.category === "basic_combat" ? "Fisik" : b.category === "basic_social" ? "Sosial" : "Dasar"}]`,
       range: (b as any).range || "Melee (5 ft)",
       check: b.check_type || (b as any).check || "Physique / Power",
       damage: b.effect || (b as any).damage || "-",
@@ -883,9 +928,12 @@ function renderMovesList(char: Character, filter: string): string {
   const arcMoves = (curArchetype?.archetype_moves || (curArchetype as any)?.archetypeMoves || []);
   if (curArchetype && arcMoves.length > 0) {
     arcMoves.forEach((m: any) => {
+      const actType = resolveActionType(m.cost || m.move_type, "action");
       moves.push({
         name: m.name,
         category: "archetype_move",
+        actionType: actType,
+        cost: m.cost || "Action",
         type: `${m.move_type || m.type || 'Action'} [${curArchetype.name.split('(')[0].trim()}]`,
         range: m.range || "Self / Pandangan",
         check: m.check_type || m.check || "Otomatis",
@@ -901,9 +949,12 @@ function renderMovesList(char: Character, filter: string): string {
     clubMoves.forEach((m: any, idx: number) => {
       const unlockGrade = m.unlock_grade || (m.order === 1 ? 10 : m.order === 2 ? 11 : 12);
       const isLocked = charGrade < unlockGrade;
+      const actType = resolveActionType(m.cost || m.move_type, "action");
       moves.push({
         name: m.name,
         category: "club_move",
+        actionType: actType,
+        cost: m.cost || "Action",
         type: `${m.move_type || m.type || 'Action'} [${curEkskul.name.split('(')[0].trim()}]`,
         range: m.range || "Self / 15 ft",
         check: m.check_type || m.check || "Otomatis",
@@ -922,9 +973,12 @@ function renderMovesList(char: Character, filter: string): string {
       curSubclass.subclass_moves.forEach(sm => {
         const unlockGrade = sm.unlock_grade || (sm.tier === "G12" ? 12 : 11);
         const isLocked = charGrade < unlockGrade;
+        const actType = resolveActionType(sm.cost || sm.move_type, "action");
         moves.push({
           name: sm.name,
           category: "subclass_move",
+          actionType: actType,
+          cost: sm.cost || "Action",
           type: `${sm.move_type || 'Subclass'} [${curSubclass.name}]`,
           range: sm.range || "Self / 30 ft",
           check: sm.check_type || "Otomatis",
@@ -939,9 +993,12 @@ function renderMovesList(char: Character, filter: string): string {
       // Subclass not selected yet; preview candidate moves with lock badge
       curEkskul.subclasses.forEach(sc => {
         (sc.subclass_moves || []).forEach(sm => {
+          const actType = resolveActionType(sm.cost || sm.move_type, "action");
           moves.push({
             name: sm.name,
             category: "subclass_move",
+            actionType: actType,
+            cost: sm.cost || "Action",
             type: `${sm.move_type || 'Subclass'} [${sc.name}]`,
             range: sm.range || "Self / 30 ft",
             check: sm.check_type || "Otomatis",
@@ -957,7 +1014,11 @@ function renderMovesList(char: Character, filter: string): string {
   }
 
   if (filter !== "all") {
-    moves = moves.filter(m => m.category === filter);
+    if (filter === "action" || filter === "bonus_action" || filter === "reaction") {
+      moves = moves.filter(m => m.actionType === filter);
+    } else {
+      moves = moves.filter(m => m.category === filter);
+    }
   }
 
   activeRenderedMoves = moves;
@@ -973,10 +1034,25 @@ function renderMovesList(char: Character, filter: string): string {
       : m.category === "basic_combat" ? "#60a5fa"
       : "#86efac";
 
+    const actionBadgeBg = m.actionType === "bonus_action" ? "rgba(245,158,11,0.18)"
+      : m.actionType === "reaction" ? "rgba(139,92,246,0.18)"
+      : "rgba(225,29,72,0.15)";
+    const actionBadgeColor = m.actionType === "bonus_action" ? "#fde68a"
+      : m.actionType === "reaction" ? "#c4b5fd"
+      : "#fda4af";
+    const actionBadgeIcon = m.actionType === "bonus_action" ? "⚡"
+      : m.actionType === "reaction" ? "🛡️"
+      : "⚔️";
+
     return `
       <div class="move-card ${m.isLocked ? 'move-card-locked' : 'move-card-interactive'}" data-move-idx="${idx}" style="${m.isLocked ? 'opacity:0.65;border:1px dashed var(--border-card);background:rgba(255,255,255,0.02);' : 'cursor:pointer;'}">
         <div class="move-card-header">
-          <span class="move-name" style="${m.isLocked ? 'color:var(--text-muted);' : ''}">${escapeHtml(m.name)}</span>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <span class="move-name" style="${m.isLocked ? 'color:var(--text-muted);' : ''}">${escapeHtml(m.name)}</span>
+            <span class="badge" style="background:${actionBadgeBg};color:${actionBadgeColor};border:1px solid ${actionBadgeColor}44;font-size:0.68rem;padding:2px 6px;border-radius:4px;font-weight:700;">
+              ${actionBadgeIcon} ${escapeHtml(m.cost || (m.actionType ? m.actionType.replace('_', ' ').toUpperCase() : 'ACTION'))}
+            </span>
+          </div>
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             ${m.isLocked ? `
               <span class="badge badge-locked" style="background:rgba(255,255,255,0.08);color:#fbbf24;font-size:0.72rem;border:1px solid rgba(251,191,36,0.3);padding:2px 6px;border-radius:4px;">
@@ -1002,17 +1078,64 @@ function renderFeaturesContent(char: Character): string {
   const curEkskul = compEkskul.find(e => e.id === char.ekskul_id);
   const curSocial = compSocial.find(s => s.id === char.social_class_id);
 
+  const archRw = getArchetypeReworkData(char.archetype_id);
+  const socRw = getSocialClassReworkData(char.social_class_id);
+
   let html = "";
-  if (curArchetype) {
-    const bonusEntries = Object.entries(curArchetype.stat_bonus || getArchetypeStatBonus(char.archetype_id));
+  if (curArchetype || archRw) {
+    const archName = curArchetype?.name || archRw?.name || char.archetype_id;
+    const bonusEntries = Object.entries(curArchetype?.stat_bonus || archRw?.statBonus || getArchetypeStatBonus(char.archetype_id));
     const bonusText = bonusEntries.map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ");
+    const rollBonus = curArchetype?.roll_bonus || archRw?.rollBonus;
+    const socialFocus = curArchetype?.social_focus || archRw?.socialFocus;
+    const traits = curArchetype?.unique_traits || archRw?.uniqueTraits || [];
+
     html += `
-      <div class="card p-3 mb-3">
-        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.4rem;">
-          <h4 style="color:#60a5fa;margin:0;font-size:0.95rem;font-weight:800;">Fitur Archetype: ${escapeHtml(curArchetype.name)}</h4>
+      <div class="card p-3 mb-3" style="border:1px solid rgba(96,165,250,0.3);background:var(--bg-surface);">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.6rem;">
+          <div>
+            <h4 style="color:#60a5fa;margin:0;font-size:1rem;font-weight:800;">🎭 Fitur Archetype: ${escapeHtml(archName)}</h4>
+            ${curArchetype?.tagline || archRw?.tagline ? `<div style="font-size:0.75rem;color:var(--amber-gold);font-style:italic;margin-top:2px;">${escapeHtml(curArchetype?.tagline || archRw?.tagline || '')}</div>` : ''}
+          </div>
           ${bonusText ? `<span style="font-size:0.75rem;background:rgba(225,29,72,0.15);color:var(--rose-light);border:1px solid rgba(225,29,72,0.3);padding:2px 8px;border-radius:4px;font-weight:700;">Bonus Stat: ${escapeHtml(bonusText)}</span>` : ""}
         </div>
-        <p class="text-sm" style="line-height:1.6;">${escapeHtml(curArchetype.perk_description || "Karakteristik kepribadian dan gaya masa muda khas anime.")}</p>
+
+        ${rollBonus ? `
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;margin-bottom:0.5rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#60a5fa;text-transform:uppercase;margin-bottom:2px;">
+              🎯 Bonus Roll &amp; Damage: ${escapeHtml(rollBonus.name)}
+            </div>
+            <p class="text-sm" style="line-height:1.45;color:var(--text-dim);margin:0;">${escapeHtml(rollBonus.description)}</p>
+          </div>
+        ` : ''}
+
+        ${socialFocus ? `
+          <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;margin-bottom:0.5rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#c084fc;text-transform:uppercase;margin-bottom:2px;">
+              🗣️ Fokus Interaksi Sosial: ${escapeHtml(socialFocus.name)}
+            </div>
+            <p class="text-sm" style="line-height:1.45;color:var(--text-dim);margin:0;">${escapeHtml(socialFocus.description)}</p>
+          </div>
+        ` : ''}
+
+        ${traits.length > 0 ? `
+          <div style="margin-top:0.6rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:var(--rose-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;">
+              ⚡ 3 Unique Traits:
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:0.5rem;">
+              ${traits.map(t => `
+                <div style="background:var(--bg-card);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:0.55rem 0.7rem;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                    <strong style="font-size:0.8rem;color:var(--text-main);">${escapeHtml(t.name)}</strong>
+                    <span style="font-size:0.65rem;background:rgba(245,158,11,0.15);color:var(--amber-gold);padding:1px 6px;border-radius:3px;font-weight:700;">${escapeHtml(t.cost)}</span>
+                  </div>
+                  <div style="font-size:0.74rem;color:var(--text-dim);line-height:1.35;">${escapeHtml(t.effect)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
   }
@@ -1038,11 +1161,54 @@ function renderFeaturesContent(char: Character): string {
     `;
   }
 
-  if (curSocial) {
+  if (curSocial || socRw) {
+    const socName = curSocial?.name || socRw?.name || char.social_class_id;
+    const privilege = curSocial?.privilege || socRw?.privilege;
+    const perks = curSocial?.perks || socRw?.perks || [];
+    const drawback = curSocial?.drawback || socRw?.drawback;
+
     html += `
-      <div class="card p-3 mb-3">
-        <h4 style="color:#fde68a;margin-bottom:0.4rem;font-size:0.95rem;font-weight:800;">Status Finansial &amp; Kelas Sosial: ${escapeHtml(curSocial.name)}</h4>
-        <p class="text-sm" style="line-height:1.6;">${escapeHtml(curSocial.description || curSocial.tier || "Uang saku harian dan modal tabungan sesuai latar belakang keluarga.")}</p>
+      <div class="card p-3 mb-3" style="border:1px solid rgba(245,158,11,0.3);background:var(--bg-surface);">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;">
+          <h4 style="color:#fde68a;margin:0;font-size:1rem;font-weight:800;">Status Finansial &amp; Kelas Sosial: ${escapeHtml(socName)}</h4>
+          <span style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;">Tier: ${escapeHtml(curSocial?.tier || socRw?.tier || char.social_class_id)}</span>
+        </div>
+
+        ${privilege ? `
+          <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-xs);padding:0.6rem 0.75rem;margin-bottom:0.5rem;">
+            <div style="font-size:0.72rem;font-weight:800;color:var(--amber-gold);text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:4px;">
+              🏛️ Hak Istimewa &amp; Jaringan (Privilege)
+            </div>
+            <p class="text-sm" style="line-height:1.45;color:var(--text-main);margin:0;">${escapeHtml(privilege)}</p>
+          </div>
+        ` : ''}
+
+        ${perks.length > 0 ? `
+          <div style="margin-bottom:0.5rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:var(--rose-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;">
+              ✨ Keuntungan Mekanik (Class Perks):
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:0.5rem;">
+              ${perks.map(p => `
+                <div style="background:var(--bg-card);border-left:3px solid var(--rose-primary);border-radius:0 var(--radius-xs) var(--radius-xs) 0;padding:0.5rem 0.7rem;">
+                  <div style="font-size:0.78rem;font-weight:700;color:#fff;">
+                    ${escapeHtml(p.name)} ${p.cost ? `<span style="font-size:0.68rem;color:var(--amber-gold);font-weight:normal;">(${escapeHtml(p.cost)})</span>` : ''}
+                  </div>
+                  <div style="font-size:0.74rem;color:var(--text-dim);line-height:1.35;margin-top:2px;">${escapeHtml(p.effect)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        ` : ''}
+
+        ${drawback ? `
+          <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius-xs);padding:0.55rem 0.75rem;">
+            <div style="font-size:0.72rem;font-weight:800;color:#fca5a5;text-transform:uppercase;margin-bottom:2px;">
+              ⚠️ Kelemahan Sosial (Drawback)
+            </div>
+            <p class="text-sm" style="line-height:1.4;color:#fecdd3;margin:0;">${escapeHtml(drawback)}</p>
+          </div>
+        ` : ''}
       </div>
     `;
   }
@@ -1327,6 +1493,12 @@ function renderFeatsTabContent(char: Character, isDmUnlocked: boolean): string {
 }
 
 function openMoveDrawer(m: MoveItem, char: Character) {
+  const statsList = [
+    { label: "Biaya Aksi", value: m.cost || (m.actionType ? m.actionType.replace('_', ' ').toUpperCase() : "Action") },
+    { label: "Jarak / Range", value: m.range },
+    { label: "Check Dadu", value: m.check, accent: true },
+    { label: "Efek / Damage", value: m.damage }
+  ];
   slideOverDrawer.open({
     title: m.name,
     category: m.category.replace(/_/g, " "),
@@ -1337,11 +1509,7 @@ function openMoveDrawer(m: MoveItem, char: Character) {
       : m.category === "archetype_move" ? "feat" : undefined,
     badge: m.type,
     subtitle: m.isLocked ? m.lockReason : undefined,
-    stats: [
-      { label: "Jarak / Range", value: m.range },
-      { label: "Check Dadu", value: m.check, accent: true },
-      { label: "Efek / Damage", value: m.damage }
-    ],
+    stats: statsList,
     flavor: `Aksi atau jurus khusus siswa Housen Academy (${m.type}).`,
     mechanics: m.desc,
     actions: m.isLocked ? [] : [
@@ -1490,7 +1658,12 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
       char.vitals = res.vitals;
       char.finances = res.finances;
       char.version = res.newVersion;
-      showToast(`🌙 Long Rest: HP & Composure pulih penuh! +¥${res.totalAdded.toLocaleString()} disetor ke tabungan.`, "success");
+      const wageInfo = res.depositWage > 0 ? ` + baito ¥${res.depositWage.toLocaleString()}` : "";
+      const netSign = res.netFinancialChange >= 0 ? "+" : "";
+      showToast(
+        `🌙 Long Rest selesai! HP & Composure pulih penuh. Uang saku +¥${res.depositDaily.toLocaleString()}${wageInfo} - biaya hidup ¥${res.livingCost.toLocaleString()} (Net: ${netSign}¥${res.netFinancialChange.toLocaleString()}).`,
+        "success"
+      );
       updateDynamicElements(char);
     } catch (err: any) {
       showToast(`Gagal Long Rest: ${err.message}`, "error");

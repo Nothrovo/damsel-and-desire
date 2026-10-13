@@ -1352,20 +1352,19 @@ class DamselDesireApp {
     char.restDiceSpent = 0;
     char.heartInspiration = true;
 
-    // Financial: add daily allowance + job wage (Long Rest = new day)
+    // Financial: add daily allowance + job wage minus living cost (300 Yen) (Long Rest = new day)
     const dailyIncome = (char.dailyMoneyAmount || 0) + (char.jobWageAmount || 0);
-    if (dailyIncome > 0) {
-      char.savingsAmount = (char.savingsAmount || 0) + dailyIncome;
-      // Update savings display string (simplified format)
-      char.savings = `¥${char.savingsAmount.toLocaleString()} / Rp ${(char.savingsAmount * 100).toLocaleString()}`;
-    }
+    const livingCost = 300;
+    const netIncome = dailyIncome - livingCost;
+    char.savingsAmount = Math.max(0, (char.savingsAmount || 0) + netIncome);
+    char.savings = `¥${char.savingsAmount.toLocaleString()} / Rp ${(char.savingsAmount * 100).toLocaleString()}`;
 
     document.querySelectorAll(".check-bubble").forEach(cb => cb.checked = false);
     this.saveCurrentCharacter();
     this.renderCharacterSheet();
 
-    const incomeMsg = dailyIncome > 0 ? ` +¥${dailyIncome} (uang saku${char.jobWageAmount ? ' + baito' : ''}) masuk tabungan.` : "";
-    this.showToast(`Long Rest: Hari baru dimulai! Seluruh HP & Composure pulih penuh.${incomeMsg}`);
+    const netMsg = ` (Uang saku ¥${dailyIncome} - Biaya hidup ¥${livingCost} = Net ${netIncome >= 0 ? '+' : ''}¥${netIncome})`;
+    this.showToast(`Long Rest: Hari baru dimulai! Seluruh HP & Composure pulih penuh.${netMsg}`);
   }
 
   toggleHeartInspiration() {

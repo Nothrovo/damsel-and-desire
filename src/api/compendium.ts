@@ -1,5 +1,10 @@
 import { supabase } from "./supabase";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
+import {
+  ARCHETYPE_REWORK_CATALOG,
+  SOCIAL_CLASS_REWORK_CATALOG,
+  STANDARD_COMBAT_ACTIONS
+} from "../rules/combatActions";
 import type {
   AbilityCompendium,
   EkskulCompendium,
@@ -179,6 +184,7 @@ export async function getCompendiumArchetypes(): Promise<ArchetypeCompendium[]> 
     if (!error && data && data.length > 0) {
       cacheArchetypes = (data as any[]).map(a => {
         const fallback = FALLBACK_DD_DATA.archetypes.find((fa: any) => fa.id === a.id);
+        const rework = ARCHETYPE_REWORK_CATALOG[a.id];
         const moves = (a.archetype_moves && a.archetype_moves.length > 0)
           ? a.archetype_moves
           : (fallback?.archetypeMoves || []).map((m: any, idx: number) => ({
@@ -194,6 +200,9 @@ export async function getCompendiumArchetypes(): Promise<ArchetypeCompendium[]> 
             }));
         return {
           ...a,
+          roll_bonus: a.roll_bonus || rework?.rollBonus,
+          social_focus: a.social_focus || rework?.socialFocus,
+          unique_traits: a.unique_traits || rework?.uniqueTraits,
           archetype_moves: moves
         };
       }) as ArchetypeCompendium[];
@@ -204,24 +213,30 @@ export async function getCompendiumArchetypes(): Promise<ArchetypeCompendium[]> 
   }
 
   // Fallback
-  cacheArchetypes = FALLBACK_DD_DATA.archetypes.map((a: any) => ({
-    id: a.id,
-    name: a.name,
-    tagline: a.tagline,
-    stat_bonus: a.statBonus,
-    perk_description: a.perkDesc,
-    archetype_moves: (a.archetypeMoves || []).map((m: any, idx: number) => ({
-      id: `${a.id}_move_${idx + 1}`,
-      archetype_id: a.id,
-      name: m.name,
-      move_type: m.type,
-      cost: m.cost,
-      range: m.range,
-      check_type: m.check,
-      effect: m.effect,
-      description: m.desc
-    }))
-  }));
+  cacheArchetypes = FALLBACK_DD_DATA.archetypes.map((a: any) => {
+    const rework = ARCHETYPE_REWORK_CATALOG[a.id];
+    return {
+      id: a.id,
+      name: a.name,
+      tagline: a.tagline,
+      stat_bonus: a.statBonus,
+      perk_description: a.perkDesc,
+      roll_bonus: rework?.rollBonus,
+      social_focus: rework?.socialFocus,
+      unique_traits: rework?.uniqueTraits,
+      archetype_moves: (a.archetypeMoves || []).map((m: any, idx: number) => ({
+        id: `${a.id}_move_${idx + 1}`,
+        archetype_id: a.id,
+        name: m.name,
+        move_type: m.type,
+        cost: m.cost,
+        range: m.range,
+        check_type: m.check,
+        effect: m.effect,
+        description: m.desc
+      }))
+    };
+  });
   return cacheArchetypes;
 }
 
@@ -234,7 +249,15 @@ export async function getCompendiumSocialClasses(): Promise<SocialClassCompendiu
       .order("daily_amount", { ascending: false });
 
     if (!error && data && data.length > 0) {
-      cacheSocialClasses = data as SocialClassCompendium[];
+      cacheSocialClasses = (data as any[]).map(sc => {
+        const scRework = SOCIAL_CLASS_REWORK_CATALOG[sc.id];
+        return {
+          ...sc,
+          privilege: sc.privilege || scRework?.privilege,
+          perks: sc.perks || scRework?.perks,
+          drawback: sc.drawback || scRework?.drawback
+        };
+      }) as SocialClassCompendium[];
       return cacheSocialClasses;
     }
   } catch (err) {
@@ -242,17 +265,23 @@ export async function getCompendiumSocialClasses(): Promise<SocialClassCompendiu
   }
 
   // Fallback
-  cacheSocialClasses = FALLBACK_DD_DATA.socialClasses.map((s: any) => ({
-    id: s.id,
-    name: s.name,
-    tier: s.id,
-    daily_allowance: s.allowance,
-    initial_savings: s.savings,
-    daily_amount: s.allowanceAmount,
-    savings_amount: s.savingsAmount,
-    description: s.perkDesc || s.tagline,
-    starter_items: s.equipment || []
-  }));
+  cacheSocialClasses = FALLBACK_DD_DATA.socialClasses.map((s: any) => {
+    const scRework = SOCIAL_CLASS_REWORK_CATALOG[s.id];
+    return {
+      id: s.id,
+      name: s.name,
+      tier: s.id,
+      daily_allowance: s.allowance,
+      initial_savings: s.savings,
+      daily_amount: s.allowanceAmount,
+      savings_amount: s.savingsAmount,
+      description: s.perkDesc || s.tagline,
+      starter_items: s.equipment || [],
+      privilege: scRework?.privilege,
+      perks: scRework?.perks,
+      drawback: scRework?.drawback
+    };
+  });
   return cacheSocialClasses;
 }
 
@@ -265,22 +294,40 @@ export async function getCompendiumBasicActions(): Promise<BasicActionCompendium
       .order("id");
 
     if (!error && data && data.length > 0) {
-      cacheBasicActions = data as BasicActionCompendium[];
+      const dbActions = data as BasicActionCompendium[];
+      const standardIds = new Set(dbActions.map(a => a.id));
+      const merged = [...dbActions];
+      for (const std of STANDARD_COMBAT_ACTIONS) {
+        if (!standardIds.has(std.id)) {
+          merged.push({
+            id: std.id,
+            name: std.name,
+            category: std.category,
+            cost: std.cost,
+            check_type: std.check,
+            effect: std.effect,
+            description: std.description,
+            action_type: std.actionType
+          });
+        }
+      }
+      cacheBasicActions = merged;
       return cacheBasicActions;
     }
   } catch (err) {
     console.warn("Koneksi Supabase basic actions compendium gagal, beralih ke fallback lokal.");
   }
 
-  // Fallback
-  cacheBasicActions = FALLBACK_DD_DATA.basicActions.map((ba: any, idx: number) => ({
-    id: `action_${idx + 1}`,
+  // Fallback: use STANDARD_COMBAT_ACTIONS
+  cacheBasicActions = STANDARD_COMBAT_ACTIONS.map(ba => ({
+    id: ba.id,
     name: ba.name,
     category: ba.category,
     cost: ba.cost,
     check_type: ba.check,
     effect: ba.effect,
-    description: ba.desc
+    description: ba.description,
+    action_type: ba.actionType
   }));
   return cacheBasicActions;
 }

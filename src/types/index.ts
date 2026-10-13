@@ -254,6 +254,70 @@ export interface ArchetypeMoveCompendium {
   description: string;
 }
 
+export interface ArchetypeRollBonus {
+  name: string;
+  description: string;
+  target?: string;
+  bonusModifier?: string;
+}
+
+export interface ArchetypeSocialFocus {
+  name: string;
+  description: string;
+  advantageChecks?: string[];
+}
+
+export interface ArchetypeUniqueTrait {
+  id: string;
+  name: string;
+  cost: string;
+  effect: string;
+  description?: string;
+  limit?: string;
+}
+
+export interface ArchetypeReworkData {
+  id: string;
+  name: string;
+  tagline?: string;
+  statBonus: Partial<CharacterAbilities>;
+  rollBonus: ArchetypeRollBonus;
+  socialFocus: ArchetypeSocialFocus;
+  uniqueTraits: ArchetypeUniqueTrait[];
+}
+
+export interface SocialClassPerk {
+  id: string;
+  name: string;
+  effect: string;
+  cost?: string;
+  limit?: string;
+}
+
+export interface SocialClassReworkData {
+  id: string;
+  name: string;
+  tier: string;
+  privilege: string;
+  perks: SocialClassPerk[];
+  drawback: string;
+}
+
+export type CombatActionType = "action" | "bonus_action" | "reaction" | "free_action";
+
+export interface CombatActionDefinition {
+  id: string;
+  name: string;
+  actionType: "action" | "bonus_action" | "reaction";
+  category: "combat" | "social" | "defense" | "movement" | "utility";
+  cost: string;
+  check: string;
+  effect: string;
+  description: string;
+  range?: string;
+  trigger?: string;
+}
+
 export interface ArchetypeCompendium {
   id: string;
   name: string;
@@ -261,6 +325,9 @@ export interface ArchetypeCompendium {
   stat_bonus: Partial<CharacterAbilities>;
   perk_description?: string;
   archetype_moves?: ArchetypeMoveCompendium[];
+  roll_bonus?: ArchetypeRollBonus;
+  social_focus?: ArchetypeSocialFocus;
+  unique_traits?: ArchetypeUniqueTrait[];
 }
 
 export interface SocialClassCompendium {
@@ -273,6 +340,9 @@ export interface SocialClassCompendium {
   savings_amount: number;
   description?: string;
   starter_items: string[];
+  privilege?: string;
+  perks?: SocialClassPerk[];
+  drawback?: string;
 }
 
 export interface EquipmentPackCompendium {
@@ -290,6 +360,7 @@ export interface BasicActionCompendium {
   check_type: string;
   effect: string;
   description: string;
+  action_type?: CombatActionType;
 }
 
 export interface CalendarEventCompendium {
@@ -550,5 +621,29 @@ export interface SchoolCalendarState {
   academicYear: number; // 1 = Kelas 10 (Kōkō Ichinensei), 2 = Kelas 11 (Kōkō Ninensei)
   updatedAt: string;
 }
+
+export interface LongRestRpcResult {
+  characterId: string;
+  vitals: CharacterVitals;
+  finances: CharacterFinances;
+  featUsage?: FeatUsageTracker;
+  depositDaily: number;
+  depositWage: number;
+  livingCost: number;
+  netFinancialChange: number;
+  totalAdded: number;
+  newVersion: number;
+}
+
+export interface AdjustSavingsRpcResult {
+  characterId: string;
+  deltaYen: number;
+  deltaRupiah: number;
+  newSavingsAmount: number;
+  finances: CharacterFinances;
+  note: string;
+  newVersion: number;
+}
+
 
 

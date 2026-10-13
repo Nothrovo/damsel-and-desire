@@ -1,0 +1,451 @@
+General
+Specify Action Cost: Setiap Club Move perlu mencantumkan action cost secara jelas, apakah Action, Bonus Action, Reaction, atau Free Action.
+Karena kemungkinan akan ada lebih banyak Roleplay (RP) dibandingkan combat, pertimbangkan agar jumlah penggunaan Club Move dapat dibuat unlimited/infinite untuk move tertentu yang tidak terlalu kuat.
+Pertimbangkan agar setiap Class/Archetype memiliki senjata bawaan yang sesuai dengan tema class.
+Proficiency Bonus: Jangan lupa melakukan scaling berdasarkan level.
+Ekskul dan Archetype (Damsels & Desires 1.5e?): 
+1. +1 Club Move(atau Trait) untuk semua Class dan Benefit Archetype jadi: Bonus (Dmg, Roll etc), Traits, Social focused. (?)
+2. Mendapatkan +1 Skill (ability)  untuk 1 Skill pilihan.
+Combat Action Economy
+Action
+Pukulan/Serangan Fisik (Unarmed Strike)
+Biaya: Action
+Check: Physique / Power (vs Guard Fisik Target)
+Efek: 1d4 + Mod Physique Physical Damage
+Pukulan mentah, tamparan, atau tendangan kuat saat adu fisik jarak dekat.
+
+Dorongan Kuat (Shove)
+Biaya: Action
+Check: Physique / Power vs Target Physique Save
+Efek: Target terdorong 5\text{ ft} atau jatuh Prone
+Mendorong lawan dengan kedua tangan penuh tenaga untuk merusak posisi berdirinya.
+
+Tangkis & Bertahan (Dodge & Guard)
+Biaya: Action
+Check: Otomatis
+Efek: +2 Physical & Social Guard (AC) hingga awal giliranmu berikutnya
+Memasang kuda-kuda rapat dan memfokuskan pertahanan terhadap semua serangan.
+
+Bantuan & Dukungan (Help / Support)
+Biaya: Action
+Check: Mind / Interpersonal (atau Sub-Skill relevan)
+Efek: Memberikan Advantage pada roll check berikutnya milik 1 sekutu
+Memberikan arahan taktis, memegangi objek, atau membantu teman secara langsung.
+
+Kabur & Menghindar (Disengage)
+Biaya: Action
+Check: Physique / Agility
+Efek: Gerakanmu tidak memicu Opportunity Attack selama ronde ini
+Mundur dengan langkah cerdas memanfaatkan celah pergerakan lawan.
+
+Bonus Action
+​Ucapkan Kata-Kata / Gestur Sosial (Social Remark)
+​Biaya: Bonus Action
+​Check: Sub-Skill Sosial (Charm / Aura / People / Interpersonal vs Target Mind Save / DC)
+​Efek: Fleksibel (DM Menentukan Outcome)
+​Melontarkan ejekan/sindiran, tatapan intimidasi, rayuan singkat, atau teriakan penyemangat di sela aksi.
+
+​Gunakan Barang / Konsumsi (Use Item / Consume)
+​Biaya: Bonus Action
+​Check: Otomatis
+​Efek: Meminum minuman kemasan, memakan bekal/permen, atau menggunakan peralatan kecil dari saku/tas
+​Aksi praktis mengambil dan menggunakan item konsumsi ringan di tengah pertempuran atau eksplorasi.
+Reaction Moves
+​Serangan Kesempatan (Opportunity Attack)
+​Biaya: Reaction
+​Pemicu: Saat musuh yang berada dalam jangkauan jarak dekatmu bergerak keluar dari area jangkauanmu tanpa menggunakan aksi Disengage.
+​Check: Physique / Power (vs Guard Fisik Target)
+​Efek: Lakukan 1 kali Unarmed Strike (1d4 + Mod Physique) atau serangan senjata jarak dekat standar.
+​Memanfaatkan kelengahan lawan saat mereka mencoba kabur atau berpindah posisi di dekatmu.
+
+Social Class Bonus
+1. Rich (Keluarga Konglomerat / Ningrat)
+Financial & Network Privilege: Beli barang/jasa biasa tanpa roll. 1×/Long Rest gunakan nama/koneksi orang tua untuk membatalkan 1 penalti pelanggaran sekolah atau meminta izin khusus guru.
+Class Perk: Pampered Comfort: Memulai hari dengan +2 Temporary Composure.
+Drawback: Disadvantage pada check Street di lingkungan kumuh/pasar, serta menjadi target utama pemerasan/gosip.
+2. Medium Rich (Keluarga Menengah Atas)
+Financial & Network Privilege: Akses kendaraan pribadi (membawa 1 sekutu berpindah lokasi 2\times lebih cepat tanpa memakan waktu/AP).
+Class Perk: Academic Edge & Generous: Advantage pada 1 check Academic per hari. 1×/Short Rest saat mentraktir/berbagi konsumsi, berikan +1d4 Composure ke 1 teman.
+Drawback: Disadvantage pada Mind Save melawan status Fluster saat Composure-mu di bawah 50%.
+3. Medium (Keluarga Pegawai Biasa)
+Financial & Network Privilege: Punya bekal makan siang rumah yang hemat operasional harian.
+Class Perk: Home-Cooked & Balanced: Bekal rumah memulihkan ekstra +1d6 Composure saat Short Rest (bisa dibagi). Dapatkan bonus pasif +1 pada seluruh Mind Save.
+Drawback: Karakter biasa tanpa akses koneksi khusus ke figur otoritas maupun jalanan.
+4. Medium Poor (Keluarga Pas-pasan / Berhemat)
+Financial & Network Privilege: Diskon 30% saat membeli item konsumsi/peralatan karena jago menawar.
+Class Perks (3 Bonus):
+DIY Repair: Memperbaiki item/alat rusak tanpa biaya menggunakan barang bekas.
+Thrifty Nutrition: Memulihkan +1d4 HP/Composure tambahan tiap kali menggunakan item konsumsi paling murah.
+Resourceful Eye: Advantage saat mencari barang bekas atau alat berguna di area sekolah/kota.
+Drawback: Penalti -2 check Charm saat berada di tempat mewah/acara sosial elite.
+5. Orphanage (Anak Asuh Panti / Hidup Mandiri)
+Financial & Network Privilege: Kehidupan mandiri, modal uang sangat minim.
+Class Perks (3 Bonus):
+Found Family Shield: Bonus Acrion, Saat membantu sekutu yang HP/Composure-nya di bawah 50%, dapatkan bonus +2 Guard (AC) fisik & sosial.
+Shared Pain (Empathy): 1× / Long Rest saat sekutu dalam jarak 15 ft menerima damage Composure, kamu bisa menanggung setengah damage tersebut.
+Street Kinship: Advantage check People saat berinteraksi dengan sesama karakter tersisih/NPC kelas bawah.
+Drawback: Disadvantage check Influence saat bernegosiasi dengan figur otoritas sekolah (guru/staf/OSIS).
+6. Poor (Keluarga Kurang Mampu / Pejuang Hidup)
+Financial & Network Privilege: Hampir tidak ada modal finansial/koneksi.
+Class Perks (3 Bonus Kuat):
+Unbreakable Determination: Saat Physical HP atau Composure-mu menyentuh angka 0 pertama kali dalam satu sesi, roll d20: hasil 8+ membuatmu bertahan di 1 HP/Composure.
+ Hard Work Stamina: Advantage permanen pada semua check Stamina dan Street. Imun terhadap penalti kelelahan tingkat pertama dan cuaca ekstrem.
+ Brawler Spirit: Saat bertarung tanpa senjata/alat mewah, serangan fisikmu memberikan +2 damage tambahan.
+Drawback: Guru BP dan satpam selalu mencurigaimu lebih dulu saat terjadi kekacauan di sekolah.
+
+Class
+Band
+Club Move: Bardic Rock Riff
+Pertanyaan:
+Jumlah penggunaan Club Move = Talent Modifier?
+Club Move: Bardic Distorsi Pemecah Telinga
+Pertanyaan:
+Apakah menggunakan To Hit? Jika iya, modifier apa yang ditambahkan?
+Atau menggunakan Saving Throw? Jika iya, perlu ditentukan DC-nya.
+Alternatif: dibuat seperti Cutting Words milik Bard, yaitu auto-hit.
+Jika menggunakan sistem auto-hit, damage die perlu diperkecil agar tetap balance.
+
+Drama
+Club Move: Air Mata Buatan
+Pertanyaan:
+Jumlah penggunaan Club Move = Talent/Logic Modifier?
+Masukkan:
+Tambahkan check untuk menentukan apakah lawan percaya atau tidak.
+Opsi 1: DC = 8 + Proficiency Bonus + LOK Modifier. atau
+Opsi 2: menggunakan Interpersonal(?) vs Charm Check.
+Drama secara otomatis Proficient dalam Charm.
+Pertimbangkan agar setiap ekskul juga mendapatkan tambahan Skill Proficiency yang sesuai dengan tema ekskul.
+Jika berhasil:
+Target terkena Pity.
+Target yang menyerang pengguna mendapatkan Disadvantage.
+Pengguna mendapatkan Advantage terhadap target.
+Jika pengguna menyerang target, efek Pity pada target tersebut langsung hilang.
+Temuan Baru: Interaksi dengan Target Lain
+Perlu ditentukan apakah efek Air Mata Buatan memengaruhi:
+Opsi 1: Semua yang Melihat
+Semua karakter yang melihat pengguna terkena efek.
+Jika pengguna menyerang salah satu target, efek Pity hilang terhadap semua target yang melihat.
+Opsi 2: Per-Target
+Hanya target yang dipilih yang terkena efek.
+Lawan lain yang Line of Sight-nya mengarah kepada pengguna dan melihat Air Mata Buatan mendapatkan Advantage pada Saving Throw terhadap Air Mata Buatan yang digunakan kepada mereka berikutnya.
+
+Kendo
+Club Move: Tebasan Sinai
+Catatan:
+Efek awal: serangan diarahkan untuk mengenai kepala.
+Masukkan:
+Pertimbangkan mengubah efek menjadi:
+Target melakukan Physique Save.
+DC = 8 + Proficiency Bonus + Jumlah Level.
+Jika gagal, target terkena Dazed selama X turn.
+Attacker mendapatkan Advantage terhadap target yang terkena Dazed.
+Pendekatan untuk Menentukan Serangan ke Kepala
+Opsi 1: AC Kepala
+Head AC = Base AC + X (misalnya +5).
+Roll diatas AC kepala → mengenai kepala.
+Roll di bawah AC kepala → tetap mengenai badan.
+Masalah: secara mekanis, kepala justru menjadi lebih mudah terkena dibandingkan bagian tubuh lainnya, tidak akurat.
+Opsi 2: Critical Hit
+Target terkena Dazed apabila serangan menghasilkan Critical Hit.
+Untuk subclass tertentu, Critical Hit dapat terjadi pada Natural 19 atau 20, seperti fitur Champion Fighter.
+Club Move: Kendo Parry & Kiai
+Pertanyaan:
+Jumlah penggunaan Club Move = Physique Modifier?
+
+KIR
+Club Move: Asap Reaksi Kimia
+Masukkan:
+Ubah konsep menjadi Chemical Vial (Draft).
+Pada awalnya tersedia 2 jenis larutan kimia:
+“Poof!” (10 ft smoke).
+“Boom!” (1d6 Force damage)
+Player dapat menyiapkan sejumlah vial berdasarkan total slot yang dimiliki.
+Contoh: 3 vial → 2 Poof + 1 Boom, 3 Boom, atau kombinasi lainnya.
+Player menentukan sendiri komposisi vial yang dibawa sebelum digunakan.
+Scaling:
+Seiring naik level:
+Jumlah vial bertambah.
+Jenis larutan kimia yang dapat digunakan bertambah.
+Contoh:
+Molotov
+Larutan Korosif
+“Kablam!”, ledakan yang lebih besar daripada Boom.
+Karena Kablam! menghasilkan ledakan yang lebih besar, ukuran vial-nya juga lebih besar.
+Kablam! membutuhkan 2 vial slot.
+Temuan Baru
+Chemical tertentu dapat dibuat sebagai akses khusus untuk subclass KIR yang berbeda.
+
+Literatur
+Club Move: Kutipan Menghancurkan
+Pertanyaan:
+Apakah menggunakan To Hit? Jika iya, modifier apa yang ditambahkan?
+Atau menggunakan Saving Throw? Jika iya, perlu ditentukan DC-nya.
+Alternatif: dibuat seperti Cutting Words milik Bard, yaitu auto-hit.
+Jika menggunakan auto-hit, Composure Damage Die perlu diperkecil agar tetap balance.
+
+Martial Class
+Club Move: Bantingan Matras & Kunci Sendi
+Pertanyaan:
+Apakah menggunakan Saving Throw?
+Jika iya, jenis Save dan DC perlu ditentukan.
+
+Painting
+Club Move: Cipratan Cat Distraksi
+Masukkan:
+Ubah menjadi To Hit.
+Damage: 1d4 + Jumlah Level.
+Jika serangan mengenai target, target langsung melakukan Saving Throw.
+DC = 8 + Proficiency Bonus + Jumlah Level.
+Jika gagal:
+Target terkena Blinded.
+Target dapat menggunakan Action untuk melakukan Saving Throw kembali dan menghilangkan efek.
+Efek juga hilang secara otomatis setelah Proficiency Bonus turn.
+Pada level 1, belum ada efek lanjutan.
+Scaling: Cat Berkualitas
+Unlock level tinggi:
+Turn 1. Cat Basah
+DC untuk menghilangkan efek lebih tinggi.
+Lebih sulit dibersihkan.
+Turn 2 Mulai Mengering
+Tambahkan X Poison Damage.
+Kembali menggunakan base DC.
+Turn 3. Mengering
+Tambahkan more X Poison Damage.
+DC dikurangi.
+Turn berikutnya
+Mempertahankan efek seperti Turn 3.
+DC tidak semakin berkurang.
+
+Sispala
+Club Move: Insting Survival
+Masukkan:
+Ubah menjadi:
+Opsi 1: Karakter tidak pernah tersesat.
+Opsi 2: Mendapatkan Advantage pada check untuk mencari jalan/navigasi.
+Opsi 3: Keduanya.
+Club Move: Panjat Penghalang
+Masukkan:
+Jangan dibatasi hanya 1 kali penggunaan agar dapat melakukan scaling.
+Contoh:
+Proficiency Bonus / Short Rest.
+Semakin tinggi level, semakin sering dapat digunakan.
+
+Penyiaran
+Club Move: Pengumuman Speaker Sekolah
+Masukkan:
+Ubah menjadi (Nama Baru).
+Pengguna dapat berbicara langsung kepada target melalui pengumuman.
+Efek:
+Pesan positif → + Composure.
+Pesan negatif → - Composure.
+Damage/Effect Die: d6.
+Amplify:
+Jika berbicara melalui speaker sekolah:
+Die meningkat menjadi d8/d10, atau
+Menggunakan 2d6.
+Club Move: Bocoran Intel Eksklusif
+Masukkan:
+Kemungkinan terlalu DM-dependent.
+Perlu ditentukan requirement untuk mendapatkan informasi.
+Alternatif:
+Ekskul Penyiaran adalah ekskul yang mengelola Damstagram sekolah.
+Player dapat melakukan riset melalui Handphone selama X waktu untuk mendapatkan informasi mengenai target.
+
+Pramuka
+Club Move: Kuncian Tali Pramuka
+Masukkan:
+Buat resource-dependent.
+Anak Pramuka memulai dengan 2 tali.
+Tali dapat putus.
+Setiap naik level, kualitas tali meningkat.
+Gunakan Physique Save DC.
+Untuk scaling, tambahkan Jumlah Level ke DC.
+Tali memiliki HP untuk menentukan apakah tali dapat dipotong.
+Contoh: HP awal = 2.
+Setiap level naik → HP bertambah 2.
+Scaling
+Semakin tinggi level, semakin banyak tali yang dapat dibawa.
+Club Move: Aba-aba Menggelegar
+Masukkan:
+Karena Saving Throw tidak dapat diprediksi oleh player, Action Cost dapat dibuat menjadi Reaction.
+Jumlah penggunaan = Proficiency Bonus / Long Rest.
+
+Sports
+Club Move: Lemparan Bola Akurat
+Masukkan:
+Sedikit resource-dependent.
+Mulai dengan 2 bola.
+Jarak lempar: 10/60 ft
+Di bawah 10 ft → Disadvantage.
+Di atas 60 ft → Disadvantage.
+Tidak dapat menggunakan fitur “jemput bola” pada kedua kondisi tersebut.
+Bola memantul, jika bola mengenai musuh:
+Player dapat menggunakan Reaction untuk mendapatkan tambahan Movement.
+Movement tersebut digunakan untuk mengejar/mengambil bola yang memantul dari musuh.
+Arah pantulan ditentukan oleh DM.
+
+OSIS
+Konsep Class
+Class OSIS lebih cocok jika dijadikan versi “Paladin” dalam sistem.
+Club Move 1: Perintah Kedisiplinan
+Disciplinary Order (Combat)
+Bonus Action: Setelah berhasil mendaratkan serangan fisik kepada musuh, pengguna memberikan teguran berdasarkan wewenangnya sebagai anggota OSIS.
+Target melakukan Mind Save.
+DC = 8 + Proficiency Bonus + LOK Modifier.
+Jika gagal, target menerima 1dX tambahan Composure Damage.
+Penggunaan: Proficiency Bonus / Long Rest.
+Club Move 2: Birokrasi & Wewenang
+Executive Privilege (Utility)
+Pengguna dapat meminta izin khusus tanpa melakukan check, seperti:
+Surat jalan.
+Akses ke ruangan ber-AC atau ruangan terkunci.
+Barang darurat dari anggaran OSIS.
+Penggunaan: 1× / School Day.
+Club Move 3: Koneksi Pihak Sekolah
+Faculty Protection (Reaction)
+Reaction: Ketika pengguna atau 1 sekutu dalam jarak 30 ft menerima status emosional negatif, seperti Fluster atau Shaken, pengguna dapat membatalkan efek tersebut.
+Target kemudian memulihkan:
+1d6 + Intelligence Modifier Composure.
+Penggunaan: Proficiency Bonus / Long Rest.
+
+
+Archetype Rework 
+
+Perhitungan & Aturan Umum Archetype
+Bonus Atribut: Setiap Archetype memberikan total +3 Stat Points saat pembuatan karakter.
+Bonus Pasif: Mengubah atau memberikan bonus Roll, Damage, atau Passive DC.
+Social Focused: Keunggulan khusus interaksi sosial, reputasi, dan dinamika antar murid.
+Unique Trait: Kemampuan mekanik eksklusif Archetype yang tidak bisa diambil melalui Feat.
+
+
+1. Class Clown (Pelawak Kelas)
+Tukang rusuh positif, pemecah kecanggungan, dan pencair suasana.
+
+Stat Bonus: +1 LOOKS, +2 TALENT. 
+Bonus Roll & Damage
+Funny Bone: Menambahkan +1d4 Damage Composure pada semua Club Move atau aksi verbal yang berhasil mengejek/mempermalukan lawan.
+
+
+Social Focused (Icebreaker): Karakter otomatis disukai oleh murid-murid berstatus "Biasa/Kalem". Memiliki Advantage pada semua Check untuk mencairkan suasana kaku, pertengkaran, atau kecanggungan antar kelompok.
+
+
+Unique Trait:
+Tension Breaker: 1 Action (1x / Short Rest). Memulihkan 1d6 Composure ke seluruh sekutu dalam radius 30 ft.
+Class Buffoon: Advantage pada Check untuk berpura-pura konyol, tidak sengaja, atau tidak tahu apa-apa demi menghindari hukuman ringan/tegoran guru.
+Heckler Resistance: Kebal terhadap status Fluster yang disebabkan oleh ejekan, celaan, atau sorakan penonton/murid lain.
+
+
+2. Delinquent (Berandalan / Yanki)
+Seragam dasi longgar, tatapan tajam, dan penyelesai masalah jalanan.
+
+Stat Bonus: +1 LOOKS, +2 PHYSIQUE
+Bonus Roll & Damage:
+Heavy Stance: Menambahkan +2 Damage Fisik/Unarmed saat menyerang target yang memiliki ukuran lebih besar atau level lebih tinggi.
+
+Social Focused (Street Respect): Disegani oleh murid berandalan dan anak jalanan. Otomatis lolos tanpa roll saat melakukan Intimidation/Aura Check terhadap murid kelas di bawahmu.
+
+Unique Trait:
+Street Crew: 1x / Long Rest. Memanggil 1-2 NPC geng jalanan untuk membantu situasi konflik non-akademik, menjadi distraction, atau mengumpulkan informasi rahasia di luar sekolah.
+Street Smart Navigation: Tahu semua celah rahasia di area sekolah (jalan pintas bolos, area luar jangkauan CCTV, atau lubang pagar).
+Scruffy Durability: Mendapatkan tambahan +2 Temporary HP setiap kali memasuki combat atau pertikaian fisik.
+
+
+3. Emo / Serius
+Duduk di sudut jendela, headphone terpasang, dan sulit ditebak.
+
+Stat Bonus: +2 MIND, +1 INTELLIGENT
+Bonus Roll & Damage:
+
+
+Cold Mind: Menambahkan +2 pada semua Mind & Emotional Saving Throws. Memiliki Resistance terhadap Composure Damage dari ejekan atau provokasi langsung.
+
+Social Focused (Unreadable Vibe): Orang lain tidak bisa membaca emosi atau niat aslimu (Passive Insight/Vibe Check lawan mengalami penalti -5 terhadapmu).
+
+Unique Trait:
+Eerie Silence: 1 Action, Memaksa 1 target melakukan Mind Save (DC=8+PB+MNDMod). Jika gagal, target kehilangan 1d6 Composure dan menderita status Shaken karena tatapan dinginmu.
+Corner Dweller: Saat berada sendirian di area sepi atau sudut ruangan, mendapat bonus +2 Passive Perception.
+Headphone Sanctuary: Selama menggunakan headphone/earphone, kebal terhadap efek gangguan suara sekitar (Noise/Distraction) dan mendapat Advantage pada Mind Saving Throw melawan provokasi auditori.
+
+4. Jock / Sporty
+Bugar, berenergi tinggi, dan selalu bersemangat.
+
+Stat Bonus: +1 TALENT, +2 PHYSIQUE
+Bonus Roll & Damage:
+
+
+Athletic Burst: Menambahkan +10 ft Movement Speed dan memberikan +2 bonus pada Roll Attack Fisik di ronde pertama pertarungan.
+
+Social Focused (School Star): Mudah mendapatkan simpati dari klub olahraga dan guru Penjaskes. Semua Looks Check yang dilakukan sesaat setelah melakukan aksi fisik mendapat Advantage.
+
+Unique Trait:
+Adrenaline Rush: Bonus Action (1x per Short Rest). Ketika Physical HP berada di bawah 50%, kamu bisa langsung memulihkan 1d8 Physical HP secara instan.
+Second Wind Stamina: Mengurangi durasi status Fatigue atau Exhaustion akibat aktivitas fisik berat sebesar setengahnya.
+Locker Room Locker: Memiliki akses mudah ke fasilitas olahraga sekolah (ruang ganti, alat fitness, kantong es, gudang bola) tanpa memerlukan izin khusus.
+
+
+5. Nerd (Murid Ambis / Kutu Buku)
+Kacamata tebal, catatan rapi, dan gudang informasi sekolah.
+
+Stat Bonus: +1 MIND, +2 INTELLIGENT
+Bonus Roll & Damage:
+
+
+Analytical Strike: Ketika menyerang target yang sudah dianalisis kelemahannya, kamu mendapatkan +1d4 Bonus Damage (Fisik atau Composure).
+
+Social Focused (Academic Leverage): Guru dan staf sekolah memberikan kepercayaan penuh padamu. Kamu bisa memberi "bantuan PR/tugas" ke murid lain untuk mendapatkan imbalan atau jaminan pertolongan (Social Favor).
+
+
+Unique Trait :
+Quick Analysis: Bonus Action, Menganalisis kelemahan target. Serangan atau aksi berikutnya terhadap target tersebut mendapat Advantage dan mengabaikan 2 poin Physical/Social AC target.
+Speed Reader: Mampu membaca dan memahami dokumen, lembar tugas, atau catatan akademis 2x lebih cepat dibanding murid biasa.
+Correction Instinct: Reaction (1x per Short Rest): Saat NPC atau sekutu melakukan kesalahan fakta/informasi di depan umum, kamu bisa mengoreksinya secara spontan untuk memberikan penalti -2 pada Social Check mereka berikutnya.
+
+
+6. Normies (Murid Biasa / Kalem)
+Tidak banyak tingkah, pengamat netral, dan jarang terseret masalah.
+
+Stat Bonus: +1 ke semua stat.
+Bonus Roll & Damage:
+
+Consistent Average: (Proficiency Bonus + Level / Long Rest). Reaction: Kamu bisa mengubah hasil d20 pada Check biasa (non-combat) yang mendapatkan nilai d20 di bawah 8 menjadi nilai pasti 9 + Stat Modifier sebelum mengetahui hasil akhir.
+
+Social Focused (Out of Sight): Bebas dari radar kecemburuan sosial. Guru BP, OSIS, maupun geng berandalan tidak pernah mencurigaimu sebagai dalang kerusuhan (Bystander Immunity).
+
+Unique Trait :
+Pure Luck: 1x per Long Rest, Ketika kamu atau sekutu dalam radius 10 ft mengalami kegagalan fatal (Critical Failure) atau menerima dampaknya, kamu bisa membatalkan (revert) kejadian tersebut karena "kebetulan yang beruntung".
+Unremarkable Face: Guru BP atau petugas keamanan sekolah membutuhkan waktu 2x lebih lama untuk mengenali atau mengidentifikasimu dalam foto/rekaman CCTV blur.
+Comfort Zone: Mengulur waktu istirahat selama 5 menit saat Short Rest memberikan pemulihan tambahan sebesar +2 Composure.
+
+7. Popular Kids (Idola Sekolah / Trendsetter)
+Senyum menawan, selalu jadi pusat perhatian, dan penentu tren.
+
+Stat Bonus: +1 MIND, +2 LOOKS
+Bonus Roll & Damage:
+
+Social Pressure: Menambahkan +2 pada DC Saving Throw dari semua Club Move yang berbasis Looks.
+
+
+Social Focused (Trendsetter): Advantage Skill yang untuk mengubah opini publik atau rumor tentang seorang murid hanya dalam waktu 1 hari sekolah melalui kata-kata atau postingan media sosial. 
+
+Unique Trait:
+VIP Name-Drop: Reaction (PB x per Long Rest), Ketika kamu atau sekutumu akan menerima sanksi sekolah, kekerasan, atau penurunan reputasi, kamu bisa menyebut nama figur berpengaruh (alumni/kepala sekolah/donatur) untuk membatalkan aksi negatif tersebut secara instan.
+Dress Code Immunity: Pelanggaran kecil atribut seragam (seperti perhiasan, warna sepatu, atau tatanan rambut) selalu dimaklumi oleh OSIS atau guru selama berada di lingkungan sekolah.
+Photogenic Advantage: Selalu mendapatkan hasil pose sempurna dalam foto atau rekaman video; kebal terhadap foto buruk (unflattering pics) yang coba digunakan murid lain untuk merusak reputasimu.
+
+
+8. Weeb (Pecinta Pop Culture / Chuunibyou)
+Imajinasi liar, penuh semangat, dan memiliki dunia sendiri.
+
+Stat Bonus: +2 LUCK, +1 TALENT
+Bonus Roll & Damage:
+Dramatic Flare: Jika kamu memperagakan pose atau mengucapkan nama jurus sebelum melakukan roll, tambahkan +2 pada hasil Roll/Check tersebut.
+
+Social Focused (Sub-Culture Brotherhood): Otomatis bersahabat dengan sesama anggota klub hobi, komik, game, atau teknologi. Memiliki Advantage saat mencari barang-barang langka/kolektor di sekolah.
+
+Unique Trait :
+Secret Chuunibyou Technique: 1 Action, Melakukan serangan emosional dramatis yang memberikan 1d8 Composure Damage. Jika kamu berhasil memperagakan nama jurus unik secara spontan di meja permainan, damage meningkat menjadi 1d10 + LUCK Mod.
+Gacha Luck: 1x per Hari Sekolah: Saat membeli barang acak (seperti jajanan bermerek, mesin gacha kantin, atau kotak misteri), kamu selalu mendapatkan item varian langka/terbaik.
+Obscure Lore Master: Advantage pada Intelligence Check untuk mengingat detail spesifik mengenai budaya pop, sejarah fiksi, bahasa rahasia, atau rumor aneh di internet.
+
+
+
