@@ -29,3 +29,18 @@ export function renderSheetSkeleton(): string {
     </div>
   `;
 }
+
+export function renderBuilderSkeleton(): string {
+  return `
+    <div class="builder-container" style="max-width:1120px;margin:1.5rem auto;padding:0 1rem;">
+      <div class="skeleton-shimmer" style="height:32px;width:240px;border-radius:6px;margin-bottom:1rem;"></div>
+      <div class="skeleton-shimmer" style="height:80px;border-radius:10px;margin-bottom:1.5rem;"></div>
+      <div class="skeleton-shimmer" style="height:48px;border-radius:8px;margin-bottom:1.5rem;"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:1.25rem;">
+        <div class="skeleton-shimmer" style="height:220px;border-radius:10px;"></div>
+        <div class="skeleton-shimmer" style="height:220px;border-radius:10px;"></div>
+        <div class="skeleton-shimmer" style="height:220px;border-radius:10px;"></div>
+      </div>
+    </div>
+  `;
+}

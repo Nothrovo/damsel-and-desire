@@ -1,12 +1,14 @@
 import { router } from "./router/router";
 import { authStore } from "./store/authStore";
-import { renderNavbar, attachNavbarEvents } from "./components/Navbar";
+import { renderNavbar, attachNavbarEvents, updateNavbarActive } from "./components/Navbar";
 import { diceRollerModal } from "./components/DiceRollerModal";
 import { savingsModal } from "./components/SavingsModal";
 import { baitoModal } from "./components/BaitoModal";
 import { backstoryModal } from "./components/BackstoryModal";
 import { itemDetailModal } from "./components/ItemDetailModal";
 import { addItemModal } from "./components/AddItemModal";
+import { slideOverDrawer } from "./components/SlideOverDrawer";
+import { quickVitalsPopover } from "./components/QuickVitalsPopover";
 
 // Views
 import { renderLandingView } from "./views/LandingView";
@@ -57,6 +59,8 @@ function mountGlobalShell() {
       ${dmAuthModal.render()}
       ${dmRevealHistoryModal.render()}
       ${codexCharacterEditorModal.render()}
+      ${slideOverDrawer.render()}
+      ${quickVitalsPopover.render()}
     `;
     diceRollerModal.attachEvents();
     savingsModal.attachEvents();
@@ -67,6 +71,8 @@ function mountGlobalShell() {
     dmAuthModal.attachEvents();
     dmRevealHistoryModal.attachEvents();
     codexCharacterEditorModal.attachEvents();
+    slideOverDrawer.attachEvents();
+    quickVitalsPopover.attachEvents();
   }
 }
 
@@ -99,6 +105,11 @@ function initApp() {
     .register("/campaigns/:id", renderLandingView)
     .register("/settings", renderLandingView)
     .setNotFound(renderNotFoundView);
+
+  // Update navbar active state on route changes
+  router.onRouteChange((path) => {
+    updateNavbarActive(path);
+  });
 
   // Initialize Router
   router.init();

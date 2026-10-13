@@ -4,38 +4,60 @@ import {
   getCompendiumSocialClasses,
   getCompendiumBasicActions
 } from "../api/compendium";
+import { slideOverDrawer } from "../components/SlideOverDrawer";
 
 export async function renderCompendiumView(): Promise<void> {
   const appContainer = document.getElementById("appMain");
   if (!appContainer) return;
 
   appContainer.innerHTML = `
-    <section class="view-section active" style="max-width:1150px;margin:2rem auto;padding:0 1.5rem;">
-      <div style="margin-bottom:2rem;">
-        <h1 style="font-family:var(--font-heading);margin-bottom:0.35rem;">📚 Compendium Ensiklopedia TRPG</h1>
-        <p style="color:var(--text-muted);font-size:0.9rem;">
-          Panduan resmi sistem Damsel & Desire: 16 Klub Ekskul, 8 Archetype, 48 Club Moves, dan Aksi Sekolah.
+    <section class="view-section active compendium-view-wrapper" style="max-width:1300px;margin:2rem auto;padding:0 1.5rem 5rem 1.5rem;">
+      <!-- Hero Header -->
+      <div class="compendium-hero-header">
+        <div class="comp-badge-tag">
+          <span>📚 HOUSEN ACADEMY OFFICIAL CODEX</span>
+        </div>
+        <h1 class="comp-main-title">COMPENDIUM &amp; ENSIKLOPEDIA ATURAN</h1>
+        <p class="comp-main-subtitle">
+          Pusat referensi aturan, kelas klub ekstrakurikuler, arketipe kepribadian siswa, latar belakang sosial, dan katalog jurus SMA Housen.
         </p>
-        <input type="text" id="compendiumSearchInput" class="input-text" placeholder="Cari nama klub, move, atau aksi..." style="max-width:380px;margin-top:1rem;">
+
+        <!-- Search Bar -->
+        <div class="comp-search-bar-wrapper">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="comp-search-icon"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+          <input type="text" id="compendiumSearchInput" class="input-search-comp" placeholder="Cari nama klub, arketipe, jurus, atau aksi sekolah...">
+        </div>
       </div>
 
-      <div style="display:flex;gap:8px;border-bottom:1px solid var(--border-card);margin-bottom:1.5rem;overflow-x:auto;">
-        <button class="sheet-tab-btn active" data-comp-tab="ekskul">16 Ekskul (Classes)</button>
-        <button class="sheet-tab-btn" data-comp-tab="archetypes">8 Archetypes (Species)</button>
-        <button class="sheet-tab-btn" data-comp-tab="actions">Aksi Dasar Sekolah</button>
-        <button class="sheet-tab-btn" data-comp-tab="social">Latar Sosial</button>
+      <!-- Segmented Nav Tabs -->
+      <div class="comp-tabs-nav-bar">
+        <button class="comp-tab-pill active" data-comp-tab="ekskul" type="button">
+          <span>🥋 16 Klub Ekskul (Classes)</span>
+        </button>
+        <button class="comp-tab-pill" data-comp-tab="archetypes" type="button">
+          <span>🎭 8 Arketipe (Species)</span>
+        </button>
+        <button class="comp-tab-pill" data-comp-tab="actions" type="button">
+          <span>⚡ Aksi Dasar Sekolah</span>
+        </button>
+        <button class="comp-tab-pill" data-comp-tab="social" type="button">
+          <span>💎 Latar Belakang Sosial</span>
+        </button>
       </div>
 
+      <!-- Main Content Output -->
       <div id="compendiumContentPanel">
-        <div style="text-align:center;padding:2rem;color:var(--text-muted);">Memuat compendium...</div>
+        <div style="text-align:center;padding:3rem;color:var(--text-muted);">Memuat ensiklopedia...</div>
       </div>
     </section>
   `;
 
-  const ekskul = await getCompendiumEkskul();
-  const archetypes = await getCompendiumArchetypes();
-  const actions = await getCompendiumBasicActions();
-  const social = await getCompendiumSocialClasses();
+  const [ekskul, archetypes, actions, social] = await Promise.all([
+    getCompendiumEkskul(),
+    getCompendiumArchetypes(),
+    getCompendiumBasicActions(),
+    getCompendiumSocialClasses()
+  ]);
 
   let activeTab = "ekskul";
 
@@ -45,77 +67,214 @@ export async function renderCompendiumView(): Promise<void> {
     const query = ((document.getElementById("compendiumSearchInput") as HTMLInputElement)?.value || "").toLowerCase().trim();
 
     if (activeTab === "ekskul") {
-      const filtered = ekskul.filter(e => e.name.toLowerCase().includes(query) || (e.tagline || '').toLowerCase().includes(query));
-      panel.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:1.25rem;">
-          ${filtered.map(e => `
-            <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-md);padding:1.25rem;">
-              <h3 style="margin:0 0 4px 0;font-size:1.15rem;color:var(--text-main);">${e.name}</h3>
-              <div style="font-size:0.8rem;color:var(--amber-gold);margin-bottom:8px;">${e.tagline || ''}</div>
-              <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:8px;">Hit Die: <strong>${e.hit_die}</strong> • Atribut: <strong>${e.primary_stat}</strong></div>
-              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">${e.perk_description || ''}</p>
-              
-              <div style="border-top:1px solid var(--border-subtle);padding-top:10px;">
-                <strong style="font-size:0.8rem;color:var(--rose-light);">Club Moves:</strong>
-                <ul style="font-size:0.75rem;color:var(--text-dim);padding-left:1.2rem;margin:6px 0 0 0;line-height:1.6;">
-                  ${(e.club_moves || []).map(m => `
-                    <li><strong>${m.name}</strong> (${m.move_type}) - ${m.effect}</li>
-                  `).join("")}
-                </ul>
-              </div>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    } else if (activeTab === "archetypes") {
-      const filtered = archetypes.filter(a => a.name.toLowerCase().includes(query) || (a.tagline || '').toLowerCase().includes(query));
-      panel.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:1.25rem;">
-          ${filtered.map(a => `
-            <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-md);padding:1.25rem;">
-              <h3 style="margin:0 0 4px 0;font-size:1.15rem;">${a.name}</h3>
-              <div style="font-size:0.8rem;color:var(--amber-gold);margin-bottom:8px;">${a.tagline || ''}</div>
-              <div style="font-size:0.8rem;color:var(--rose-light);margin-bottom:8px;">
-                Bonus: ${Object.entries(a.stat_bonus).map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ")}
-              </div>
-              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:12px;">${a.perk_description || ''}</p>
+      const filtered = ekskul.filter(e => 
+        e.name.toLowerCase().includes(query) || 
+        (e.tagline || '').toLowerCase().includes(query) ||
+        (e.club_moves || []).some(m => m.name.toLowerCase().includes(query))
+      );
 
-              <div style="border-top:1px solid var(--border-subtle);padding-top:10px;">
-                <strong style="font-size:0.8rem;color:var(--rose-light);">Archetype Moves:</strong>
-                <ul style="font-size:0.75rem;color:var(--text-dim);padding-left:1.2rem;margin:6px 0 0 0;line-height:1.6;">
-                  ${(a.archetype_moves || []).map(m => `
-                    <li><strong>${m.name}</strong> (${m.cost}) - ${m.effect}</li>
+      if (filtered.length === 0) {
+        panel.innerHTML = `<div class="empty-state"><p class="empty-desc">Tidak ada klub ekskul yang cocok dengan "${query}".</p></div>`;
+        return;
+      }
+
+      panel.innerHTML = `
+        <div class="comp-cards-grid">
+          ${filtered.map(e => `
+            <div class="comp-item-card">
+              <div class="comp-item-header">
+                <div class="comp-title-group">
+                  <h3 class="comp-item-name">${e.name}</h3>
+                  <span class="comp-item-tagline">${e.tagline || 'Klub Resmi Housen Gakuen'}</span>
+                </div>
+                <div class="comp-item-badges">
+                  <span class="comp-badge badge-hitdie">Hit Die: ${e.hit_die}</span>
+                  <span class="comp-badge badge-stat">Atribut: ${e.primary_stat}</span>
+                </div>
+              </div>
+
+              <p class="comp-item-desc">${e.perk_description || ''}</p>
+
+              <div class="comp-moves-block">
+                <div class="comp-moves-header">
+                  <span class="comp-moves-title">JURUS &amp; CLUB MOVES:</span>
+                  <span class="comp-moves-count">${(e.club_moves || []).length} Moves</span>
+                </div>
+                <div class="comp-moves-list">
+                  ${(e.club_moves || []).map(m => `
+                    <div class="comp-mini-move-card" data-move-name="${m.name}" title="Klik untuk membaca detail mekanik jurus">
+                      <div class="mini-move-top">
+                        <strong class="mini-move-name">${m.name}</strong>
+                        <span class="mini-move-type">${m.move_type}</span>
+                      </div>
+                      <span class="mini-move-effect">${m.effect}</span>
+                    </div>
                   `).join("")}
-                </ul>
+                </div>
               </div>
             </div>
           `).join("")}
         </div>
       `;
-    } else if (activeTab === "actions") {
+
+      // Attach Drawer Inspector on Moves Click
+      panel.querySelectorAll(".comp-mini-move-card").forEach((card: any) => {
+        card.addEventListener("click", () => {
+          const moveName = card.dataset.moveName;
+          const foundMove = ekskul.flatMap(ek => ek.club_moves || []).find(m => m.name === moveName);
+          if (foundMove) {
+            slideOverDrawer.open({
+              title: foundMove.name,
+              category: "CLUB MOVE",
+              categoryType: "club",
+              badge: foundMove.move_type,
+              stats: [
+                { label: "Tipe Aksi", value: foundMove.move_type },
+                { label: "Batas Pakai", value: (foundMove as any).usage_limit || "Aktivasi Normal" },
+                { label: "Efek Mekanik", value: foundMove.effect }
+              ],
+              flavor: `Jurus dan teknik khas klub ekstrakurikuler Housen Academy.`,
+              mechanics: foundMove.description || foundMove.effect
+            });
+          }
+        });
+      });
+
+    } else if (activeTab === "archetypes") {
+      const filtered = archetypes.filter(a => 
+        a.name.toLowerCase().includes(query) || 
+        (a.tagline || '').toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        panel.innerHTML = `<div class="empty-state"><p class="empty-desc">Tidak ada arketipe yang cocok dengan "${query}".</p></div>`;
+        return;
+      }
+
       panel.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1.25rem;">
-          ${actions.map(act => `
-            <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-md);padding:1.25rem;">
-              <h4 style="margin:0 0 4px 0;font-size:1rem;color:var(--text-main);">${act.name}</h4>
-              <div style="font-size:0.75rem;color:var(--amber-gold);margin-bottom:6px;">Biaya: ${act.cost} • Check: ${act.check_type}</div>
-              <div style="font-size:0.8rem;color:var(--rose-light);margin-bottom:8px;">Efek: ${act.effect}</div>
-              <p style="font-size:0.75rem;color:var(--text-muted);margin:0;">${act.description}</p>
+        <div class="comp-cards-grid">
+          ${filtered.map(a => {
+            const bonuses = Object.entries(a.stat_bonus || {}).map(([k, v]) => `+${v} ${k.toUpperCase()}`).join(", ");
+            return `
+              <div class="comp-item-card">
+                <div class="comp-item-header">
+                  <div class="comp-title-group">
+                    <h3 class="comp-item-name">${a.name}</h3>
+                    <span class="comp-item-tagline">${a.tagline || ''}</span>
+                  </div>
+                  <div class="comp-item-badges">
+                    <span class="comp-badge badge-bonus">Bonus Stat: ${bonuses}</span>
+                  </div>
+                </div>
+
+                <p class="comp-item-desc">${a.perk_description || ''}</p>
+
+                <div class="comp-moves-block">
+                  <div class="comp-moves-header">
+                    <span class="comp-moves-title">ARCHETYPE MOVES:</span>
+                    <span class="comp-moves-count">${(a.archetype_moves || []).length} Moves</span>
+                  </div>
+                  <div class="comp-moves-list">
+                    ${(a.archetype_moves || []).map(m => `
+                      <div class="comp-mini-move-card" data-arch-move="${m.name}" title="Klik untuk melihat detail jurus">
+                        <div class="mini-move-top">
+                          <strong class="mini-move-name">${m.name}</strong>
+                          <span class="mini-move-type">${m.cost || 'Passive'}</span>
+                        </div>
+                        <span class="mini-move-effect">${m.effect}</span>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+
+      panel.querySelectorAll(".comp-mini-move-card").forEach((card: any) => {
+        card.addEventListener("click", () => {
+          const moveName = card.dataset.archMove;
+          const foundMove = archetypes.flatMap(ar => ar.archetype_moves || []).find(m => m.name === moveName);
+          if (foundMove) {
+            slideOverDrawer.open({
+              title: foundMove.name,
+              category: "ARCHETYPE MOVE",
+              categoryType: "feat",
+              badge: foundMove.cost || "Action",
+              stats: [
+                { label: "Biaya / Cost", value: foundMove.cost || "Free" },
+                { label: "Efek Mekanik", value: foundMove.effect }
+              ],
+              flavor: `Bakat alami dan kebiasaan kepribadian arketipe siswa.`,
+              mechanics: foundMove.description || foundMove.effect
+            });
+          }
+        });
+      });
+
+    } else if (activeTab === "actions") {
+      const filtered = actions.filter(act => 
+        act.name.toLowerCase().includes(query) || 
+        act.description.toLowerCase().includes(query)
+      );
+
+      panel.innerHTML = `
+        <div class="comp-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));">
+          ${filtered.map(act => `
+            <div class="comp-item-card action-card-item">
+              <div class="comp-item-header">
+                <div class="comp-title-group">
+                  <h3 class="comp-item-name" style="font-size:1.1rem;">${act.name}</h3>
+                  <span class="comp-item-tagline">Aksi Baku SMA • Biaya: ${act.cost}</span>
+                </div>
+                <div class="comp-item-badges">
+                  <span class="comp-badge badge-check">Check: ${act.check_type}</span>
+                </div>
+              </div>
+
+              <div class="action-effect-box">
+                <strong>Efek:</strong> ${act.effect}
+              </div>
+
+              <p class="comp-item-desc" style="margin-top:10px;">${act.description}</p>
             </div>
           `).join("")}
         </div>
       `;
     } else if (activeTab === "social") {
+      const filtered = social.filter(s => 
+        s.name.toLowerCase().includes(query) || 
+        (s.description || '').toLowerCase().includes(query)
+      );
+
       panel.innerHTML = `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:1.25rem;">
-          ${social.map(s => `
-            <div style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-md);padding:1.25rem;">
-              <h4 style="margin:0 0 4px 0;font-size:1rem;">${s.name}</h4>
-              <div style="font-size:0.8rem;color:var(--amber-gold);margin-bottom:4px;">Uang Jajan: ${s.daily_allowance}</div>
-              <div style="font-size:0.8rem;color:var(--green-health);margin-bottom:8px;">Tabungan Awal: ${s.initial_savings}</div>
-              <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;">${s.description || ''}</p>
-              <div style="font-size:0.75rem;color:var(--text-dim);">
-                Starter Items: ${s.starter_items.join(", ")}
+        <div class="comp-cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+          ${filtered.map(s => `
+            <div class="comp-item-card">
+              <div class="comp-item-header">
+                <div class="comp-title-group">
+                  <h3 class="comp-item-name" style="font-size:1.15rem;">${s.name}</h3>
+                  <span class="comp-item-tagline">Status Sosial &amp; Ekonomi</span>
+                </div>
+              </div>
+
+              <div class="social-fin-strip">
+                <div class="social-fin-box">
+                  <span class="fin-lbl">UANG SAKU HARIAN</span>
+                  <strong class="fin-val">${s.daily_allowance}</strong>
+                </div>
+                <div class="social-fin-box">
+                  <span class="fin-lbl">TABUNGAN AWAL</span>
+                  <strong class="fin-val text-green">${s.initial_savings}</strong>
+                </div>
+              </div>
+
+              <p class="comp-item-desc" style="margin:12px 0;">${s.description || ''}</p>
+
+              <div class="social-starter-items">
+                <strong>Barang Bawaan Awal:</strong>
+                <p style="margin:4px 0 0 0;font-size:0.85rem;color:var(--text-dim);">${(s.starter_items || []).join(", ")}</p>
               </div>
             </div>
           `).join("")}

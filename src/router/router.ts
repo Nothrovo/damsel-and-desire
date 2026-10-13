@@ -14,6 +14,12 @@ interface RouteConfig {
 class Router {
   private routes: RouteConfig[] = [];
   private notFoundHandler: RouteHandler = () => {};
+  private onRouteChangeCallbacks: Array<(path: string) => void> = [];
+
+  onRouteChange(cb: (path: string) => void) {
+    this.onRouteChangeCallbacks.push(cb);
+    return this;
+  }
 
   private getBasePath(): string {
     const path = window.location.pathname;
@@ -150,6 +156,9 @@ class Router {
         }
 
         try {
+          this.onRouteChangeCallbacks.forEach((cb) => {
+            try { cb(normalizedPath); } catch (e) { console.warn("Router listener error:", e); }
+          });
           await route.handler(params);
         } catch (err: any) {
           console.error("Router execution error:", err);

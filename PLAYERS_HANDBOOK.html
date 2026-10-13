@@ -263,6 +263,22 @@
   columns: 2;
   column-gap: 2.25rem;
   column-rule: 1px solid #e7ded0;
+  text-align: left;
+}
+
+.phb-chapter-content h2,
+.phb-chapter-content h3,
+.phb-chapter-content h4,
+.phb-chapter-content .phb-callout,
+.phb-chapter-content .phb-table-wrap,
+.phb-chapter-content .phb-stat-card {
+  break-inside: avoid;
+  break-after: avoid;
+}
+
+.phb-chapter-content p {
+  text-align: left;
+  hyphens: auto;
 }
 
 @media (max-width: 768px) {

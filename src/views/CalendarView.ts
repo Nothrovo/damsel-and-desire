@@ -176,45 +176,43 @@ function renderCalendarDOM() {
   const isDm = dmAuthStore.isAuthenticated();
 
   appContainer.innerHTML = `
-    <section class="view-section active school-calendar-view" style="max-width:1280px;margin:2rem auto;padding:0 1.5rem 5rem 1.5rem;">
+    <section class="view-section active school-calendar-view" style="max-width:1280px;margin:1.5rem auto;padding:0 1.5rem 5rem 1.5rem;">
       
       <!-- HERO & GLOBAL ACADEMIC PROGRESS HEADER -->
-      <div class="calendar-hero-card" style="background:linear-gradient(135deg, rgba(31,41,61,0.96), rgba(17,24,39,0.98));border:1px solid var(--border-card);border-radius:var(--radius-lg);padding:1.75rem;margin-bottom:1.5rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1.25rem;margin-bottom:1.25rem;">
+      <div class="calendar-hero-card" style="background:linear-gradient(135deg, rgba(31,41,61,0.96), rgba(17,24,39,0.98));border:1px solid var(--border-card);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
           <div>
-            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(225,29,72,0.12);border:1px solid var(--rose-primary);padding:4px 14px;border-radius:var(--radius-full);color:var(--rose-light);font-size:0.78rem;font-weight:700;margin-bottom:0.65rem;font-family:var(--font-heading);letter-spacing:0.04em;">
+            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(225,29,72,0.12);border:1px solid var(--rose-primary);padding:3px 12px;border-radius:var(--radius-full);color:var(--rose-light);font-size:0.75rem;font-weight:700;margin-bottom:0.4rem;font-family:var(--font-heading);letter-spacing:0.04em;">
               <span>🌸 HOUSEN ACADEMY ACADEMIC &amp; ROMANCE TIMELINE</span>
             </div>
-            <h1 style="font-family:var(--font-heading);font-size:2rem;color:var(--amber-gold);margin:0 0 0.4rem 0;">
+            <h1 style="font-family:var(--font-heading);font-size:1.65rem;color:var(--amber-gold);margin:0 0 0.25rem 0;line-height:1.2;">
               Kalender Sekolah Progresif (April – Maret)
             </h1>
-            <p style="color:var(--text-muted);max-width:740px;font-size:0.92rem;line-height:1.55;margin:0;">
-              Pantau perjalanan 1 tahun ajaran penuh SMA Jepang dari masa penerimaan siswa baru (Kelas 10) hingga naik ke Kelas 11. Tandai bulan yang sedang berjalan, centang event yang sudah lewat, dan catat momen memorable party.
+            <p style="color:var(--text-muted);max-width:740px;font-size:0.86rem;line-height:1.5;margin:0;">
+              Pantau perjalanan 1 tahun ajaran penuh SMA Jepang dari masa penerimaan siswa baru (Kelas 10) hingga naik ke Kelas 11.
             </p>
           </div>
 
           <!-- Top Right Controls: Year Toggle & Story Guide Toggle -->
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.6rem;">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <select id="calAcademicYearSelect" class="input-text" style="padding:6px 12px;font-size:0.82rem;border-radius:var(--radius-full);background:var(--bg-input);border:1px solid var(--amber-gold);color:var(--amber-gold);font-weight:700;cursor:pointer;">
-                <option value="1" ${calendarState.academicYear === 1 ? "selected" : ""}>🎒 Tahun 1: Kelas 10 (Kōkō Ichinensei)</option>
-                <option value="2" ${calendarState.academicYear === 2 ? "selected" : ""}>🎓 Tahun 2: Kelas 11 (Kōkō Ninensei)</option>
-              </select>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <select id="calAcademicYearSelect" class="input-text" style="padding:5px 12px;font-size:0.8rem;border-radius:var(--radius-full);background:var(--bg-input);border:1px solid var(--amber-gold);color:var(--amber-gold);font-weight:700;cursor:pointer;">
+              <option value="1" ${calendarState.academicYear === 1 ? "selected" : ""}>🎒 Tahun 1: Kelas 10 (Kōkō Ichinensei)</option>
+              <option value="2" ${calendarState.academicYear === 2 ? "selected" : ""}>🎓 Tahun 2: Kelas 11 (Kōkō Ninensei)</option>
+            </select>
 
-              <button id="calToggleStoryGuideBtn" class="btn btn-sm" style="border-radius:var(--radius-full);padding:6px 14px;font-size:0.8rem;cursor:pointer;border:1px solid ${showStoryGuides ? "var(--rose-primary)" : "var(--border-subtle)"};background:${showStoryGuides ? "rgba(225,29,72,0.15)" : "var(--bg-surface)"};color:${showStoryGuides ? "var(--rose-light)" : "var(--text-muted)"};">
-                🎭 Ide Cerita &amp; Konflik: ${showStoryGuides ? "Tampil" : "Sembunyi"}
+            <button id="calToggleStoryGuideBtn" class="btn btn-sm" style="border-radius:var(--radius-full);padding:5px 12px;font-size:0.8rem;cursor:pointer;border:1px solid ${showStoryGuides ? "var(--rose-primary)" : "var(--border-subtle)"};background:${showStoryGuides ? "rgba(225,29,72,0.15)" : "var(--bg-surface)"};color:${showStoryGuides ? "var(--rose-light)" : "var(--text-muted)"};">
+              🎭 Ide Cerita: ${showStoryGuides ? "Tampil" : "Sembunyi"}
+            </button>
+
+            ${!isDm ? `
+              <button id="calOpenDmBtn" class="btn btn-sm" style="border-radius:var(--radius-full);padding:5px 12px;font-size:0.8rem;cursor:pointer;border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-dim);">
+                👑 Login DM
               </button>
-
-              ${!isDm ? `
-                <button id="calOpenDmBtn" class="btn btn-sm" style="border-radius:var(--radius-full);padding:6px 14px;font-size:0.8rem;cursor:pointer;border:1px solid var(--border-subtle);background:var(--bg-surface);color:var(--text-dim);">
-                  👑 Login DM
-                </button>
-              ` : `
-                <span style="font-size:0.78rem;color:var(--amber-gold);background:rgba(245,158,11,0.12);border:1px solid var(--amber-gold);padding:5px 12px;border-radius:var(--radius-full);font-weight:700;">
-                  👑 Mode DM Aktif
-                </span>
-              `}
-            </div>
+            ` : `
+              <span style="font-size:0.75rem;color:var(--amber-gold);background:rgba(245,158,11,0.12);border:1px solid var(--amber-gold);padding:4px 10px;border-radius:var(--radius-full);font-weight:700;">
+                👑 Mode DM Aktif
+              </span>
+            `}
           </div>
         </div>
 

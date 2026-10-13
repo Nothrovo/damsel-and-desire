@@ -28,6 +28,7 @@ import {
 import { ensureGradeFeatGrants } from "../rules/migration";
 import { ALL_FEATS } from "../data/featCompendium";
 import { showToast } from "../components/Toast";
+import { renderBuilderSkeleton } from "../components/Skeleton";
 import { router } from "../router/router";
 import type {
   Character,
@@ -300,9 +301,7 @@ export async function renderBuilderWizardView(params?: Record<string, string>): 
 
   appContainer.innerHTML = `
     <section class="view-section active">
-      <div class="builder-container" style="max-width:1120px;margin:1.5rem auto;padding:0 1rem;">
-        <div style="text-align:center;color:var(--text-muted);padding:3rem;">Memuat data aturan &amp; karakter...</div>
-      </div>
+      ${renderBuilderSkeleton()}
     </section>
   `;
 

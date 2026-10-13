@@ -34,6 +34,9 @@ import { backstoryModal } from "../components/BackstoryModal";
 import { diceRollerModal } from "../components/DiceRollerModal";
 import { itemDetailModal } from "../components/ItemDetailModal";
 import { addItemModal } from "../components/AddItemModal";
+import { slideOverDrawer } from "../components/SlideOverDrawer";
+import { quickVitalsPopover } from "../components/QuickVitalsPopover";
+import { getItemDetails } from "../data/itemCompendium";
 import { levelUpWizardModal } from "../components/LevelUpWizardModal";
 import { subclassSelectModal } from "../components/SubclassSelectModal";
 import { editCharacterModal } from "../components/EditCharacterModal";
@@ -91,6 +94,7 @@ interface MoveItem {
 let activeTab: "actions" | "inventory" | "features" | "feats" | "roleplay" | "affection" = "actions";
 let activeMoveFilter: string = "all";
 let isDmUnlocked = false;
+let activeRenderedMoves: MoveItem[] = [];
 
 // Cached compendiums for the active sheet
 let compAbilities: AbilityCompendium[] = [];
@@ -254,9 +258,6 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
             <svg viewBox="0 0 20 20" fill="currentColor" class="btn-icon" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
             Builder Baru
           </a>
-          <span style="display:inline-flex;align-items:center;margin-left:8px;font-size:0.8rem;color:var(--text-muted);">
-            v${char.version}
-          </span>
           ${characterStore.hasConflict ? `
             <span style="background:rgba(225,29,72,0.2);color:var(--rose-light);padding:2px 8px;border-radius:4px;font-size:0.75rem;border:1px solid var(--rose-primary);margin-left:8px;">
               ⚠️ Konflik Versi Server
@@ -289,12 +290,9 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
         </div>
       ` : ''}
 
-      <!-- SHEET HEADER BANNER -->
+      <!-- SHEET HEADER BANNER (CLEAN & COMPACT) -->
       <div class="sheet-banner">
         <div class="banner-char-identity">
-          <div class="banner-avatar-frame">
-            <img id="sheetAvatarImg" src="${avatar}" alt="${escapeHtml(char.name)}">
-          </div>
           <div class="banner-name-block">
             <h1 id="sheetCharName" class="char-name">${escapeHtml(char.name)}</h1>
             <div class="char-meta-tags">
@@ -340,12 +338,13 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
           const mod = mods[key];
           const modFormatted = formatModifier(mod);
           const bonusHint = archBonus > 0 ? ` (Dasar ${baseScore} + ${archBonus} Archetype)` : "";
+          const displayLabel = key === "intelligent" ? "INTELLIGENCE" : key.toUpperCase();
           return `
-            <div class="ability-card" data-stat="${key}" data-mod="${mod}" title="Klik untuk melempar check ${key.toUpperCase()} d20${bonusHint}">
-              <span class="ability-card-label">${key.toUpperCase()}</span>
+            <div class="ability-card" data-stat="${key}" data-mod="${mod}" title="Klik untuk melempar check ${displayLabel} d20${bonusHint}">
+              <span class="ability-card-label">${displayLabel}</span>
               <div class="ability-card-mod" id="sheetMod${capitalize(key)}">${modFormatted}</div>
               <div class="ability-card-score" id="sheetScore${capitalize(key)}">${score}</div>
-              <div class="ability-card-sub" id="sheetSub${capitalize(key)}" style="font-size:0.65rem;color:var(--text-muted);margin-top:2px;line-height:1;">
+              <div class="ability-card-sub" id="sheetSub${capitalize(key)}" style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;line-height:1;">
                 ${archBonus > 0 ? `${baseScore} <span style="color:var(--rose-light);font-weight:700;">+${archBonus}</span>` : ""}
               </div>
             </div>
@@ -961,11 +960,13 @@ function renderMovesList(char: Character, filter: string): string {
     moves = moves.filter(m => m.category === filter);
   }
 
+  activeRenderedMoves = moves;
+
   if (moves.length === 0) {
     return `<p style="color:var(--text-muted);text-align:center;padding:1.5rem;">Tidak ada aksi dalam kategori ini.</p>`;
   }
 
-  return moves.map(m => {
+  return moves.map((m, idx) => {
     const categoryColor = m.category === "club_move" ? "#fda4af"
       : m.category === "subclass_move" ? "#f43f5e"
       : m.category === "archetype_move" ? "#c4b5fd"
@@ -973,7 +974,7 @@ function renderMovesList(char: Character, filter: string): string {
       : "#86efac";
 
     return `
-      <div class="move-card ${m.isLocked ? 'move-card-locked' : ''}" style="${m.isLocked ? 'opacity:0.65;border:1px dashed var(--border-card);background:rgba(255,255,255,0.02);' : ''}">
+      <div class="move-card ${m.isLocked ? 'move-card-locked' : 'move-card-interactive'}" data-move-idx="${idx}" style="${m.isLocked ? 'opacity:0.65;border:1px dashed var(--border-card);background:rgba(255,255,255,0.02);' : 'cursor:pointer;'}">
         <div class="move-card-header">
           <span class="move-name" style="${m.isLocked ? 'color:var(--text-muted);' : ''}">${escapeHtml(m.name)}</span>
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
@@ -1325,6 +1326,49 @@ function renderFeatsTabContent(char: Character, isDmUnlocked: boolean): string {
   return html;
 }
 
+function openMoveDrawer(m: MoveItem, char: Character) {
+  slideOverDrawer.open({
+    title: m.name,
+    category: m.category.replace(/_/g, " "),
+    categoryType: m.category === "basic_combat" ? "combat"
+      : m.category === "basic_social" ? "social"
+      : m.category === "club_move" ? "club"
+      : m.category === "subclass_move" ? "subclass"
+      : m.category === "archetype_move" ? "feat" : undefined,
+    badge: m.type,
+    subtitle: m.isLocked ? m.lockReason : undefined,
+    stats: [
+      { label: "Jarak / Range", value: m.range },
+      { label: "Check Dadu", value: m.check, accent: true },
+      { label: "Efek / Damage", value: m.damage }
+    ],
+    flavor: `Aksi atau jurus khusus siswa Housen Academy (${m.type}).`,
+    mechanics: m.desc,
+    actions: m.isLocked ? [] : [
+      {
+        label: `🎲 Lempar Dadu Check: ${m.check}`,
+        variant: "primary",
+        icon: "🎲",
+        onClick: () => {
+          diceRollerModal.show("d20", 0, `Move: ${m.name} (${m.check})`);
+        }
+      }
+    ]
+  });
+}
+
+function attachMoveCardEvents(container: HTMLElement, char: Character) {
+  container.querySelectorAll(".move-card-interactive").forEach((card: any) => {
+    card.addEventListener("click", () => {
+      const idx = Number(card.dataset.moveIdx);
+      const move = activeRenderedMoves[idx];
+      if (move) {
+        openMoveDrawer(move, char);
+      }
+    });
+  });
+}
+
 function attachSheetEvents(container: HTMLElement, char: Character) {
   // 1. Toolbar Actions
   document.getElementById("btnExportCharJson")?.addEventListener("click", () => exportCharacterJson(char));
@@ -1526,31 +1570,23 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     }
   });
 
-  // 7. Physical HP Button Alters (-1, Dmg, Heal)
+  // 7. Physical HP Button Alters (Quick Popover & -1 Shortcut)
   document.getElementById("btnPhysMinusOne")?.addEventListener("click", () => alterVitalDirect(char, "phys", -1));
-  document.getElementById("btnPhysDmg")?.addEventListener("click", () => {
-    const val = prompt("Masukkan jumlah Physical Damage yang diterima:", "1");
-    const num = parseInt(val || "0");
-    if (!isNaN(num) && num > 0) alterVitalDirect(char, "phys", -num);
-  });
-  document.getElementById("btnPhysHeal")?.addEventListener("click", () => {
-    const val = prompt("Masukkan jumlah Physical Heal (pemulihan):", "1");
-    const num = parseInt(val || "0");
-    if (!isNaN(num) && num > 0) alterVitalDirect(char, "phys", num);
-  });
+  const openPhysPopover = () => {
+    quickVitalsPopover.open("physical_hp", char.id, char.vitals.physicalHpCurrent, char.vitals.physicalHpMax);
+  };
+  document.getElementById("btnPhysDmg")?.addEventListener("click", openPhysPopover);
+  document.getElementById("btnPhysHeal")?.addEventListener("click", openPhysPopover);
+  document.getElementById("sheetPhysHpCurrent")?.parentElement?.addEventListener("click", openPhysPopover);
 
-  // 8. Composure Button Alters (-1, Salting, Tenang)
+  // 8. Composure Button Alters (Quick Popover & -1 Shortcut)
   document.getElementById("btnCompMinusOne")?.addEventListener("click", () => alterVitalDirect(char, "composure", -1));
-  document.getElementById("btnCompSalting")?.addEventListener("click", () => {
-    const val = prompt("Masukkan jumlah Salting / Syok Mental (Composure Damage):", "1");
-    const num = parseInt(val || "0");
-    if (!isNaN(num) && num > 0) alterVitalDirect(char, "composure", -num);
-  });
-  document.getElementById("btnCompTenang")?.addEventListener("click", () => {
-    const val = prompt("Masukkan jumlah Ketenangan / Relaksasi (Composure Heal):", "1");
-    const num = parseInt(val || "0");
-    if (!isNaN(num) && num > 0) alterVitalDirect(char, "composure", num);
-  });
+  const openCompPopover = () => {
+    quickVitalsPopover.open("composure", char.id, char.vitals.composureCurrent, char.vitals.composureMax);
+  };
+  document.getElementById("btnCompSalting")?.addEventListener("click", openCompPopover);
+  document.getElementById("btnCompTenang")?.addEventListener("click", openCompPopover);
+  document.getElementById("sheetComposureCurrent")?.parentElement?.addEventListener("click", openCompPopover);
 
   // 9. Death & Meltdown Saves Checkboxes
   container.querySelectorAll(".save-chk").forEach((chk: any) => {
@@ -1576,7 +1612,7 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
     });
   });
 
-  // 11. Move Filter Pills
+  // 11. Move Filter Pills & Interactive Drawer Events
   container.querySelectorAll(".moves-filter-bar .filter-pill").forEach((pill: any) => {
     pill.addEventListener("click", (e: any) => {
       const filter = e.currentTarget.dataset.filter;
@@ -1584,9 +1620,14 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
       container.querySelectorAll(".moves-filter-bar .filter-pill").forEach(p => p.classList.remove("active"));
       e.currentTarget.classList.add("active");
       const movesList = document.getElementById("sheetMovesList");
-      if (movesList) movesList.innerHTML = renderMovesList(char, filter);
+      if (movesList) {
+        movesList.innerHTML = renderMovesList(char, filter);
+        attachMoveCardEvents(container, char);
+      }
     });
   });
+
+  attachMoveCardEvents(container, char);
 
   // 12. Inventory Financial Modals
   document.getElementById("btnManageSavings")?.addEventListener("click", () => savingsModal.show());
@@ -1821,7 +1862,34 @@ function attachInventoryDetailEvents(container: HTMLElement) {
       if ((e.target as HTMLElement).closest(".btn-del-inv")) return;
       const itemName = el.dataset.itemName;
       if (itemName) {
-        itemDetailModal.show(itemName);
+        const itemDef = getItemDetails(itemName);
+        const char = characterStore.currentCharacter;
+        if (itemDef) {
+          slideOverDrawer.open({
+            title: itemDef.name,
+            category: `Barang (${itemDef.category || "Umum"})`,
+            categoryType: "item",
+            badge: itemDef.rarity || "Common",
+            stats: [
+              { label: "Asal", value: itemDef.origin || "Sekolah" },
+              { label: "Tipe Aksi", value: itemDef.actionType || "Utility" }
+            ],
+            flavor: itemDef.flavorText,
+            mechanics: itemDef.mechanic,
+            actions: itemDef.rollCheck && char ? [
+              {
+                label: `🎲 Lempar Check: ${itemDef.rollCheck.label || itemDef.rollCheck.stat}`,
+                variant: "primary",
+                icon: "🎲",
+                onClick: () => {
+                  diceRollerModal.show("d20", 0, `Item: ${itemDef.name} (${itemDef.rollCheck?.stat || "Check"})`);
+                }
+              }
+            ] : []
+          });
+        } else {
+          itemDetailModal.show(itemName);
+        }
       }
     });
   });
