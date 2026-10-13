@@ -5923,3 +5923,354 @@ h1, h2, h3, h4, h5 {
   transform: translateY(-3px);
   border-color: var(--amber-gold) !important;
 }
+
+/* ==========================================================================
+   VIEW: COMPENDIUM & OFFICIAL RULEBOOK ENCYCLOPEDIA (/compendium)
+   ========================================================================== */
+.compendium-view-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.compendium-hero-header {
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.comp-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(225, 29, 72, 0.12);
+  color: var(--rose-light);
+  border: 1px solid rgba(225, 29, 72, 0.35);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.85rem;
+  border-radius: var(--radius-full);
+  margin-bottom: 0.85rem;
+}
+
+.comp-main-title {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.15;
+}
+
+.comp-main-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  max-width: 760px;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Search Bar */
+.comp-search-bar-wrapper {
+  position: relative;
+  max-width: 480px;
+}
+
+.comp-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px;
+  max-width: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input-search-comp {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.input-search-comp:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 10px rgba(225, 29, 72, 0.25);
+}
+
+/* Tabs Navigation Bar */
+.comp-tabs-nav-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.comp-tab-pill {
+  background: var(--bg-surface);
+  color: var(--text-dim);
+  border: 1px solid var(--border-card);
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.comp-tab-pill:hover {
+  background: var(--bg-card);
+  color: #fff;
+  border-color: var(--text-muted);
+  transform: translateY(-1px);
+}
+
+.comp-tab-pill.active {
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.2), rgba(190, 18, 60, 0.35));
+  color: #fff;
+  border-color: var(--rose-primary);
+  box-shadow: 0 0 14px var(--rose-glow);
+}
+
+/* Compendium Grid & Item Cards */
+.comp-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.comp-item-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.comp-item-card:hover {
+  border-color: rgba(225, 29, 72, 0.4);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(225, 29, 72, 0.15);
+  transform: translateY(-2px);
+}
+
+.comp-item-header {
+  margin-bottom: 0.85rem;
+}
+
+.comp-title-group {
+  margin-bottom: 0.65rem;
+}
+
+.comp-item-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.comp-item-tagline {
+  font-size: 0.82rem;
+  color: var(--amber-gold);
+  font-style: italic;
+  display: block;
+}
+
+.comp-item-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.comp-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  display: inline-block;
+}
+
+.badge-hitdie {
+  background: rgba(225, 29, 72, 0.12);
+  color: var(--rose-light);
+  border: 1px solid rgba(225, 29, 72, 0.3);
+}
+
+.badge-stat {
+  background: rgba(59, 130, 246, 0.12);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-bonus {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--amber-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-check {
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.comp-item-desc {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin: 0 0 1.25rem 0;
+}
+
+/* Moves Block inside Compendium Card */
+.comp-moves-block {
+  margin-top: auto;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1rem;
+}
+
+.comp-moves-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.comp-moves-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--rose-light);
+  letter-spacing: 0.05em;
+}
+
+.comp-moves-count {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.comp-moves-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comp-mini-move-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.comp-mini-move-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--rose-primary);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.18);
+}
+
+.mini-move-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.mini-move-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mini-move-type {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--amber-gold);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.mini-move-effect {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Action Cards */
+.action-card-item .action-effect-box {
+  background: var(--bg-surface);
+  border-left: 3px solid var(--rose-primary);
+  padding: 0.65rem 0.85rem;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.85rem;
+  color: var(--rose-light);
+  line-height: 1.5;
+}
+
+/* Social Finances Strip */
+.social-fin-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+}
+
+.social-fin-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.fin-lbl {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.fin-val {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--amber-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.social-starter-items {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.85rem;
+  font-size: 0.82rem;
+}
