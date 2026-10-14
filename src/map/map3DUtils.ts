@@ -104,6 +104,241 @@ export function createFloorSlabMesh(
 }
 
 /**
+ * Creates 3D staircase structure for access rooms: taller cabin, pitched roof, interior steps,
+ * door frame, safety railings, and raycasting metadata.
+ */
+export function createStaircaseGroup(
+  room: Room,
+  viewBox: string,
+  wallHeight: number = 10
+): THREE.Group {
+  const group = new THREE.Group();
+  group.name = `staircase_${room.id}`;
+
+  const colors = getCategory3DColor(room.category);
+  const roomCenter = getRoomCenter(room);
+  const worldCenter = svgToWorld3D(roomCenter.x, roomCenter.y, viewBox);
+
+  const w = room.rect.width * SCALE_3D;
+  const d = room.rect.height * SCALE_3D;
+  const cabinHeight = wallHeight * 1.3;
+  const halfW = w / 2;
+  const halfD = d / 2;
+  const halfH = cabinHeight / 2;
+
+  // 1. Penthouse Cabin — taller box with darker walls
+  const cabinWallColor = 0x1a1025;
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: cabinWallColor,
+    roughness: 0.85,
+    metalness: 0.1
+  });
+
+  // Floor tile (interactive raycaster target)
+  const floorGeom = new THREE.BoxGeometry(Math.max(1, w - 1.2), 0.6, Math.max(1, d - 1.2));
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: colors.floor,
+    roughness: 0.6,
+    metalness: 0.2,
+    emissive: 0x000000,
+    emissiveIntensity: 0
+  });
+  const floorMesh = new THREE.Mesh(floorGeom, floorMat);
+  floorMesh.position.set(worldCenter.x, 0.3, worldCenter.z);
+  floorMesh.receiveShadow = true;
+  floorMesh.userData = {
+    isRoom: true,
+    roomId: room.id,
+    room: room,
+    baseColor: colors.floor,
+    emissiveColor: colors.emissive,
+    category: 'access'
+  };
+  group.add(floorMesh);
+
+  // North wall
+  const northWall = new THREE.Mesh(
+    new THREE.BoxGeometry(w, cabinHeight, 1.2), wallMat
+  );
+  northWall.position.set(worldCenter.x, halfH, worldCenter.z - halfD);
+  northWall.castShadow = true;
+  northWall.receiveShadow = true;
+  group.add(northWall);
+
+  // South wall
+  const southWall = new THREE.Mesh(
+    new THREE.BoxGeometry(w, cabinHeight, 1.2), wallMat
+  );
+  southWall.position.set(worldCenter.x, halfH, worldCenter.z + halfD);
+  southWall.castShadow = true;
+  southWall.receiveShadow = true;
+  group.add(southWall);
+
+  // West wall
+  const westWall = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, cabinHeight, d), wallMat
+  );
+  westWall.position.set(worldCenter.x - halfW, halfH, worldCenter.z);
+  westWall.castShadow = true;
+  westWall.receiveShadow = true;
+  group.add(westWall);
+
+  // East wall
+  const eastWall = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, cabinHeight, d), wallMat
+  );
+  eastWall.position.set(worldCenter.x + halfW, halfH, worldCenter.z);
+  eastWall.castShadow = true;
+  eastWall.receiveShadow = true;
+  group.add(eastWall);
+
+  // Wall edge accent lines
+  const edgesGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(w, cabinHeight, d));
+  const edgesMat = new THREE.LineBasicMaterial({
+    color: colors.emissive,
+    transparent: true,
+    opacity: 0.35
+  });
+  const edgesLine = new THREE.LineSegments(edgesGeom, edgesMat);
+  edgesLine.position.set(worldCenter.x, halfH, worldCenter.z);
+  group.add(edgesLine);
+
+  // 2. Pitched Roof — triangular prism (wedge)
+  const roofColor = 0x1a1a2e;
+  const roofPeakHeight = 5;
+  const roofOverhang = 1.5;
+
+  const roofVertices = new Float32Array([
+    // Front triangle
+    -(halfW + roofOverhang), 0, -(halfD + roofOverhang),
+     (halfW + roofOverhang), 0, -(halfD + roofOverhang),
+     0, roofPeakHeight, -(halfD + roofOverhang),
+    // Back triangle
+    -(halfW + roofOverhang), 0,  (halfD + roofOverhang),
+     (halfW + roofOverhang), 0,  (halfD + roofOverhang),
+     0, roofPeakHeight,  (halfD + roofOverhang),
+  ]);
+
+  const roofIndices = [
+    // Front face
+    0, 1, 2,
+    // Back face
+    3, 5, 4,
+    // Left slope
+    0, 2, 5, 0, 5, 3,
+    // Right slope
+    1, 4, 5, 1, 5, 2,
+    // Bottom
+    0, 3, 4, 0, 4, 1
+  ];
+
+  const roofGeom = new THREE.BufferGeometry();
+  roofGeom.setAttribute('position', new THREE.BufferAttribute(roofVertices, 3));
+  roofGeom.setIndex(roofIndices);
+  roofGeom.computeVertexNormals();
+
+  const roofMat = new THREE.MeshStandardMaterial({
+    color: roofColor,
+    roughness: 0.8,
+    metalness: 0.15
+  });
+  const roofMesh = new THREE.Mesh(roofGeom, roofMat);
+  roofMesh.position.set(worldCenter.x, cabinHeight, worldCenter.z);
+  roofMesh.castShadow = true;
+  group.add(roofMesh);
+
+  // 3. Interior Steps — 8 steps stacked at incremental Y with Z offset
+  const stepCount = 8;
+  const stepWidth = w * 0.65;
+  const stepDepth = (d * 0.75) / stepCount;
+  const stepHeight = 0.4;
+  const stepTotalRise = cabinHeight * 0.7;
+
+  for (let i = 0; i < stepCount; i++) {
+    const stepGeom = new THREE.BoxGeometry(stepWidth, stepHeight, stepDepth * 0.9);
+    const stepColor = i % 2 === 0 ? 0x2e1065 : 0x3b1a8a;
+    const stepMat = new THREE.MeshStandardMaterial({
+      color: stepColor,
+      roughness: 0.7,
+      metalness: 0.15
+    });
+    const step = new THREE.Mesh(stepGeom, stepMat);
+    const yPos = (stepTotalRise / stepCount) * (i + 0.5);
+    const zPos = worldCenter.z - halfD * 0.6 + (stepDepth * i);
+    step.position.set(worldCenter.x, yPos, zPos);
+    step.castShadow = true;
+    step.receiveShadow = true;
+    group.add(step);
+  }
+
+  // 4. Door Frame — thin box outline at south face
+  const doorWidth = w * 0.35;
+  const doorHeight = cabinHeight * 0.65;
+  const doorThickness = 0.3;
+  const frameMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.5,
+    metalness: 0.4
+  });
+
+  // Left jamb
+  const leftJamb = new THREE.Mesh(
+    new THREE.BoxGeometry(doorThickness, doorHeight, doorThickness), frameMat
+  );
+  leftJamb.position.set(
+    worldCenter.x - doorWidth / 2, doorHeight / 2, worldCenter.z + halfD + 0.2
+  );
+  group.add(leftJamb);
+
+  // Right jamb
+  const rightJamb = new THREE.Mesh(
+    new THREE.BoxGeometry(doorThickness, doorHeight, doorThickness), frameMat
+  );
+  rightJamb.position.set(
+    worldCenter.x + doorWidth / 2, doorHeight / 2, worldCenter.z + halfD + 0.2
+  );
+  group.add(rightJamb);
+
+  // Lintel
+  const lintel = new THREE.Mesh(
+    new THREE.BoxGeometry(doorWidth + doorThickness, doorThickness, doorThickness), frameMat
+  );
+  lintel.position.set(
+    worldCenter.x, doorHeight, worldCenter.z + halfD + 0.2
+  );
+  group.add(lintel);
+
+  // 5. Safety Railings — 4 corner posts
+  const railRadius = 0.3;
+  const railHeight = cabinHeight;
+  const railMat = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    roughness: 0.4,
+    metalness: 0.6
+  });
+  const railGeom = new THREE.CylinderGeometry(railRadius, railRadius, railHeight, 8);
+
+  const cornerOffsets = [
+    { x: -halfW, z: -halfD },
+    { x:  halfW, z: -halfD },
+    { x: -halfW, z:  halfD },
+    { x:  halfW, z:  halfD }
+  ];
+  for (const offset of cornerOffsets) {
+    const rail = new THREE.Mesh(railGeom, railMat);
+    rail.position.set(
+      worldCenter.x + offset.x,
+      railHeight / 2,
+      worldCenter.z + offset.z
+    );
+    rail.castShadow = true;
+    group.add(rail);
+  }
+
+  return group;
+}
+
+/**
  * Creates 3D room representation: floor tile, walls, and edge lines.
  */
 export function create3DRoomGroup(
@@ -325,6 +560,340 @@ export function createSvgPathMesh(
 }
 
 /**
+ * Creates a lamp post with pole, glowing head, and point light.
+ */
+export function createLampPost(x: number, z: number): THREE.Group {
+  const lampGroup = new THREE.Group();
+  lampGroup.name = "lamp_post";
+
+  // Pole
+  const poleGeom = new THREE.CylinderGeometry(0.4, 0.4, 8, 6);
+  const poleMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.5,
+    metalness: 0.6
+  });
+  const pole = new THREE.Mesh(poleGeom, poleMat);
+  pole.position.set(x, 4, z);
+  pole.castShadow = true;
+  lampGroup.add(pole);
+
+  // Lamp head — warm amber glow
+  const headGeom = new THREE.SphereGeometry(1.5, 8, 6);
+  const headMat = new THREE.MeshStandardMaterial({
+    color: 0xfde68a,
+    emissive: 0xfde68a,
+    emissiveIntensity: 0.6,
+    roughness: 0.3,
+    metalness: 0.0
+  });
+  const head = new THREE.Mesh(headGeom, headMat);
+  head.position.set(x, 8.5, z);
+  lampGroup.add(head);
+
+  // Point light
+  const light = new THREE.PointLight(0xfde68a, 0.3, 25);
+  light.position.set(x, 8.5, z);
+  lampGroup.add(light);
+
+  return lampGroup;
+}
+
+/**
+ * Creates a chain-link fence around a rectangular area with a gate opening on the east side.
+ */
+export function createChainLinkFence(
+  centerX: number,
+  centerZ: number,
+  width: number,
+  depth: number,
+  height: number
+): THREE.Group {
+  const fenceGroup = new THREE.Group();
+  fenceGroup.name = "chain_link_fence";
+
+  const halfW = width / 2;
+  const halfD = depth / 2;
+  const gateGap = 10;
+
+  const wireMat = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.6
+  });
+
+  const postMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    roughness: 0.4,
+    metalness: 0.7
+  });
+
+  // North panel
+  const northPanel = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, height),
+    wireMat
+  );
+  northPanel.position.set(centerX, height / 2, centerZ - halfD);
+  fenceGroup.add(northPanel);
+
+  // South panel
+  const southPanel = new THREE.Mesh(
+    new THREE.PlaneGeometry(width, height),
+    wireMat
+  );
+  southPanel.position.set(centerX, height / 2, centerZ + halfD);
+  fenceGroup.add(southPanel);
+
+  // West panel
+  const westPanel = new THREE.Mesh(
+    new THREE.PlaneGeometry(depth, height),
+    wireMat
+  );
+  westPanel.position.set(centerX - halfW, height / 2, centerZ);
+  westPanel.rotation.y = Math.PI / 2;
+  fenceGroup.add(westPanel);
+
+  // East panel — two halves with gate gap
+  const eastPanelHalfLen = (depth - gateGap) / 2;
+  if (eastPanelHalfLen > 0) {
+    const eastTop = new THREE.Mesh(
+      new THREE.PlaneGeometry(eastPanelHalfLen, height),
+      wireMat
+    );
+    eastTop.position.set(centerX + halfW, height / 2, centerZ - halfD + eastPanelHalfLen / 2);
+    eastTop.rotation.y = Math.PI / 2;
+    fenceGroup.add(eastTop);
+
+    const eastBottom = new THREE.Mesh(
+      new THREE.PlaneGeometry(eastPanelHalfLen, height),
+      wireMat
+    );
+    eastBottom.position.set(centerX + halfW, height / 2, centerZ + halfD - eastPanelHalfLen / 2);
+    eastBottom.rotation.y = Math.PI / 2;
+    fenceGroup.add(eastBottom);
+  }
+
+  // Corner posts
+  const postGeom = new THREE.CylinderGeometry(0.3, 0.3, height, 6);
+  const corners = [
+    [centerX - halfW, centerZ - halfD],
+    [centerX + halfW, centerZ - halfD],
+    [centerX - halfW, centerZ + halfD],
+    [centerX + halfW, centerZ + halfD]
+  ];
+  corners.forEach(([cx, cz]) => {
+    const post = new THREE.Mesh(postGeom, postMat);
+    post.position.set(cx, height / 2, cz);
+    post.castShadow = true;
+    fenceGroup.add(post);
+  });
+
+  return fenceGroup;
+}
+
+/**
+ * Creates the Confession Tree Hill (Bukit Pohon Sakura) — terraced mound, giant sakura, bench, stone path.
+ */
+export function createConfessionTreeHill(viewBox: string): THREE.Group {
+  const hillGroup = new THREE.Group();
+  hillGroup.name = "confession_tree_hill";
+
+  // Flagpole circle position: cx:343, cy:64
+  const hillWorld = svgToWorld3D(343, 64, viewBox);
+  const hx = hillWorld.x;
+  const hz = hillWorld.z;
+
+  // --- Terraced hill mound (3 stacked discs) ---
+  const tiers = [
+    { radius: 18, height: 2, color: 0x14532d, yBase: 0 },
+    { radius: 12, height: 3, color: 0x166534, yBase: 2 },
+    { radius: 7,  height: 2, color: 0x166534, yBase: 5 }
+  ];
+  tiers.forEach(tier => {
+    const geom = new THREE.CylinderGeometry(tier.radius, tier.radius, tier.height, 12);
+    const mat = new THREE.MeshStandardMaterial({ color: tier.color, roughness: 0.9 });
+    const disc = new THREE.Mesh(geom, mat);
+    disc.position.set(hx, tier.yBase + tier.height / 2, hz);
+    disc.receiveShadow = true;
+    disc.castShadow = true;
+    hillGroup.add(disc);
+  });
+
+  const treeBaseY = 7; // top of terraced mound
+
+  // --- Giant sakura tree ---
+  // Trunk — tapered, slightly tilted
+  const trunkGeom = new THREE.CylinderGeometry(1.2, 2.0, 12, 8);
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85 });
+  const trunk = new THREE.Mesh(trunkGeom, trunkMat);
+  trunk.position.set(hx, treeBaseY + 6, hz);
+  trunk.rotation.z = 0.08;
+  trunk.castShadow = true;
+  hillGroup.add(trunk);
+
+  // Branch system — 5 radiating branches from trunk top
+  const branchMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85 });
+  const branchAngles = [0, Math.PI * 0.4, Math.PI * 0.8, Math.PI * 1.2, Math.PI * 1.6];
+  branchAngles.forEach(angle => {
+    const branchGeom = new THREE.CylinderGeometry(0.3, 0.6, 6, 6);
+    const branch = new THREE.Mesh(branchGeom, branchMat);
+    branch.position.set(
+      hx + Math.cos(angle) * 3,
+      treeBaseY + 12,
+      hz + Math.sin(angle) * 3
+    );
+    branch.rotation.z = Math.cos(angle) * 0.6;
+    branch.rotation.x = Math.sin(angle) * 0.6;
+    branch.castShadow = true;
+    hillGroup.add(branch);
+  });
+
+  // Canopy — overlapping pink spheres in a dome arrangement
+  const canopyConfigs = [
+    { r: 8,  x: 0,  y: 16, z: 0,  color: 0xf472b6 },
+    { r: 6,  x: 5,  y: 15, z: 3,  color: 0xfbcfe8 },
+    { r: 7,  x: -4, y: 14, z: 4,  color: 0xf472b6 },
+    { r: 5,  x: 3,  y: 17, z: -4, color: 0xfbcfe8 },
+    { r: 6,  x: -3, y: 16, z: -3, color: 0xf472b6 },
+    { r: 5,  x: 0,  y: 18, z: 0,  color: 0xfbcfe8 },
+    { r: 4,  x: 4,  y: 17, z: 2,  color: 0xf472b6 }
+  ];
+  canopyConfigs.forEach(cfg => {
+    const geom = new THREE.SphereGeometry(cfg.r, 8, 6);
+    const mat = new THREE.MeshStandardMaterial({
+      color: cfg.color,
+      transparent: true,
+      opacity: 0.85,
+      roughness: 0.8,
+      metalness: 0.0,
+      depthWrite: false
+    });
+    const sphere = new THREE.Mesh(geom, mat);
+    sphere.position.set(hx + cfg.x, treeBaseY + cfg.y, hz + cfg.z);
+    sphere.castShadow = true;
+    hillGroup.add(sphere);
+  });
+
+  // --- Semi-circular bench at base of tree ---
+  const benchSegments = 3;
+  for (let i = 0; i < benchSegments; i++) {
+    const angle = (Math.PI / 2) + (i * Math.PI) / (benchSegments - 1); // semicircle from PI/2 to 3PI/2 (front-facing)
+    const benchGeom = new THREE.BoxGeometry(8, 0.8, 2);
+    const benchMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.8 });
+    const bench = new THREE.Mesh(benchGeom, benchMat);
+    bench.position.set(
+      hx + Math.cos(angle) * 10,
+      treeBaseY + 0.4,
+      hz + Math.sin(angle) * 10
+    );
+    bench.rotation.y = -angle + Math.PI / 2;
+    bench.receiveShadow = true;
+    hillGroup.add(bench);
+  }
+
+  // --- Stone stepping path spiraling up the hill ---
+  const stoneCount = 6;
+  for (let i = 0; i < stoneCount; i++) {
+    const t = i / stoneCount;
+    const spiralAngle = t * Math.PI * 2.5; // 2.5 rotations
+    const spiralRadius = 18 - t * 14;      // from outer rim toward center
+    const stoneGeom = new THREE.CylinderGeometry(1.5, 1.5, 0.3, 6);
+    const stoneMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.7 });
+    const stone = new THREE.Mesh(stoneGeom, stoneMat);
+    stone.position.set(
+      hx + Math.cos(spiralAngle) * spiralRadius,
+      t * 6 + 0.15,
+      hz + Math.sin(spiralAngle) * spiralRadius
+    );
+    stone.receiveShadow = true;
+    hillGroup.add(stone);
+  }
+
+  return hillGroup;
+}
+
+/**
+ * Creates a sakura petal particle system that drifts and falls.
+ * Returns the Points object and an update function to call each frame.
+ */
+export function createSakuraPetalSystem(
+  viewBox: string
+): { points: THREE.Points; update: (time: number) => void } {
+  const hillWorld = svgToWorld3D(343, 64, viewBox);
+  const hx = hillWorld.x;
+  const hz = hillWorld.z;
+  const canopyY = 7 + 18; // treeBaseY + highest canopy y
+
+  const count = 300;
+  const positions = new Float32Array(count * 3);
+  const velocities = new Float32Array(count * 3); // vx, vy, vz per particle
+  const phases = new Float32Array(count);
+
+  for (let i = 0; i < count; i++) {
+    const i3 = i * 3;
+    // Random within 30-unit radius sphere above canopy
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = Math.random() * 30;
+    positions[i3] = hx + Math.sin(phi) * Math.cos(theta) * r;
+    positions[i3 + 1] = canopyY + Math.random() * 10;
+    positions[i3 + 2] = hz + Math.sin(phi) * Math.sin(theta) * r;
+
+    velocities[i3] = 0;
+    velocities[i3 + 1] = -(0.08 + Math.random() * 0.04);
+    velocities[i3 + 2] = 0;
+
+    phases[i] = Math.random() * Math.PI * 2;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+
+  const material = new THREE.PointsMaterial({
+    color: 0xfda4af,
+    size: 1.2,
+    transparent: true,
+    opacity: 0.7,
+    sizeAttenuation: true,
+    depthWrite: false
+  });
+
+  const points = new THREE.Points(geometry, material);
+  points.name = "sakura_petals";
+
+  const update = (time: number) => {
+    const posAttr = geometry.attributes.position as THREE.BufferAttribute;
+    const posArray = posAttr.array as Float32Array;
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      const phase = phases[i];
+
+      // Horizontal drift
+      posArray[i3] += Math.sin(time * 0.001 * 0.5 + phase) * 0.15;
+      // Vertical fall
+      posArray[i3 + 1] += velocities[i3 + 1];
+      // Z drift
+      posArray[i3 + 2] += Math.cos(time * 0.001 * 0.3 + phase) * 0.1;
+
+      // Reset petal when it falls below ground
+      if (posArray[i3 + 1] < -5) {
+        const theta = Math.random() * Math.PI * 2;
+        const r = Math.random() * 20;
+        posArray[i3] = hx + Math.cos(theta) * r;
+        posArray[i3 + 1] = canopyY + 5 + Math.random() * 10; // 15-25 above tree base
+        posArray[i3 + 2] = hz + Math.sin(theta) * r;
+      }
+    }
+
+    posAttr.needsUpdate = true;
+  };
+
+  return { points, update };
+}
+
+/**
  * Creates 3D representation for campus grounds (Athletic field, pool, gym, gardens, maze).
  */
 export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
@@ -348,10 +917,44 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
   // 2. Full Campus Walkway Network (Extruded from authentic SVG path)
   const walkwayElement = campusFloor.decorativeElements?.find(e => e.id === "campus_walkways");
   if (walkwayElement && walkwayElement.type === "path" && walkwayElement.pathData) {
-    const walkwaysMesh = createSvgPathMesh(walkwayElement.pathData, viewBox, 0.35, 0x24324a);
+    // Curb border — slightly larger underlay mesh for stepped edge effect
+    const curbMesh = createSvgPathMesh(walkwayElement.pathData, viewBox, 0.6, 0x1e293b);
+    if (curbMesh) {
+      curbMesh.position.y = 0.0;
+      curbMesh.scale.set(1.04, 1, 1.04);
+      group.add(curbMesh);
+    }
+
+    // Main walkway surface — elevated with improved contrast
+    const walkwaysMesh = createSvgPathMesh(walkwayElement.pathData, viewBox, 0.35, 0x334155);
     if (walkwaysMesh) {
+      walkwaysMesh.position.y = 0.2;
       group.add(walkwaysMesh);
     }
+
+    // Lamp posts along walkway intersections
+    const lampPositions = [
+      { svgX: 200, svgY: 350 },  // Near pool entrance
+      { svgX: 480, svgY: 350 },  // Near gym entrance
+      { svgX: 340, svgY: 840 },  // South gate area
+      { svgX: 120, svgY: 550 },  // West garden junction
+      { svgX: 560, svgY: 550 },  // East maze junction
+    ];
+    lampPositions.forEach(pos => {
+      const world = svgToWorld3D(pos.svgX, pos.svgY, viewBox);
+      group.add(createLampPost(world.x, world.z));
+    });
+  }
+
+  // Chain-link fence around the swimming pool
+  const poolRoom = campusFloor.rooms.find(r => r.id === "campus_swimming_pool");
+  if (poolRoom) {
+    const poolCX = poolRoom.rect.x + poolRoom.rect.width / 2;
+    const poolCY = poolRoom.rect.y + poolRoom.rect.height / 2;
+    const poolWorld = svgToWorld3D(poolCX, poolCY, viewBox);
+    const fenceW = poolRoom.rect.width * SCALE_3D + 12;
+    const fenceD = poolRoom.rect.height * SCALE_3D + 12;
+    group.add(createChainLinkFence(poolWorld.x, poolWorld.z, fenceW, fenceD, 6));
   }
 
   // 3. Campus Zones & Buildings
@@ -740,6 +1343,17 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
     const label = createRoomLabelSprite(room, viewBox, gardenHeight + 3);
     group.add(label);
   });
+
+  // Confession Tree Hill (Bukit Pohon Sakura) — behind the athletic field
+  const confessionHill = createConfessionTreeHill(viewBox);
+  group.add(confessionHill);
+
+  // Sakura petal particle system
+  const petalSystem = createSakuraPetalSystem(viewBox);
+  group.add(petalSystem.points);
+
+  // Store petal update on group userData so the render loop can drive it
+  group.userData.petalUpdate = petalSystem.update;
 
   return group;
 }

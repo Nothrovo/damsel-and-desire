@@ -3,9 +3,10 @@ import { Map2DRenderer } from "../map/Map2DRenderer";
 import { searchSchoolMap, type SearchResult } from "../map/mapSearch";
 import { FALLBACK_DD_DATA } from "../data/fallbackCompendium";
 import type { FloorId, Room, MapMode } from "../map/types";
-import { getCategoryColor, getCategoryLabel } from "../map/mapUtils";
+import { getCategoryLabel } from "../map/mapUtils";
 import { router } from "../router/router";
 import { Map3DRenderer } from "../map/Map3DRenderer";
+import { slideOverDrawer } from "../components/SlideOverDrawer";
 
 type AnyMapRenderer = Map2DRenderer | Map3DRenderer;
 let activeRenderer: AnyMapRenderer | null = null;
@@ -78,17 +79,19 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
         <button class="map-hud-btn" id="mapResetBtn" title="Reset Tampilan (⟲)" aria-label="Reset Tampilan">⟲</button>
       </div>
 
-      <!-- Room Detail Drawer / Panel -->
-      <aside id="mapRoomPanel" class="map-room-panel" style="display:none;" aria-label="Detail Ruangan"></aside>
+      <!-- Slide-Over Drawer (Universal Component) -->
+      ${slideOverDrawer.render()}
     </div>
   `;
 
   const canvasContainer = document.getElementById("mapCanvasContainer");
-  const roomPanel = document.getElementById("mapRoomPanel");
   const searchInput = document.getElementById("mapSearchInput") as HTMLInputElement | null;
   const searchClearBtn = document.getElementById("mapSearchClearBtn");
   const searchDropdown = document.getElementById("mapSearchDropdown");
   if (!canvasContainer) return;
+
+  // Mount Slide-Over Drawer events
+  slideOverDrawer.attachEvents();
 
   // Build ekskul dictionary for quick detail lookup
   const ekskulMap = new Map<string, any>();
@@ -109,98 +112,148 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
     router.navigate(newUrl, !pushState);
   }
 
+  // =========================================================================
+  // Kanji lookup table for special rooms
+  // =========================================================================
+  const roomKanjiMap: Record<string, string> = {
+    campus_main_building: "鳳仙学園 本校舎",
+    campus_athletic_field: "運動場",
+    campus_swimming_pool: "プール",
+    campus_gymnasium: "体育館",
+    campus_west_zen_garden: "西・禅庭園",
+    campus_east_zen_garden: "東・禅庭園",
+    campus_garden: "植物園",
+    campus_hedge_maze: "迷路庭園",
+    f1_lockers: "下駄箱",
+    f1_infirmary: "保健室",
+    f1_faculty_room: "職員室",
+    f1_guidance_counselor: "相談室",
+    f2_library: "図書室",
+    f2_student_council: "生徒会室",
+    f2_cafeteria: "食堂",
+    f3_principals_office: "校長室",
+    f3_computer_lab: "コンピュータ室",
+    f3_audiovisual_room: "視聴覚室",
+  };
+
+  // Roleplay atmosphere flavor per category
+  const categoryAtmosphere: Record<string, string> = {
+    classroom: "Deretan meja kayu berjajar rapi menghadap papan tulis. Sinar matahari sore menyusup dari jendela koridor, menerangi debu yang melayang tenang.",
+    club: "Ruangan penuh semangat anggota klub yang berlatih sepulang sekolah. Suasananya akrab, riuh, dan penuh kenangan masa muda.",
+    admin: "Aroma teh hijau dan kertas arsip. Langkah kaki terasa berhati-hati di lorong yang sunyi dan penuh wibawa.",
+    facility: "Peralatan tertata rapi menunggu jam pelajaran praktik. Suasana profesional bercampur aroma bahan khas.",
+    utility: "Ruang fungsional yang jarang dikunjungi — tempat sempurna untuk percakapan rahasia atau persembunyian singkat.",
+    common: "Pusat hiruk-pikuk kehidupan sekolah. Suara tawa, langkah kaki, dan aroma makanan berbaur menjadi satu.",
+    outdoor: "Angin sepoi-sepoi membawa aroma rumput dan tanah basah. Langit terbentang luas di atas kepala.",
+    access: "Tangga beton bergema setiap langkah kaki. Cahaya neon berkedip samar di sudut-sudut pendaratan.",
+  };
+
   function showRoomDetails(room: Room) {
-    if (!roomPanel) return;
-    const colors = getCategoryColor(room.category);
     const floorLabel = MAP_FLOORS[room.floorId].label;
     const isCampusMainBuilding = room.id === "campus_main_building";
 
     // Lookup ekskul data if available
     const ekskulData = room.ekskulId ? ekskulMap.get(room.ekskulId) : null;
+    const kanji = roomKanjiMap[room.id] || "";
+    const atmosphere = categoryAtmosphere[room.category] || "";
 
-    roomPanel.innerHTML = `
-      <div class="map-drawer-handle" aria-hidden="true"></div>
-      <div class="map-room-panel-header">
-        <h3 class="map-room-panel-title">${room.name}</h3>
-        <button class="map-room-panel-close" id="mapClosePanelBtn" aria-label="Tutup Panel">✕</button>
-      </div>
-      <div>
-        <span
-          class="map-room-category-badge"
-          style="background-color:${colors.fill};color:${colors.text};border:1px solid ${colors.stroke};"
-        >
-          ${getCategoryLabel(room.category)} • ${floorLabel}
-        </span>
-      </div>
-      <p class="map-room-desc">${room.description || "Tidak ada deskripsi tambahan untuk ruangan ini."}</p>
+    // Build stats array
+    const stats: { label: string; value: string; accent?: boolean }[] = [
+      { label: "Lantai", value: floorLabel },
+      { label: "Kategori", value: getCategoryLabel(room.category) },
+    ];
+    if (kanji) {
+      stats.push({ label: "Kanji", value: kanji, accent: true });
+    }
+    if (ekskulData) {
+      stats.push({ label: "Hit Die", value: ekskulData.hit_die || ekskulData.hitDie || "-" });
+      stats.push({ label: "Atribut Utama", value: ekskulData.primary_stat || ekskulData.primaryStat || "-", accent: true });
+    }
 
-      ${
-        ekskulData
-          ? `
-          <div class="map-ekskul-card">
-            <div class="map-ekskul-card-title">🏆 ${ekskulData.name}</div>
-            <div class="map-ekskul-card-tagline">“${ekskulData.tagline || ''}”</div>
-            <div class="map-ekskul-card-stats">
-              Hit Die: <strong>${ekskulData.hit_die || ekskulData.hitDie || '-'}</strong> • Atribut Utama: <strong>${ekskulData.primary_stat || ekskulData.primaryStat || '-'}</strong>
-            </div>
-          </div>
-          `
-          : ""
+    // Build flavor text
+    let flavorHtml = "";
+    if (atmosphere) {
+      flavorHtml += `<p style="margin:0 0 8px;font-style:italic;color:var(--text-muted);">${atmosphere}</p>`;
+    }
+    if (room.description) {
+      flavorHtml += `<p style="margin:0;">${room.description}</p>`;
+    }
+
+    // Build mechanics / club info
+    let mechanicsHtml = "";
+    if (ekskulData) {
+      mechanicsHtml += `<div style="margin-bottom:8px;"><strong>🏆 ${ekskulData.name}</strong></div>`;
+      if (ekskulData.tagline) {
+        mechanicsHtml += `<p style="font-style:italic;color:var(--rose-light);margin:0 0 6px;">"${ekskulData.tagline}"</p>`;
       }
+    }
+    if (room.relatedEkskulIds && room.relatedEkskulIds.length > 0) {
+      const tags = room.relatedEkskulIds
+        .map(id => {
+          const e = ekskulMap.get(id);
+          return `<span style="background:var(--bg-surface);border:1px solid var(--border-subtle);padding:2px 8px;border-radius:4px;color:var(--text-main);font-size:0.75rem;">${e ? e.name : id}</span>`;
+        })
+        .join(" ");
+      mechanicsHtml += `<div style="margin-top:8px;"><span style="color:var(--text-muted);font-size:0.75rem;">Ekskul Terkait:</span> ${tags}</div>`;
+    }
 
-      ${
-        room.relatedEkskulIds && room.relatedEkskulIds.length > 0
-          ? `
-          <div style="margin-bottom:0.85rem;font-size:0.75rem;color:var(--text-muted);">
-            <span>Ekskul Terkait: </span>
-            ${room.relatedEkskulIds
-              .map(id => {
-                const e = ekskulMap.get(id);
-                return `<span style="background:var(--bg-surface);border:1px solid var(--border-subtle);padding:2px 6px;border-radius:4px;color:var(--text-main);margin-right:4px;">${e ? e.name : id}</span>`;
-              })
-              .join("")}
-          </div>
-          `
-          : ""
-      }
-
-      <div class="map-room-actions">
-        ${
-          room.ekskulId
-            ? `<a href="/compendium" class="btn-primary" style="font-size:0.8rem;padding:6px 12px;text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
-                <span>📚</span> Buka di Compendium
-               </a>`
-            : ""
-        }
-        ${
-          isCampusMainBuilding
-            ? `<button id="mapBtnEnter1F" class="btn-primary" style="font-size:0.8rem;padding:6px 12px;display:inline-flex;align-items:center;gap:4px;">
-                <span>🚪</span> Masuk ke Gedung (1F)
-               </button>`
-            : ""
-        }
-        <button id="mapBtnFocusRoom" class="map-ctrl-btn" style="font-size:0.8rem;padding:6px 10px;" title="Pusatkan kamera pada ruangan ini">
-          <span>🎯</span> Pusatkan
-        </button>
-      </div>
-    `;
-    roomPanel.style.display = "block";
-
-    document.getElementById("mapClosePanelBtn")?.addEventListener("click", () => {
-      roomPanel.style.display = "none";
-      if (activeRenderer) activeRenderer.selectRoom(null);
-      updateUrl(null, false);
-    });
-
-    document.getElementById("mapBtnFocusRoom")?.addEventListener("click", () => {
-      activeRenderer?.focusRoom(room.id, true);
-    });
+    // Build actions
+    const actions: { label: string; variant?: "primary" | "secondary" | "accent" | "purple"; icon?: string; onClick: () => void }[] = [];
 
     if (isCampusMainBuilding) {
-      document.getElementById("mapBtnEnter1F")?.addEventListener("click", () => {
-        switchToFloor("f1", true);
+      actions.push({
+        label: "Masuk ke Gedung (1F)",
+        variant: "primary",
+        icon: "🚪",
+        onClick: () => {
+          slideOverDrawer.close();
+          switchToFloor("f1", true);
+        }
       });
     }
+    if (ekskulData) {
+      actions.push({
+        label: "Buka di Compendium",
+        variant: "accent",
+        icon: "📚",
+        onClick: () => {
+          slideOverDrawer.close();
+          router.navigate("/compendium");
+        }
+      });
+    }
+    actions.push({
+      label: "Pusatkan Kamera",
+      variant: "secondary",
+      icon: "🎯",
+      onClick: () => {
+        activeRenderer?.focusRoom(room.id, true);
+      }
+    });
+
+    // Map room category to drawer categoryType
+    const categoryTypeMap: Record<string, "combat" | "social" | "club" | "subclass" | "item" | "feat" | "skill" | "secret"> = {
+      classroom: "social",
+      club: "club",
+      admin: "feat",
+      facility: "skill",
+      utility: "item",
+      common: "social",
+      outdoor: "subclass",
+      access: "secret",
+    };
+
+    slideOverDrawer.open({
+      title: room.name,
+      category: getCategoryLabel(room.category),
+      categoryType: categoryTypeMap[room.category] || "social",
+      badge: kanji || undefined,
+      subtitle: floorLabel,
+      stats,
+      flavor: flavorHtml || undefined,
+      mechanics: mechanicsHtml || undefined,
+      actions,
+    });
   }
 
   function switchToFloor(targetFloorId: FloorId, pushHistory: boolean = false) {
@@ -211,7 +264,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
       activeRenderer.setFloor(MAP_FLOORS[targetFloorId]);
       activeRenderer.selectRoom(null);
     }
-    if (roomPanel) roomPanel.style.display = "none";
+    slideOverDrawer.close();
 
     // Update active floor button
     document.querySelectorAll(".map-floor-btn").forEach(btn => {
@@ -470,11 +523,7 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
       searchInput?.select();
     } else if (e.key === "Escape") {
       closeSearchDropdown();
-      if (roomPanel && roomPanel.style.display !== "none") {
-        roomPanel.style.display = "none";
-        activeRenderer?.selectRoom(null);
-        updateUrl(null, false);
-      }
+      // SlideOverDrawer handles its own Escape key closing
     }
   });
 }

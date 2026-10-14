@@ -8,6 +8,7 @@ import {
   svgToWorld3D,
   createFloorSlabMesh,
   create3DRoomGroup,
+  createStaircaseGroup,
   createRoomLabelSprite,
   createCampusFacilitiesGroup
 } from "./map3DUtils";
@@ -111,6 +112,36 @@ export class Map3DRenderer {
     // 2. Scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x0b0f19);
+
+    // Golden-hour twilight sky dome
+    const skyGeom = new THREE.SphereGeometry(1000, 32, 32);
+    const skyMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      uniforms: {},
+      vertexShader: `
+        varying float vUv;
+        void main() {
+          vUv = normalize(position).y * 0.5 + 0.5;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying float vUv;
+        void main() {
+          vec3 horizon = mix(vec3(0.976, 0.451, 0.086), vec3(0.984, 0.573, 0.235), smoothstep(0.0, 0.15, vUv));
+          vec3 mid = mix(vec3(0.514, 0.094, 0.263), vec3(0.118, 0.106, 0.294), smoothstep(0.15, 0.5, vUv));
+          vec3 zenith = vec3(0.043, 0.059, 0.098);
+          vec3 color = mix(horizon, mid, smoothstep(0.1, 0.35, vUv));
+          color = mix(color, zenith, smoothstep(0.45, 0.85, vUv));
+          gl_FragColor = vec4(color, 1.0);
+        }
+      `
+    });
+    const skyMesh = new THREE.Mesh(skyGeom, skyMat);
+    skyMesh.name = "skyDome";
+    this.scene.add(skyMesh);
+
     this.scene.add(this.worldGroup);
 
     // 3. Orthographic Isometric Camera
@@ -142,17 +173,18 @@ export class Map3DRenderer {
     this.controls.maxZoom = 4.0;
     this.controls.target.copy(initTarget);
 
-    // 5. Lighting Setup
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x0f172a, 0.85);
+    // 5. Lighting Setup — Golden Hour
+    const hemiLight = new THREE.HemisphereLight(0xfde68a, 0x1a0a2e, 0.7);
     this.scene.add(hemiLight);
 
-    const dirLight = new THREE.DirectionalLight(0xfff1f2, 1.25);
-    dirLight.position.set(280, 450, 180);
+    const dirLight = new THREE.DirectionalLight(0xfde68a, 1.4);
+    dirLight.position.set(250, 280, 200);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     dirLight.shadow.camera.near = 50;
     dirLight.shadow.camera.far = 1200;
+    dirLight.shadow.bias = -0.001;
     const shadowD = 220;
     dirLight.shadow.camera.left = -shadowD;
     dirLight.shadow.camera.right = shadowD;
@@ -160,7 +192,7 @@ export class Map3DRenderer {
     dirLight.shadow.camera.bottom = -shadowD;
     this.scene.add(dirLight);
 
-    const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.35);
+    const rimLight = new THREE.DirectionalLight(0xc084fc, 0.25);
     rimLight.position.set(-180, 250, -180);
     this.scene.add(rimLight);
   }
@@ -213,11 +245,14 @@ export class Map3DRenderer {
 
       // Floor Rooms
       floorData.rooms.forEach(room => {
-        const roomGroup = create3DRoomGroup(room, floorData.viewBox, 10);
+        const roomGroup = room.category === 'access'
+          ? createStaircaseGroup(room, floorData.viewBox, 10)
+          : create3DRoomGroup(room, floorData.viewBox, 10);
         floorGroup.add(roomGroup);
 
-        // Room Label Sprite
-        const sprite = createRoomLabelSprite(room, floorData.viewBox, 10);
+        // Room Label Sprite (staircase labels positioned higher)
+        const labelHeight = room.category === 'access' ? 10 * 1.3 + 6 : 10;
+        const sprite = createRoomLabelSprite(room, floorData.viewBox, labelHeight);
         floorGroup.add(sprite);
 
         // Register interactive floor mesh for raycasting
@@ -575,6 +610,13 @@ export class Map3DRenderer {
 
       this.controls.update();
       this.renderer.render(this.scene, this.camera);
+
+      // Drive sakura petal particle system via campus group userData
+      const campusGroup = this.floorGroups.get("campus");
+      if (campusGroup?.userData.petalUpdate) {
+        campusGroup.userData.petalUpdate(time);
+      }
+
       this.animFrameId = requestAnimationFrame(animate);
     };
 
@@ -586,6 +628,12 @@ export class Map3DRenderer {
     if (this.animFrameId !== null) {
       cancelAnimationFrame(this.animFrameId);
       this.animFrameId = null;
+    }
+
+    // Clear petal update callback
+    const campusGroup = this.floorGroups.get("campus");
+    if (campusGroup) {
+      delete campusGroup.userData.petalUpdate;
     }
 
     if ((this as any)._cleanupEvents) {
