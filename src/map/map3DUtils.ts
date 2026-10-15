@@ -699,16 +699,16 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
   const hillGroup = new THREE.Group();
   hillGroup.name = "confession_tree_hill";
 
-  // Position behind (north of) the athletic field — just above track top edge (y=20)
-  const hillWorld = svgToWorld3D(343, 5, viewBox);
+  // Position behind (north of) the athletic field — well above track top edge (y=20)
+  const hillWorld = svgToWorld3D(343, -25, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
 
-  // --- Terraced hill mound (3 stacked discs) ---
+  // --- Terraced hill mound (3 stacked discs, compact to avoid track overlap) ---
   const tiers = [
-    { radius: 18, height: 2, color: 0x14532d, yBase: 0 },
-    { radius: 12, height: 3, color: 0x166534, yBase: 2 },
-    { radius: 7,  height: 2, color: 0x166534, yBase: 5 }
+    { radius: 12, height: 2, color: 0x14532d, yBase: 0 },
+    { radius: 8,  height: 3, color: 0x166534, yBase: 2 },
+    { radius: 5,  height: 2, color: 0x166534, yBase: 5 }
   ];
   tiers.forEach(tier => {
     const geom = new THREE.CylinderGeometry(tier.radius, tier.radius, tier.height, 12);
@@ -820,7 +820,7 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
 export function createSakuraPetalSystem(
   viewBox: string
 ): { points: THREE.Points; update: (time: number) => void } {
-  const hillWorld = svgToWorld3D(343, 5, viewBox);
+  const hillWorld = svgToWorld3D(343, -25, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
   const canopyY = 7 + 18; // treeBaseY + highest canopy y
@@ -901,16 +901,16 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
   group.name = "campus_facilities";
   const viewBox = campusFloor.viewBox;
 
-  // 1. Ground terrain slab
+  // 1. Ground terrain slab — extended north (+15) to accommodate sakura hill
   const [, , vbW, vbH] = viewBox.split(" ").map(Number);
-  const groundGeom = new THREE.BoxGeometry(vbW * SCALE_3D + 40, 2, vbH * SCALE_3D + 40);
+  const groundGeom = new THREE.BoxGeometry(vbW * SCALE_3D + 40, 2, vbH * SCALE_3D + 55);
   const groundMat = new THREE.MeshStandardMaterial({
     color: 0x090d16,
     roughness: 0.9,
     metalness: 0.1
   });
   const groundMesh = new THREE.Mesh(groundGeom, groundMat);
-  groundMesh.position.set(0, -1, 0);
+  groundMesh.position.set(0, -1, -7.5); // shift north to keep south edge aligned
   groundMesh.receiveShadow = true;
   group.add(groundMesh);
 
