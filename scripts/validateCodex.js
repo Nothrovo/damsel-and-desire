@@ -144,7 +144,14 @@ if (process.argv[1] && process.argv[1].endsWith("validateCodex.js")) {
       const fullPath = path.join(dir, ent.name);
       if (ent.isDirectory()) {
         traverse(fullPath);
-      } else if (ent.isFile() && ent.name.endsWith(".md") && !ent.name.startsWith("_") && !ent.name.includes("TEMPLATE") && !ent.name.includes("PROMPTS") && !ent.name.includes("COMPENDIUM")) {
+      } else if (
+        ent.isFile() &&
+        ent.name.endsWith(".md") &&
+        !ent.name.startsWith("_") &&
+        !ent.name.includes("TEMPLATE") &&
+        !ent.name.toLowerCase().includes("prompt") &&
+        !ent.name.includes("COMPENDIUM")
+      ) {
         totalFiles++;
         const res = parseMarkdownCharacter(fullPath);
         if (res.valid) {

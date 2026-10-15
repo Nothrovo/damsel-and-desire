@@ -72,7 +72,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "gaming",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "weeb",
@@ -205,7 +205,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "martial_arts",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "delinquent",
@@ -492,7 +492,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "band",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "popular_kids",
@@ -538,6 +538,13 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
       "base": 2,
       "confession_target_dc": 16,
       "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Flirty Acquaintance",
+          "description": "Menggoda dengan panggilan manis, berbisik dekat telinga, suka tebar pesona. (**Event 1:** Pertemuan pertama saat ia meminjamkan pick gitarnya di lorong kelas.)"
+        },
         {
           "range": "3 ♥",
           "minHearts": 3,
@@ -629,7 +636,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "sports",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "class_clown",
@@ -894,7 +901,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "penyiaran",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "popular_kids",
@@ -940,6 +947,13 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
       "base": 2,
       "confession_target_dc": 16,
       "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Energetic Classmate & Wingwoman",
+          "description": "Super ramah, langsung manggil nama akrab, sibuk meledek Airi dan protagonis. (**Event 1:** Sapaan ceria di depan loker sepatu bersama Airi.)"
+        },
         {
           "range": "3 ♥",
           "minHearts": 3,
@@ -1031,7 +1045,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "photography",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "popular_kids",
@@ -1314,7 +1328,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 10,
     "class_room": "10-1",
     "category_id": "class_1_1",
-    "role": "Love Interest / Target Asmara",
+    "role": "Siswa Housen Academy",
     "club": "sports",
     "club_role": "Anggota Junior (Kelas 10)",
     "archetype": "jock",
@@ -1451,6 +1465,122 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_alisa_mikhailovna",
+    "slug": "alisa_mikhailovna",
+    "name": "Alisa Mikhailovna Voronina (アリサ・ミハイロヴナ・ヴォローニナ)",
+    "furigana": "アリサ・ミハイロヴナ・ヴォローニナ",
+    "nickname": [
+      "Alya",
+      "Alya-san",
+      "Putri Perak Moskow",
+      "Bendahara Dingin"
+    ],
+    "tagline": "Jangan salah paham. Aku meminjamkan catatan matematikaku ini bukan karena mengkhawatirkanmu, tapi karena jika nilaimu jeblok, rata-rata kelas 11-1 akan turun dan itu mengganggu estetikaku. ...Идиот (Bodoh).",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "osis",
+    "role": "Presidium OSIS & Bendahara Komite Pertukaran Pelajar",
+    "club": "student_council",
+    "club_role": "Bendahara Pertukaran Pelajar & Presidium OSIS",
+    "archetype": "popular_kids",
+    "social_class": "elite",
+    "age": 16,
+    "birthday": "7 November",
+    "zodiac": "Scorpio",
+    "mbti": "INTJ",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=alisa_mikhailovna",
+    "stats": {
+      "physique": 11,
+      "intelligent": 16,
+      "looks": 17,
+      "mind": 15,
+      "talent": 14,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 16
+    },
+    "likes": [
+      "Teh hitam hangat dengan sesendok selai stroberi (Varenie)",
+      "Membaca novel klasik Rusia di dekat jendela perpustakaan",
+      "Merapikan pembukuan kas sampai tidak ada selisih satu yen pun",
+      "Seseorang yang berusaha keras tanpa mengeluh",
+      "Menonton video kucing lucu diam-diam di kamarnya"
+    ],
+    "dislikes": [
+      "Orang malas yang suka menggampangkan tugas kelompok",
+      "Dipandang hanya dari penampilan fisiknya",
+      "Ketahuan saat sedang salah tingkah dan bergumam bahasa Rusia",
+      "Makanan pedas yang membakar lidahnya"
+    ],
+    "personality": {
+      "traits": "Tampak sangat dingin, berjarak, dan perfeksionis di luar (*The Unapproachable Ice Beauty*). Ia selalu berbicara dengan nada baku, logis, dan penuh wibawa. Namun di balik topeng ketatnya, Alya sebenarnya sangat emosional, mudah tersipu, dan haus akan apresiasi tulus. Sifat uniknya yang paling ikonik: jika ia merasa gugup, senang, atau cemburu berat pada seseorang, ia akan melontarkan pujian manis atau umpatan manja dalam bahasa Rusia fasih dengan wajah datar, mengira orang di hadapannya tidak akan pernah paham.",
+      "flaws": "Terlalu keras pada diri sendiri dan enggan meminta tolong pada orang lain karena takut terlihat lemah. Ia memikul beban ekspektasi keluarga diplomatik besar sendirian di pundaknya.",
+      "dere_pattern": "Tipe Kuudere / Tsundere Berbahasa Rusia. Jika hatinya luluh, ia akan diam-diam menyelipkan cokelat artisan di meja pemain, atau duduk sangat dekat sambil bergumam: *'Я тебя люблю' (Aku mencintaimu)* lalu membuang muka pura-pura batuk."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Kulit putih pucat mulus bak salju pertama Siberia, rahang ramping elegan, hidung mancung mungil, dan sepasang mata biru kristal es (*glacial crystal blue*) yang tajam namun memancarkan kilau rapuh. Pipi dan telinganya sangat sensitif dan cepat merona merah muda saat emosinya terusik.\n* **Rambut:** Rambut perak platinum panjang lurus sepinggang yang berkilau sejuk di bawah sinar matahari. Poni depannya dipotong rapi membingkai dahi dengan bando kain putih polos (*white Alice headband*) yang menjadi ciri khasnya.\n* **Postur & Gestur:** Tinggi semampai (167 cm), bahu ramping dengan postur tegak sempurna ala bangsawan. Sering menyilangkan tangan di depan dada sambil sedikit mendongak acuh tak acuh.\n* **Seragam & Gaya Berpakaian:** Mengenakan seragam pelaut Housen Academy yang dipadukan dengan rompi rajut (*knit vest*) berwarna biru es pastel tanpa lengan, kaus kaki hitam ketat di bawah lutut, dan sepatu pantofel kulit mengilap.\n* **Aksesori & Barang Bawaan:** Jam tangan wanita tipis berplatina, binder arsip OSIS berwarna putih-perak, dan pulpen perak berukir inisial keluarganya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Teh hitam hangat dengan sesendok selai stroberi (Varenie)"
+      ],
+      "normal": [
+        "Merapikan pembukuan kas sampai tidak ada selisih satu yen pun"
+      ],
+      "disliked": [
+        "Orang malas yang suka menggampangkan tugas kelompok"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_asahina_tenka",
     "slug": "asahina_tenka",
     "name": "Asahina Tenka (朝比奈 天華)",
@@ -1463,7 +1593,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "tagline": "Kamu sudah berjuang keras hari ini, bukan? Duduklah dulu, minum teh hangat ini... Ruang OSIS ini aman, kamu boleh menceritakan apa pun yang membebani hatimu.",
     "grade": 11,
     "class_room": "11-1",
-    "category_id": "class_2_1",
+    "category_id": "osis",
     "role": "Heroine / Target Asmara",
     "club": "student_council",
     "club_role": "Ketua OSIS (Presidium Dewan Siswa)",
@@ -1583,6 +1713,812 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_fujiwara_kenji",
+    "slug": "fujiwara_kenji",
+    "name": "Fujiwara Kenji (藤原 健二)",
+    "furigana": "藤原 健二",
+    "nickname": [
+      "Kenji",
+      "Tuan Muda Fujiwara",
+      "Kalkulator Berjalan",
+      "Bendahara OSIS"
+    ],
+    "tagline": "Semua hal di dunia ini memiliki nilai valuasi objektif, termasuk keberanian kalian. Proposal dana darurat ini saya setujui... tapi pastikan pengembalian investasinya sebanding dengan reputasi Housen!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "osis",
+    "role": "Bendahara Komite OSIS & Pewaris Konglomerat Perbankan",
+    "club": "student_council",
+    "club_role": "Bendahara Komite OSIS",
+    "archetype": "elite",
+    "social_class": "old_money",
+    "age": 16,
+    "birthday": "29 September",
+    "zodiac": "Libra",
+    "mbti": "ESTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=fujiwara_kenji",
+    "stats": {
+      "physique": 10,
+      "intelligent": 17,
+      "looks": 15,
+      "mind": 14,
+      "talent": 14,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 10,
+      "composure_max": 16
+    },
+    "likes": [
+      "Grafik neraca keuangan yang seimbang sempurna",
+      "Jam tangan mekanik Swiss buatan tangan",
+      "Kopi espresso impor",
+      "Negosiasi diskon anggaran belanja festival"
+    ],
+    "dislikes": [
+      "Pengeluaran dana yang tidak memiliki tanda terima resmi",
+      "Berandal yang merusak fasilitas sekolah yang dibeli yayasan",
+      "Makanan cepat saji berminyak"
+    ],
+    "personality": {
+      "traits": "Tampak angkuh dan sombong di awal karena latar belakang keluarga old money-nya, namun sangat adil dan bisa diandalkan dalam urusan logistik.",
+      "flaws": "Mudah panik jika menghadapi situasi kekerasan jalanan yang tidak bisa diselesaikan dengan uang.",
+      "dere_pattern": "Tipe Rich Tsundere Ally. Membiayai logistik dan peralatan party diam-diam sambil berkata: *'Ini murni kalkulasi bisnis, jangan salah paham!'*"
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah bangsawan aristokratik dengan hidung mancung, sepasang mata cokelat hazel kalkulatif di balik kacamata bulat berbingkai emas tipis (*gold-rimmed round glasses*).\n* **Rambut:** Rambut cokelat tua dipomade rapi klimis ke samping dengan kilau terawat.\n* **Postur & Gestur:** Ramping elegan (175 cm), gestur tangannya terukur saat mengetik kalkulator tipis.\n* **Seragam & Gaya Berpakaian:** Blazer Housen custom dari wol Italia halus, kemeja putih dengan kancing manset emas (*gold cufflinks*), dasi sutra emas-merah bergaris.\n* **Aksesori & Barang Bawaan:** Jam tangan Patek Philippe warisan kakeknya, pulpen emas Parker, dan map kulit keuangan OSIS.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Grafik neraca keuangan yang seimbang sempurna"
+      ],
+      "normal": [
+        "Kopi espresso impor"
+      ],
+      "disliked": [
+        "Pengeluaran dana yang tidak memiliki tanda terima resmi"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_hanase_tamanibu",
+    "slug": "hanase_tamanibu",
+    "name": "Hanase Tamanibu (花瀬 玉三)",
+    "furigana": "花瀬 玉三",
+    "nickname": [
+      "Tamanibu",
+      "Tama-senpai",
+      "Ketua Beanie",
+      "Penyihir Kabel"
+    ],
+    "tagline": "Kabel udah dicolok, equalizer udah di-setting flat. Jangan grogi di depan mikrofon... selama ada gw di balik mixer, suara lu bakal terdengar luar biasa di seluruh aula.",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "class_2_2",
+    "role": "Ketua Klub Musik & Sound Engineer",
+    "club": "band",
+    "club_role": "Ketua Klub Musik & Sound Engineer",
+    "archetype": "normies",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "14 Oktober",
+    "zodiac": "Libra",
+    "mbti": "ISFP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=hanase_tamanibu",
+    "stats": {
+      "physique": 11,
+      "intelligent": 14,
+      "looks": 14,
+      "mind": 15,
+      "talent": 17,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 14
+    },
+    "likes": [
+      "Suara petikan bassline analog yang dalam dan bulat",
+      "Mencari kaset piringan hitam langka di toko loak bekas",
+      "Kopi kaleng dingin rasa moka di sela mixing audio",
+      "Topi beanie abu-abu rajut kesayangannya",
+      "Ruang studio musik ber-AC dingin saat siang terik"
+    ],
+    "dislikes": [
+      "Feedback melengking dari speaker monitor yang rusak",
+      "Senar gitar yang putus di tengah-tengah rekaman lagu",
+      "Orang yang menginjak kabel mixer audio di panggung",
+      "Didesak menyelesaikan jadwal konser terburu-buru"
+    ],
+    "personality": {
+      "traits": "Sangat santai, penyabar, berjiwa pengayom bagi adik kelas, dan punya pendengaran audio yang sangat teliti. Ia tidak suka drama kekuasaan dan hanya ingin musik sekolah dinikmati semua kalangan.",
+      "flaws": "Sering begadang menata track audio hingga tertidur di atas sofa ruang klub musik saat pelajaran berlangsung.",
+      "dere_pattern": "Tipe Chill Big-Brother Dere. Sangat suportif, meminjamkan headphone favoritnya, dan meracik aransemen musik khusus untuk mengiringi momen pemain."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah santai bergaris lembut dengan tatapan mata abu-abu perak mengantuk (*sleepy silver-grey eyes*) dihiasi bulu mata panjang. Selalu terlihat rileks dan tenang di bawah tekanan panggung.\n* **Rambut:** Rambut ungu gelap kehitaman (*dark violet-black*) berpotongan shaggy sebahu yang dibiarkan keluar berantakan dari bawah topi kupluk rajut beanie abu-abu arang (*charcoal grey beanie*).\n* **Postur & Gestur:** Tinggi sedang (174 cm), postur agak bungkuk santai, selalu mengalungkan headphone studio kelas profesional di lehernya.\n* **Seragam & Gaya Berpakaian:** Kemeja seragam sekolah yang kancing atasnya terbuka santai, mengenakan kaos dalaman abu-abu gelap dengan kalung tali kulit berliontin jack audio 6.3mm. Celana seragam sedikit longgar dengan sepatu kets kanvas hitam.\n* **Aksesori & Barang Bawaan:** Headphone monitor Audio-Technica hitam melingkar di leher, binder partitur akord lagu, dan rol selotip kabel hitam di saku blazer.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Suara petikan bassline analog yang dalam dan bulat"
+      ],
+      "normal": [
+        "Kopi kaleng dingin rasa moka di sela mixing audio"
+      ],
+      "disliked": [
+        "Feedback melengking dari speaker monitor yang rusak"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_hatsushiba_miku",
+    "slug": "hatsushiba_miku",
+    "name": "Hatsushiba Miku (初芝 ミク)",
+    "furigana": "初芝 ミク",
+    "nickname": [
+      "Miku",
+      "Miku-chi",
+      "Diva Toska",
+      "Ratu Synthesizer"
+    ],
+    "tagline": "Setiap detak jantungmu itu sebenarnya punya ritme BPM sendiri lho! Ayo pasang earphone ini dan dengarkan melodi musim semi yang baru saja kutulis untukmu!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Komposer Musik Digital & Siswi Kelas 11-1",
+    "club": "band",
+    "club_role": "Komposer Musik Elektronik & Synthesizer",
+    "archetype": "creative",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "31 Agustus",
+    "zodiac": "Virgo",
+    "mbti": "ENFP",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=hatsushiba_miku",
+    "stats": {
+      "physique": 10,
+      "intelligent": 14,
+      "looks": 16,
+      "mind": 13,
+      "talent": 18,
+      "luck": 14
+    },
+    "vitals": {
+      "physical_hp_max": 10,
+      "composure_max": 14
+    },
+    "likes": [
+      "Membuat melodi elektronik baru di software DAW laptopnya",
+      "Jus daun bawang segar dingin & permen mint toska",
+      "Melihat ribuan penonton melambaikan glowstick serempak",
+      "Membagikan earphone sebelah kiri untuk mendengarkan lagu baru",
+      "Desain pakaian panggung bertema futuristik cyber-pop"
+    ],
+    "dislikes": [
+      "Baterai laptop atau synthesizer mati mendadak saat composing",
+      "Lagu melodinya dianggap bising atau tidak punya jiwa manusia",
+      "Hujan lebat yang membasahi kabel instrumen panggung",
+      "Suasana hening yang terlalu canggung tanpa alunan musik"
+    ],
+    "personality": {
+      "traits": "Penuh semangat, optimis tanpa batas, dan jenius dalam meramu progresi akord nada digital. Bagi Miku, musik adalah bahasa universal yang mampu menyatukan anak teladan OSIS maupun berandal jalanan yang sedang patah hati.",
+      "flaws": "Sering lupa waktu saat tenggelam dalam proses composing hingga melewatkan jam makan atau tidur di atas keyboard MIDI.",
+      "dere_pattern": "Tipe Genki / Musical Dere. Menjadikan pemain sebagai 'Muse' inspirasi nada cintanya, menulis lirik balada yang didedikasikan secara khusus saat konser panggung festival."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah lonjong mungil dengan kulit cerah bersinar dan sepasang mata toska pirus (*luminous turquoise-cyan*) yang memancarkan energi listrik riang. Senyumannya selalu ceria dan penuh semangat masa muda.\n* **Rambut:** Rambut toska kebiruan (*vibrant aqua-cyan*) super panjang yang dikuncir dua tinggi (*ultra-long twin-tails*) hingga menjuntai melewati pinggulnya, diikat dengan sepasang penjepit rambut digital persegi berwarna hitam-merah muda khas.\n* **Postur & Gestur:** Ramping dan lincah (158 cm), sering melompat kecil saat berjalan, kedua tangannya terbiasa bergerak mengetuk-ngetuk udara mengikuti ketukan nada musik di kepalanya.\n* **Seragam & Gaya Berpakaian:** Modifikasi seragam pelaut Housen tanpa lengan (*sleeveless white blouse*) dengan kerah pelaut abu-abu bergaris toska, dasi toska ramping, dipadukan dengan sarung lengan (*arm-sleeves*) hitam panjang terpisah berpanel aksen equalizer digital mikro. Rok lipit abu-abu pendek dengan trim toska.\n* **Aksesori & Barang Bawaan:** Headset nirkabel ramping melingkar di kepalanya, tas ransel laptop tahan air penuh stiker gelombang suara, dan kabel jack audio warna-warni di saku blus.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Membuat melodi elektronik baru di software DAW laptopnya"
+      ],
+      "normal": [
+        "Melihat ribuan penonton melambaikan glowstick serempak"
+      ],
+      "disliked": [
+        "Baterai laptop atau synthesizer mati mendadak saat composing"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_kagami_rinoka",
+    "slug": "kagami_rinoka",
+    "name": "Kagami Rinoka (鏡 璃乃香)",
+    "furigana": "鏡 璃乃香",
+    "nickname": [
+      "Rino-chan",
+      "Rinoka",
+      "Kitsune-sensei",
+      "Gadis Kacamata Pojok"
+    ],
+    "tagline": "Di kelas ini aku cuma bayangan... gadis kacamata tebal yang duduk paling pojok dan ga pernah diajak bicara. Tapi waktu mikrofon ini menyala di kamarku... ratusan ribu orang mendengarkan suaraku. Jangan bocorin rahasia ini ya, kumohon!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Siswi Kelas 11-1 & VTuber Gaming/Karaoke Rahasia",
+    "club": "broadcasting",
+    "club_role": "Operator Audio & Sound Editor (Kelas 11)",
+    "archetype": "weeb",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "19 Februari",
+    "zodiac": "Pisces",
+    "mbti": "INFP",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kagami_rinoka",
+    "stats": {
+      "physique": 9,
+      "intelligent": 14,
+      "looks": 14,
+      "mind": 15,
+      "talent": 17,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 8,
+      "composure_max": 16
+    },
+    "likes": [
+      "Streaming game horor larut malam sambil teriak kaget",
+      "Mikrofon kondensor audio Shure SM7B kesayangannya",
+      "Makan mie instan ramen mangkuk pedas jam 2 dini hari",
+      "Gantungan kunci rubah virtual bertelinga runcing",
+      "Mendengarkan seseorang memuji suara nyanyiannya dengan tulus"
+    ],
+    "dislikes": [
+      "Doxxing atau identitas aslinya di sekolah terbongkar",
+      "Koneksi internet lag atau drop frame saat live streaming",
+      "Pelajaran olahraga senam irama di depan murid laki-laki",
+      "Orang yang menertawakan impian menjadi penyanyi virtual"
+    ],
+    "personality": {
+      "traits": "Sangat kontras antara persona dunia nyata dan persona virtualnya. Di sekolah, Rinoka adalah gadis pemalu, bicaranya pelan, dan sering gugup jika dipanggil guru. Namun jika ia merasa nyaman berdua dengan pemain atau saat berada di bilik rekaman audio penyiaran, suara aslinya yang merdu, renyah, dan penuh karisma bintang seketika menguar memukau siapa pun yang mendengar.",
+      "flaws": "Rasa percaya diri yang sangat rendah terhadap penampilan fisiknya di dunia nyata (*imposter syndrome*). Ia takut penggemar virtualnya akan kecewa jika tahu siapa sosok asli di balik avatar cantiknya.",
+      "dere_pattern": "Tipe Dange-dere / Shy Streamer Dere. Jika menyukai pemain, ia akan membuatkan lagu akustik khusus yang dinyanyikan saat streaming malam dengan lirik penuh kode rahasia yang hanya dipahami oleh pemain."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah bulat manis yang biasanya tersembunyi di balik kacamata berbingkai bulat tempurung kura-kura (*tortoiseshell round glasses*). Memiliki sepasang mata bulat besar berwarna oranye-amber hangat (*warm honey amber*) yang sangat ekspresif jika kacamata dilepas. Kulitnya putih bersih dengan pipi gembil alami.\n* **Rambut:** Rambut hitam pekat bergelombang lembut dipotong model *shaggy wolf-cut* sebahu yang agak berantakan alami. Sering menyelipkan sebagian rambutnya ke belakang daun telinga kiri.\n* **Postur & Gestur:** Tinggi mungil (153 cm), sering berjalan agak menunduk sambil merapatkan kedua lengan ke tubuhnya seolah ingin menjadi tak kasat mata.\n* **Seragam & Gaya Berpakaian:** Mengenakan seragam pelaut Housen dengan kardigan rajut tebal longgar (*oversized knit cardigan*) berwarna cokelat karamel yang menutupi separuh jemarinya. Rok seragamnya sedikit lebih panjang dari siswi biasa.\n* **Aksesori & Barang Bawaan:** Earphone kabel melingkar di leher, tas sekolah penuh pin gacha indie game, serta gantungan kunci boneka rubah oranye bertelinga api yang menjadi maskot saluran virtualnya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Streaming game horor larut malam sambil teriak kaget"
+      ],
+      "normal": [
+        "Makan mie instan ramen mangkuk pedas jam 2 dini hari"
+      ],
+      "disliked": [
+        "Doxxing atau identitas aslinya di sekolah terbongkar"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_kanzawa_ryuuji",
+    "slug": "kanzawa_ryuuji",
+    "name": "Kanzawa Ryuuji (金沢 竜二)",
+    "furigana": "金沢 竜二",
+    "nickname": [
+      "Ryuuji",
+      "Si Rantai Berkarat",
+      "Jagot Pelabuhan",
+      "Enforcer Touki"
+    ],
+    "tagline": "Lihat teman kalian ini... terikat rapi di atas balok kontainer. Mau dia turun selamat? Serahin uang kas ekskul 500.000 yen kalian sekarang, atau rantai berkarat ini bakal mencium wajah tampan kalian satu per satu!",
+    "grade": 11,
+    "class_room": "SMA Kejuruan Touki (Kelas 11-Pengelasan)",
+    "category_id": "touki",
+    "role": "Komandan Regu Serbu Touki ('Rust Chain')",
+    "club": "sports",
+    "club_role": "Komandan Regu Serbu & Penculik",
+    "archetype": "delinquent",
+    "social_class": "lower_class",
+    "age": 17,
+    "birthday": "13 Maret",
+    "zodiac": "Pisces",
+    "mbti": "ESTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kanzawa_ryuuji",
+    "stats": {
+      "physique": 17,
+      "intelligent": 11,
+      "looks": 12,
+      "mind": 14,
+      "talent": 15,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 18,
+      "composure_max": 14
+    },
+    "likes": [
+      "Mendengar gemerincing rantai motor besi berkarat di tangannya",
+      "Meludahkan puntung rokok ke sepatu musuh",
+      "Menyandera anak-anak sekolah elit",
+      "Menaiki motor chopper bising"
+    ],
+    "dislikes": [
+      "Anak Housen yang bertingkah sok berani di depannya",
+      "Rantai senjatanya terlepas saat duel",
+      "Polisi patroli pelabuhan"
+    ],
+    "personality": {
+      "traits": "Sadis, provokatif, licik, sangat agresif, dan menikmati ketakutan yang terpancar di mata korbannya.",
+      "flaws": "Terlalu sombong dengan jangkauan serangan rantainya, mudah hilang kendali jika senjatanya dilucuti.",
+      "dere_pattern": "Mini-Boss Antagonis. Lawan taktis dalam pertempuran penyelamatan sandera di dalam gudang kontainer."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus kejam dengan sorot mata hijau lumut dingin berbisa (*venomous greenish-grey eyes*), tindik perak di bibir bawah kiri dan alis kanan, sering menyeringai mencemooh lawan.\n* **Rambut:** Rambut hitam jabrik berantakan bertekstur kasar yang jatuh menusuk kening.\n* **Postur & Gestur:** Bertubuh tinggi ramping berotot liat liat petarung jalanan (181 cm, 77 kg), tangan kanannya selalu melilitkan rantai motor berkarat dengan gembok seberat 2 kg di ujungnya.\n* **Seragam & Gaya Berpakaian:** Gakuran hitam kotor terbuka tanpa kemeja dalam, celana longgar bertumpuk dengan sepatu boots kerja pelabuhan.\n* **Aksesori & Barang Bawaan:** Rantai motor berkarat 2 meter dengan gembok kuningan berat, rokok di balik daun telinga, dan perban tinju kotor di pergelangan tangan.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 18,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Mendengar gemerincing rantai motor besi berkarat di tangannya"
+      ],
+      "normal": [
+        "Menyandera anak-anak sekolah elit"
+      ],
+      "disliked": [
+        "Anak Housen yang bertingkah sok berani di depannya"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_kasane_teiko",
+    "slug": "kasane_teiko",
+    "name": "Kasane Teiko (重音 テイコ)",
+    "furigana": "重音 テイコ",
+    "nickname": [
+      "Teto",
+      "Teiko-chan",
+      "Si Bor Ganda",
+      "Ratu Roti Baget"
+    ],
+    "tagline": "Oi oi oi! Siapa bilang radio sekolah cuma boleh nyetel lagu instrumen tidur? Volume maksimal, gitar distorsi distel, dan roti baget di tangan! Kalau Setsuna mau razia, hadapi dulu vokalku!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Penyiar Radio Sekolah, Vokalis Rock & Siswi Kelas 11-1",
+    "club": "broadcasting",
+    "club_role": "Penyiar Utama Radio Istirahat Siang & Vokalis Rock",
+    "archetype": "class_clown",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "1 April",
+    "zodiac": "Aries",
+    "mbti": "ESTP",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kasane_teiko",
+    "stats": {
+      "physique": 12,
+      "intelligent": 12,
+      "looks": 15,
+      "mind": 13,
+      "talent": 17,
+      "luck": 14
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 14
+    },
+    "likes": [
+      "Roti Prancis baget panjang yang renyah dan gurih",
+      "Menyiarkan lagu rock distorsi keras saat jam istirahat siang",
+      "Mengerjai murid teladan dengan lelucon absurd (April Mop)",
+      "Menyanyi vokal serak bertenaga (*screamo / rock belt*)",
+      "Dipuji bahwa gaya rambut bor spiralnya sangat keren"
+    ],
+    "dislikes": [
+      "Dimarahi komite disiplin karena menyetel radio terlalu bising",
+      "Roti baget yang lembek dan tidak renyah",
+      "Orang sok jaim yang tidak bisa diajak bercanda lepas",
+      "Dibilang rambutnya mirip bor penggali tambang"
+    ],
+    "personality": {
+      "traits": "Blak-blakan, penuh energi meledak-ledak, dan sangat setia kawan. Ia tidak segan-segan mendobrak aturan kaku jika aturan itu merugikan teman-temannya. Di balik sikap badungnya, Teiko memiliki kepekaan emosional yang tinggi terhadap ketidakadilan.",
+      "flaws": "Suka bertindak impulsif sebelum berpikir panjang, sering memicu pertengkaran mulut dengan Komite Disiplin.",
+      "dere_pattern": "Tipe Tsundere Usil / Teasing Bakaderu. Caranya menggoda pemain adalah dengan membagikan separuh roti bagetnya, atau mengumumkan pesan cinta terselubung di mikrofon radio sekolah saat bel pulang berbunyi."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah ceria penuh ekspresi jahil dengan sepasang mata merah delima menyala (*fiery ruby red*) yang selalu berbinar mencari kesempatan usil. Sudut bibirnya memiliki satu taring kecil (*snaggletooth / yaeba*) yang mencuat imut saat tertawa menyeringai.\n* **Rambut:** Rambut merah koral cerah menyala (*vibrant coral red*) yang ditata menjadi sepasang kuncir spiral bor melingkar tebal (*twin drill pigtails*) di kedua sisi kepalanya. Poni depannya berpotongan melengkung lucu di atas alis.\n* **Postur & Gestur:** Bertubuh atletis ramping dan gesit (159 cm), sering meletakkan kedua tangan di pinggang dengan tawa bangga, atau mengacungkan roti baget seperti pedang pendek.\n* **Seragam & Gaya Berpakaian:** Seragam pelaut Housen bernuansa abu-abu gelap dengan trim merah koral, dasi pita kupu-kupu merah tua, dipadukan dengan jaket zip-up kulit sintetis hitam berkerah tegak yang sering disampirkan di pundak.\n* **Aksesori & Barang Bawaan:** Ear cuff perak bermotif sayap di telinga kanan, kantong kertas cokelat berisi roti baget hangat, dan mikrofon genggam portabel berperekat stiker tengkorak chibi.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Roti Prancis baget panjang yang renyah dan gurih"
+      ],
+      "normal": [
+        "Mengerjai murid teladan dengan lelucon absurd (April Mop)"
+      ],
+      "disliked": [
+        "Dimarahi komite disiplin karena menyetel radio terlalu bising"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_kiba_touya",
+    "slug": "kiba_touya",
+    "name": "Kiba Touya (木場 闘夜)",
+    "furigana": "木場 闘夜",
+    "nickname": [
+      "Touya",
+      "Taring Malam",
+      "Kapten Konvoi Touki",
+      "Pembalap Liar Pelabuhan"
+    ],
+    "tagline": "Mengaumlah mesin dua tak! Di jalanan aspal malam pelabuhan ini, ga ada yang bisa lolos dari kejaran taring konvoi Touki! Siapkan pemukul kalian, kita ratakan barikade mereka!",
+    "grade": 11,
+    "class_room": "SMA Kejuruan Touki (Kelas 11-Otomotif)",
+    "category_id": "touki",
+    "role": "Kapten Konvoi Motor Touki ('Fang of the Night')",
+    "club": "outdoor",
+    "club_role": "Kapten Konvoi Motor Bōsōzoku Touki",
+    "archetype": "delinquent",
+    "social_class": "lower_class",
+    "age": 17,
+    "birthday": "24 Agustus",
+    "zodiac": "Virgo",
+    "mbti": "ESTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kiba_touya",
+    "stats": {
+      "physique": 16,
+      "intelligent": 11,
+      "looks": 13,
+      "mind": 13,
+      "talent": 16,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 14
+    },
+    "likes": [
+      "Mengebut di jalanan pelabuhan tanpa helm di tengah malam",
+      "Knalpot motor berisik tanpa saringan peredam",
+      "Menghancurkan spion mobil warga",
+      "Goggles motor kuning retro"
+    ],
+    "dislikes": [
+      "Sendo Kyosuke (rival balap jalanan)",
+      "Pengejaran mobil polisi",
+      "Motor yang kehabisan bensin di tengah operasi"
+    ],
+    "personality": {
+      "traits": "Nekat, maniak kecepatan, agresif di atas motor, memimpin puluhan motor bōsōzoku Touki dalam patroli jalanan.",
+      "flaws": "Mudah terdistraksi oleh tantangan balap jalanan dan sering mengabaikan perintah taktis Samejima.",
+      "dere_pattern": "Speedster Antagonis. Menjadi rintangan pengejaran motor di jalanan menuju gudang kontainer."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah liar berantakan dengan seringai gila adrenalin, bekas luka gores di dagu, sepasang mata hitam liar (*wild dark eyes*) yang menyala saat memacu gas motor.\n* **Rambut:** Rambut pirang kuning jagung (*bleached yellow hair*) yang acak-acakan tertiup angin pelabuhan.\n* **Postur & Gestur:** Bertubuh atletis ramping dan liat (177 cm, 72 kg), selalu mengenakan kacamata goggles motor bertinta kuning di lehernya.\n* **Seragam & Gaya Berpakaian:** Jaket kulit motor hitam robek dengan sablon tengkorak bertanduk iblis di dada kiri, celana jins robek di lutut, sepatu boots motor usang.\n* **Aksesori & Barang Bawaan:** Kacamata goggles motor kuning, pipa besi pendek berpelindung karet, dan kunci kontak motor Yamaha RX-King modifikasi.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Mengebut di jalanan pelabuhan tanpa helm di tengah malam"
+      ],
+      "normal": [
+        "Menghancurkan spion mobil warga"
+      ],
+      "disliked": [
+        "Sendo Kyosuke (rival balap jalanan)"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_kisaragi_setsuna",
     "slug": "kisaragi_setsuna",
     "name": "Kisaragi Setsuna (如月 刹那)",
@@ -1596,8 +2532,8 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "tagline": "Berhenti di tempat. Tiga puluh tujuh detik sebelum bel gerbang ditutup, dan pita kerah seragammu miring dua sentimeter ke kiri. Karena hari ini adalah upacara penerimaan siswa baru, aku tidak akan mencatat namamu di buku pelanggaran... Jangan berdiri bengong, kemarikan kerahmu, biar kurapikan.",
     "grade": 11,
     "class_room": "11-2",
-    "category_id": "class_2_2",
-    "role": "Love Interest / Sekretaris OSIS & Ketua Komite Disiplin",
+    "category_id": "osis",
+    "role": "Sekretaris OSIS & Ketua Komite Disiplin",
     "club": "student_council",
     "club_role": "Sekretaris OSIS & Ketua Komite Disiplin",
     "archetype": "nerd",
@@ -1714,6 +2650,348 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_komiya_junta",
+    "slug": "komiya_junta",
+    "name": "Komiya Junta (小宮 隼太)",
+    "furigana": "小宮 隼太",
+    "nickname": [
+      "Junta",
+      "Si Dadu Emas",
+      "Makelar Taruhan",
+      "Rubah Kokuhou"
+    ],
+    "tagline": "Peluang kita menang lawan Touki cuma 28% menurut matematika kertas. Tapi dengan sedikit tipuan dadu dan jebakan debu kapur... persentasenya bisa gw putar jadi 90%! Pasang taruhan kalian sekarang!",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "kokuhou",
+    "role": "Makelar Taruhan & Intel Jalanan Kokuhou",
+    "club": "gaming",
+    "club_role": "Intelijen Jalanan & Makelar Taruhan",
+    "archetype": "class_clown",
+    "social_class": "worker",
+    "age": 16,
+    "birthday": "7 Juli",
+    "zodiac": "Cancer",
+    "mbti": "ESTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=komiya_junta",
+    "stats": {
+      "physique": 12,
+      "intelligent": 15,
+      "looks": 14,
+      "mind": 13,
+      "talent": 15,
+      "luck": 17
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 14
+    },
+    "likes": [
+      "Menebak probabilitas menang-kalah dalam taruhan",
+      "Permen karet mint yang ditiup jadi balon besar",
+      "Mendengar rumor rahasia murid sekolah lain",
+      "Dadu enam sisi dari tulang sintetis"
+    ],
+    "dislikes": [
+      "Orang yang kabur membawa utang taruhan",
+      "Dituduh mencurangi kocokan dadu",
+      "Rencana kaku yang tidak fleksibel"
+    ],
+    "personality": {
+      "traits": "Cerdik, suka berjudi dengan nasib, humoris, pandai mengalihkan perhatian penjaga, dan punya intuisi keberuntungan yang mistis.",
+      "flaws": "Terlalu suka mengambil risiko berbahaya demi sensasi adrenalin.",
+      "dere_pattern": "Tipe Trickster Ally. Memberikan trik pengalihan perhatian dan bonus Luck Point pada lemparan dadu kritis party."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus licik yang tampan dengan sepasang mata keemasan (*cunning golden-fox eyes*) yang selalu berkedip nakal. Sering mengunyah permen karet tiup di pipinya.\n* **Rambut:** Rambut pirang kusam acak-acakan (*bleached dirty-blonde messy hair*) dipotong pendek gaya jalanan.\n* **Postur & Gestur:** Bertubuh ramping gesit (173 cm), tangannya sangat lihai memainkan koin atau dadu di sela jari-jemarinya (*sleight of hand*).\n* **Seragam & Gaya Berpakaian:** Kemeja putih seragam yang dibuka dua kancing atasnya memperlihatkan kaos bergambar kartu remi, kalung tali hitam berliontin dadu mini, celana seragam modis.\n* **Aksesori & Barang Bawaan:** Tiga set dadu keberuntungan di saku, buku catatan taruhan kecil bersampul plastik, dan bungkus permen karet mint.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Menebak probabilitas menang-kalah dalam taruhan"
+      ],
+      "normal": [
+        "Mendengar rumor rahasia murid sekolah lain"
+      ],
+      "disliked": [
+        "Orang yang kabur membawa utang taruhan"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_kuroda_gin",
+    "slug": "kuroda_gin",
+    "name": "Kuroda Gin (黒田 銀)",
+    "furigana": "黒田 銀",
+    "nickname": [
+      "Gin",
+      "Bayangan Tenka",
+      "Si Tanpa Suara",
+      "Pengawal Presidium"
+    ],
+    "tagline": "Tugas saya hanya satu: memastikan tidak ada satu pun marabahaya yang menyentuh Ketua OSIS dan rekan-rekan presidium. Mundur tiga langkah dari pintu ini, atau tanganmu akan terkunci di belakang punggung.",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "osis",
+    "role": "Pengawal Bayangan Presidium OSIS & Siswa Kelas 11-1",
+    "club": "martial_arts",
+    "club_role": "Pengawal Kehormatan Presidium OSIS & Praktisi Aikido",
+    "archetype": "emo",
+    "social_class": "worker",
+    "age": 16,
+    "birthday": "1 November",
+    "zodiac": "Scorpio",
+    "mbti": "ISTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kuroda_gin",
+    "stats": {
+      "physique": 16,
+      "intelligent": 13,
+      "looks": 14,
+      "mind": 16,
+      "talent": 13,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 16
+    },
+    "likes": [
+      "Berdiri dalam kesunyian di sudut ruangan mengawasi pintu",
+      "Teh barley dingin tawar",
+      "Latihan kuncian sendi aikido dan teknik pelucutan senjata",
+      "Melihat Asahina Tenka tersenyum aman"
+    ],
+    "dislikes": [
+      "Orang asing yang mendekati Ketua OSIS secara agresif",
+      "Keributan suara gaduh di dekat ruang kerja presidium",
+      "Gerakan tubuh yang sia-sia"
+    ],
+    "personality": {
+      "traits": "Sangat pendiam, hemat bicara, memiliki kewaspadaan taktis tinggi, dan dedikasi mutlak pada perlindungan Asahina Tenka.",
+      "flaws": "Terlalu kaku dan curiga pada setiap orang baru, sulit mempercayai orang asing.",
+      "dere_pattern": "Tipe Silent Bodyguard Ally. Mengawal pemain dari bayangan koridor dan menyerahkan kunci akses pintu darurat gedung."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus dingin dengan sorot mata abu-abu baja tajam (*piercing steel-grey eyes*) yang waspada mengawasi setiap pergerakan. Jarang sekali menunjukkan senyuman.\n* **Rambut:** Rambut hitam legam dipotong model *wolf-cut* panjang yang sedikit menutupi mata kanannya (*eye-covering bangs*).\n* **Postur & Gestur:** Tinggi jangkung kurus atletis (180 cm), gerak langkahnya nyaris tanpa suara bak bayangan.\n* **Seragam & Gaya Berpakaian:** Seragam Housen hitam kancing penuh yang rapi, sarung tangan kulit tipis tanpa jari (*fingerless black leather glove*) di tangan kiri.\n* **Aksesori & Barang Bawaan:** Sarung tangan kulit, pin lencana perak OSIS tersemat terbalik di kerah dalam blazer, dan borgol nilon pengaman kesiswaan di saku.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Berdiri dalam kesunyian di sudut ruangan mengawasi pintu"
+      ],
+      "normal": [
+        "Latihan kuncian sendi aikido dan teknik pelucutan senjata"
+      ],
+      "disliked": [
+        "Orang asing yang mendekati Ketua OSIS secara agresif"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_mawatari_bando",
+    "slug": "mawatari_bando",
+    "name": "Mawatari Bando (馬渡 坂東)",
+    "furigana": "馬渡 坂東",
+    "nickname": [
+      "Bando",
+      "Si Kunci Inggris",
+      "Mekanik Kokuhou",
+      "Bando-san"
+    ],
+    "tagline": "Kalau motor lu mau lari 120 km/jam lewatin barikade pelabuhan Touki tanpa brebet, serahin ke gw. Tapi ingat, begitu sampai di sana... hajar mereka sampai ga ada rantai yang tersisa!",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "kokuhou",
+    "role": "Mekanik Motor Kokuhou & Tangan Kanan Kazugumi",
+    "club": "scouts",
+    "club_role": "Mekanik Armada Motor Kokuhou",
+    "archetype": "delinquent",
+    "social_class": "worker",
+    "age": 17,
+    "birthday": "9 September",
+    "zodiac": "Virgo",
+    "mbti": "ISTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=mawatari_bando",
+    "stats": {
+      "physique": 15,
+      "intelligent": 13,
+      "looks": 13,
+      "mind": 14,
+      "talent": 16,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 14
+    },
+    "likes": [
+      "Membongkar karburator motor sambil mendengarkan musik rap",
+      "Bandana hitam di dahi penahan keringat",
+      "Kunci inggris serbaguna baja vanadium",
+      "Ramen kuah kental dengan ekstra telur setengah matang"
+    ],
+    "dislikes": [
+      "Anak Touki yang mencuri onderdil motor orang lain",
+      "Hujan yang membuat kabel busi motor mogok",
+      "Orang sok tahu yang meremehkan kerja mekanik"
+    ],
+    "personality": {
+      "traits": "Prakmatis, setia kawan tanpa banyak omong, jenius dalam modifikasi mesin motor dan memahami rute pelarian jalanan.",
+      "flaws": "Kurang peduli pada pelajaran teori sekolah dan sering bolos ke bengkel belakang.",
+      "dere_pattern": "Tipe Loyal Mechanic Ally. Memodifikasi kendaraan jemputan party dan menyiapkan rantai evakuasi cepat."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tampan jalanan berkulit sawo matang terpapar oli dan matahari, senyuman percaya diri yang roguish, sepasang mata tembaga (*copper-brown eyes*) yang tajam menganalisis mekanik mesin. Ada coretan oli tipis di tulang pipi kirinya.\n* **Rambut:** Rambut gimbal pendek bertekstur (*short dreadlocks*) yang diikat ke belakang menjadi kuncir kuda pendek, dilingkari bandana hitam di dahinya.\n* **Postur & Gestur:** Bertubuh liat dan berotot kokoh (179 cm, 76 kg), kedua tangannya kapalan dan kuat mencengkeram besi.\n* **Seragam & Gaya Berpakaian:** Jaket seragam hitam kusam yang bagian lengannya digulung hingga siku, kaos hitam bertuliskan merk busi motor, celana kargo hitam dengan saku penuh baut.\n* **Aksesori & Barang Bawaan:** Bandana hitam di dahi, kunci inggris lipat serbaguna di saku belakang, dan kain lap kain lap microfiber berminyak.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Membongkar karburator motor sambil mendengarkan musik rap"
+      ],
+      "normal": [
+        "Kunci inggris serbaguna baja vanadium"
+      ],
+      "disliked": [
+        "Anak Touki yang mencuri onderdil motor orang lain"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_miruam_solari",
     "slug": "miruam_solari",
     "name": "Miruam Solari (ミリアム・ソラリ)",
@@ -1726,8 +3004,8 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "tagline": "Dunia ini dipenuhi pecundang munafik yang tersenyum manis hanya untuk menusukmu dari belakang demi 'kebaikan bersama'. Jangan berani-berani berbohong di hadapanku... Tunjukkan siapa dirimu sebenarnya, atau enyahlah dari pandanganku.",
     "grade": 11,
     "class_room": "11-1",
-    "category_id": "class_2_1",
-    "role": "Love Interest / Wakil Ketua OSIS & Ketua Klub Kendo",
+    "category_id": "osis",
+    "role": "Wakil Ketua OSIS & Ketua Klub Kendo",
     "club": "student_council, kendo",
     "club_role": "Wakil Ketua OSIS & Ketua Klub Kendo",
     "archetype": "popular_kids",
@@ -1845,6 +3123,808 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_ouga_tesshin",
+    "slug": "ouga_tesshin",
+    "name": "Ouga Tesshin (逢坂 鉄心)",
+    "furigana": "逢坂 鉄心",
+    "nickname": [
+      "Tesshin",
+      "Batu Karang 11-2",
+      "Raksasa Pendiam",
+      "Tembok Housen"
+    ],
+    "tagline": "Kazugumi bilang... teman sekelas ga boleh ada yang terluka. Kamu jalan di belakang tubuhku. Pipa besi mereka ga akan bisa menembus punggung ini.",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "kokuhou",
+    "role": "Raksasa Pelindung Kelas 11-2 & Judoka",
+    "club": "martial_arts",
+    "club_role": "Bouncer Kelas 11-2 & Atlet Judo",
+    "archetype": "jock",
+    "social_class": "worker",
+    "age": 17,
+    "birthday": "25 Desember",
+    "zodiac": "Capricorn",
+    "mbti": "ISFJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=ouga_tesshin",
+    "stats": {
+      "physique": 18,
+      "intelligent": 10,
+      "looks": 12,
+      "mind": 16,
+      "talent": 12,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 22,
+      "composure_max": 16
+    },
+    "likes": [
+      "Roti melon jumbo isi krim mentega manis",
+      "Tidur siang di bawah pohon rindang taman",
+      "Membantu siswi membawakan meja berat",
+      "Bantingan judo ippon bersih di matras"
+    ],
+    "dislikes": [
+      "Orang berisik yang membully teman sekelasnya",
+      "Pakaian yang kekecilan dan robek di ketiak",
+      "Makanan yang porsinya terlalu sedikit"
+    ],
+    "personality": {
+      "traits": "Sangat pendiam, penyayang, setia kawan tiada tara, dan bertindak sebagai perisai pelindung hidup bagi rekan-rekannya di Kokuhou.",
+      "flaws": "Lambat dalam berpikir taktis rumit, namun luar biasa mematikan jika dipicu amarah oleh kekerasan pada sahabatnya.",
+      "dere_pattern": "Tipe Gentle Giant Protector. Membawa tameng pintu atau drum besi untuk menangkis proyektil lawan demi melindungi party."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah persegi lebar berkarakter tenang dan hangat bak raksasa lembut (*gentle giant*), alis tebal lurus, tatapan mata gelap damai (*calm dark eyes*), dan gigi seri depan yang sedikit sompel kecil saat tersenyum ramah.\n* **Rambut:** Kepala cepak plontos sangat pendek rapi (*clean buzzcut*).\n* **Postur & Gestur:** Raksasa bertubuh masif luar biasa tinggi besar (192 cm, 105 kg) dengan dada setebal tembok bata dan lengan berurat kawat.\n* **Seragam & Gaya Berpakaian:** Seragam Housen ukuran XXXL yang kancingnya nyaris meledak menahan otot dadanya, celana panjang longgar dengan sabuk kulit kokoh.\n* **Aksesori & Barang Bawaan:** Bungkus roti melon jumbo di saku, plester perekat kram otot, dan handuk leher katun tebal.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Roti melon jumbo isi krim mentega manis"
+      ],
+      "normal": [
+        "Membantu siswi membawakan meja berat"
+      ],
+      "disliked": [
+        "Orang berisik yang membully teman sekelasnya"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_saotome_riku",
+    "slug": "saotome_riku",
+    "name": "Saotome Riku (早乙女 陸)",
+    "furigana": "早乙女 陸",
+    "nickname": [
+      "Riku",
+      "Saotome",
+      "Pedang Besi 11-1",
+      "Wakil Kendo"
+    ],
+    "tagline": "Pedang kendo bukan untuk menyombongkan kekuatan, tapi untuk mengasah kemurnian jiwa. Jika tekadmu goyah, langkah kakimu di matras akan langsung terbaca lawan.",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Wakil Kapten Klub Kendo & Siswa Kelas 11-1",
+    "club": "kendo",
+    "club_role": "Wakil Kapten Klub Kendo",
+    "archetype": "jock",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "18 Mei",
+    "zodiac": "Taurus",
+    "mbti": "ISTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=saotome_riku",
+    "stats": {
+      "physique": 16,
+      "intelligent": 12,
+      "looks": 14,
+      "mind": 15,
+      "talent": 13,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 14
+    },
+    "likes": [
+      "Latihan tebasan suburi 500 kali setiap fajar",
+      "Minyak pelindung bilah pedang kendo",
+      "Onigiri daging sapi bumbu kecap",
+      "Menjaga kehormatan dojo sekolah"
+    ],
+    "dislikes": [
+      "Siswa yang berlatih setengah hati",
+      "Seragam yang kusut dan kotor",
+      "Trik kotor dalam pertandingan beladiri"
+    ],
+    "personality": {
+      "traits": "Kaku, disiplin, loyal, dan sangat menghormati hierarki dojo. Ia adalah tangan kanan terpercaya Miruam Solari di klub kendo.",
+      "flaws": "Sangat canggung dalam interaksi romantis dan mudah salah tingkah bila diajak bercanda oleh siswi.",
+      "dere_pattern": "Tipe Disciplined Samurai Ally. Meminjamkan perlengkapan pelindung kendo terbaiknya untuk party pemain."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah maskulin persegi dengan tatapan mata abu-abu gelap (*dark grey eyes*) yang tajam, dingin, dan sangat fokus. Kulitnya kecokelatan sehat hasil latihan luar ruangan.\n* **Rambut:** Rambut hitam lurus pendek disisir rapi belah samping (*clean side-parted black hair*).\n* **Postur & Gestur:** Tegak sempurna seperti samurai (178 cm, 74 kg), jalannya mantap tanpa limbung.\n* **Seragam & Gaya Berpakaian:** Seragam Housen yang disetrika licin kancing penuh, dasi terikat kencang rapi, membawa tas pelindung shinai bambu hitam bergaris putih.\n* **Aksesori & Barang Bawaan:** Pelindung pergelangan tangan kulit kendo (*kote protector*) di saku, handuk latihan biru tua.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Latihan tebasan suburi 500 kali setiap fajar"
+      ],
+      "normal": [
+        "Onigiri daging sapi bumbu kecap"
+      ],
+      "disliked": [
+        "Siswa yang berlatih setengah hati"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_sendo_kyosuke",
+    "slug": "sendo_kyosuke",
+    "name": "Sendo Kyosuke (仙道 恭介)",
+    "furigana": "仙道 恭介",
+    "nickname": [
+      "Kyosuke",
+      "Kyo",
+      "Pembalap Liar",
+      "Sepupu Airi"
+    ],
+    "tagline": "Airi itu sepupu gw yang paling berharga. Siapa pun yang berani bikin dia nangis, atau berani nyentuh teman-teman sekelasnya... bakal gw kejar sampai ujung dermaga pelabuhan dan gw seret pake knalpot motor!",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "kokuhou",
+    "role": "Pembalap Liar Sepupu Airi & Enforcer Kokuhou",
+    "club": "sports",
+    "club_role": "Speed Enforcer Kokuhou & Pembalap Liar",
+    "archetype": "delinquent",
+    "social_class": "middle_class",
+    "age": 17,
+    "birthday": "11 Agustus",
+    "zodiac": "Leo",
+    "mbti": "ESTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=sendo_kyosuke",
+    "stats": {
+      "physique": 15,
+      "intelligent": 12,
+      "looks": 16,
+      "mind": 13,
+      "talent": 15,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 14
+    },
+    "likes": [
+      "Motor sport 400cc dua silinder warna merah menyala",
+      "Aroma aspal panas di jalan layang pantai tengah malam",
+      "Melihat sepupunya Airi tersenyum ceria",
+      "Kacamata hitam gaya aviator"
+    ],
+    "dislikes": [
+      "Polisi patroli yang menyita knalpot motornya",
+      "Cowok brengsek yang berani mengganggu atau mempermainkan Airi",
+      "Kecepatan di bawah 80 km/jam"
+    ],
+    "personality": {
+      "traits": "Protektif, modis, pemberani, penyuka kecepatan tinggi, dan sangat menghargai ikatan darah keluarga.",
+      "flaws": "Sangat emosional dan protektif berlebihan (*overprotective*) jika menyangkut keselamatan sepupunya, Sendou Airi.",
+      "dere_pattern": "Tipe Bad-Boy Speedster Ally. Menyediakan konvoi motor sport kecepatan tinggi untuk membelah barikade pengepungan Touki."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tampan modis ala gyaru-o / street racer dengan kulit kecokelatan sehat, senyuman percaya diri yang memikat, sepasang mata hazel menyala (*fiery hazel eyes*), dan anting perak salib (*silver cross earring*) di telinga kirinya.\n* **Rambut:** Rambut cokelat kemerahan (*reddish-brown*) modis ditata model *layered wolf-cut* bertekstur rapi dengan sedikit wax rambut wangi.\n* **Postur & Gestur:** Bertubuh atletis tinggi semampai (181 cm, 75 kg), gesturnya percaya diri dan selalu mengenakan sarung tangan balap kulit tanpa jari.\n* **Seragam & Gaya Berpakaian:** Blazer Housen yang disampirkan di pundak kiri, kemeja seragam terbuka menampakkan kaos hitam grafiti, celana seragam pas badan, jaket bomber motor merah-hitam di motor.\n* **Aksesori & Barang Bawaan:** Kunci motor berlogo Honda CB400, sarung tangan balap kulit, anting salib perak, dan kacamata hitam di saku blazer.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Motor sport 400cc dua silinder warna merah menyala"
+      ],
+      "normal": [
+        "Melihat sepupunya Airi tersenyum ceria"
+      ],
+      "disliked": [
+        "Polisi patroli yang menyita knalpot motornya"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_shinoda_renzo",
+    "slug": "shinoda_renzo",
+    "name": "Shinoda Renzo (篠田 蓮造)",
+    "furigana": "篠田 蓮造",
+    "nickname": [
+      "Renzo",
+      "Ren-chin",
+      "Beatmaker Begadang",
+      "Pangeran Lo-Fi"
+    ],
+    "tagline": "Dunia luar terlalu berisik... Gw lebih suka menyaring kebisingan itu jadi gelombang frekuensi yang enak didengar. Kalau butuh sound effect atau pemancar frekuensi pengacau sinyal, kasih gw lima belas menit.",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Sound Designer, Beatmaker & Siswa Kelas 11-1",
+    "club": "band",
+    "club_role": "Audio Producer & Sequencer",
+    "archetype": "emo",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "22 Oktober",
+    "zodiac": "Scorpio",
+    "mbti": "INTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=shinoda_renzo",
+    "stats": {
+      "physique": 10,
+      "intelligent": 15,
+      "looks": 14,
+      "mind": 15,
+      "talent": 17,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 10,
+      "composure_max": 14
+    },
+    "likes": [
+      "Membuat bass drum 808 dan synth pad yang mengambang",
+      "Minuman berenergi Monster Energy dingin rasa citrus",
+      "Suasana sunyi malam hari di kamarnya",
+      "Headphone in-ear monitor custom"
+    ],
+    "dislikes": [
+      "Sinar matahari pagi yang terlalu terik menyilaukan mata",
+      "Pelajaran olahraga lari maraton",
+      "Melodi lagu pop murahan yang tidak punya kedalaman chord"
+    ],
+    "personality": {
+      "traits": "Introvert, pendiam, bicaranya hemat kata, namun sangat loyal pada lingkaran teman dekatnya dan berbakat besar dalam rekayasa audio digital.",
+      "flaws": "Sering kelelahan di siang hari dan kurang peduli pada interaksi formal sekolah.",
+      "dere_pattern": "Tipe Quiet Emo Producer Ally. Memasang pengacau frekuensi sinyal (jammer) untuk melumpuhkan komunikasi geng Touki saat operasi."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus artistik dengan kulit agak pucat, kantung mata tipis akibat sering begadang membuat musik, dan sepasang mata hitam obsidian sayu (*sleepy dark eyes*) yang menyala fokus saat mendengarkan audio.\n* **Rambut:** Rambut hitam berantakan model *choppy layered* dengan ujung poni depan diberi aksen cat hijau neon (*neon-green dyed tips*).\n* **Postur & Gestur:** Bertubuh kurus jangkung (177 cm), jemarinya ramping dan selalu bergerak mengetuk ritme di meja atau saku baju.\n* **Seragam & Gaya Berpakaian:** Mengenakan hoodie hitam oversized bertuliskan logo audio di balik blazer Housen yang dibiarkan terbuka, celana seragam sedikit longgar, sepatu kets hitam polos.\n* **Aksesori & Barang Bawaan:** In-ear monitor custom kabel transparan melingkar di daun telinga, pemutar audio hi-res portabel, dan kabel adaptor jack di sakunya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Membuat bass drum 808 dan synth pad yang mengambang"
+      ],
+      "normal": [
+        "Suasana sunyi malam hari di kamarnya"
+      ],
+      "disliked": [
+        "Sinar matahari pagi yang terlalu terik menyilaukan mata"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_tahagusa_kazugumi",
+    "slug": "tahagusa_kazugumi",
+    "name": "Tahagusa Kazugumi (田端 嘉組)",
+    "furigana": "田端 嘉組",
+    "nickname": [
+      "Kazugumi",
+      "Kazu",
+      "Bos Tempat Sampah",
+      "Srigala Housen"
+    ],
+    "tagline": "Dengar baik-baik bocah baru. Di depan gerbang sakura lu boleh tunduk sama aturan OSIS. Tapi begitu lu melangkah ke jalanan luar, aturan yang berlaku cuma satu: siapa yang berani nyentuh lambang Housen, bakal gw hajar sampai ga bisa jalan pulang!",
+    "grade": 11,
+    "class_room": "11-2",
+    "category_id": "kokuhou",
+    "role": "Ketua Lapangan Geng Berandal Kokuhou",
+    "club": "martial_arts",
+    "club_role": "Ketua Lapangan Kokuhou (Geng Belakang Sekolah)",
+    "archetype": "delinquent",
+    "social_class": "worker",
+    "age": 17,
+    "birthday": "5 Mei",
+    "zodiac": "Taurus",
+    "mbti": "ESTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=tahagusa_kazugumi",
+    "stats": {
+      "physique": 17,
+      "intelligent": 11,
+      "looks": 14,
+      "mind": 15,
+      "talent": 13,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 18,
+      "composure_max": 14
+    },
+    "likes": [
+      "Adu panco dan baku hantam tangan kosong satu lawan satu yang jantan",
+      "Menghisap rokok murah di sofa rongsokan belakang sekolah",
+      "Kopi kaleng pahit hangat saat angin senja bertiup",
+      "Menjaga adik kelas dari gangguan preman sekolah luar",
+      "Mendengarkan kisah pertempuran legendaris Kurogane Tetsuo"
+    ],
+    "dislikes": [
+      "Berandal pengecut yang main keroyokan atau memakai senjata tajam",
+      "Anak SMA Touki yang suka memeras murid tak berdaya",
+      "Orang sok suci yang memandang rendah anak berandal tanpa tahu luka hidup mereka",
+      "Komite disiplin yang merazia bungkus rokoknya"
+    ],
+    "personality": {
+      "traits": "Tegas, liar, menjunjung tinggi kode etik petarung jalanan (*Noble Banchou*). Ia menolak memeras warga atau menyakiti perempuan dan anak kecil. Kepemimpinannya didasarkan pada rasa hormat dan darah persaudaraan.",
+      "flaws": "Sangat keras kepala dan mudah terpancing emosinya jika nama baik faksi atau kehormatan sekolahnya dihina.",
+      "dere_pattern": "Tipe Delinquent Bro / Tsundere Protektif. Mengajarkan teknik tinju pada pemain, membelikan ramen mangkuk ganda, dan pasang badan di garis depan saat musuh menyerbu."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tampan keras berahang tegas dengan bekas luka goresan perkelahian di rahang kiri. Sepasang mata tajam berwarna cokelat madu liar (*feral amber-brown*) bak serigala lapar. Di batang hidungnya selalu tertempel plester medis putih (*adhesive bandage*).\n* **Rambut:** Potongan rambut *undercut* pirang gelap bertekstur kasar, bagian atasnya disisir berantakan ke belakang (*slicked-back textured quiff*).\n* **Postur & Gestur:** Bertubuh liat, tegap, dan berotot kokoh (182 cm). Sering berjalan dengan kedua tangan di saku celana, dagu terangkat menantang siapa pun yang menatap matanya.\n* **Seragam & Gaya Berpakaian:** Jaket seragam hitam (*gakuran*) yang seluruh kancingnya dibuka memperlihatkan kaos dalaman hitam polos pas badan, rantai dompet perak tipis di pinggang, dan celana longgar khas berandal dengan sepatu boots kulit hitam usang.\n* **Aksesori & Barang Bawaan:** Plester hidung cadangan di saku jaket, korek api zippo kuningan, dan perban tinju melilit pergelangan tangannya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Adu panco dan baku hantam tangan kosong satu lawan satu yang jantan"
+      ],
+      "normal": [
+        "Kopi kaleng pahit hangat saat angin senja bertiup"
+      ],
+      "disliked": [
+        "Berandal pengecut yang main keroyokan atau memakai senjata tajam"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_vesna_strivozha",
+    "slug": "vesna_strivozha",
+    "name": "Vesna Strivozha (ヴェスナ・ストリヴォージャ)",
+    "furigana": "ヴェスナ・ストリヴォージャ",
+    "nickname": [
+      "Vesna",
+      "Snowy Banquet's Blade",
+      "Putri Peri Anggar",
+      "Komandan Vila"
+    ],
+    "tagline": "Titel komandan atau putri bangsawan bisa menunggu di depan pintu. Di atas matras anggar ini, hanya ada kecepatan pedang dan ketulusan hatimu yang berbicara. Ayo, tunjukkan padaku apakah tekadmu bisa menembus badai esku!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Komandan Siswa Tamu Snezhnaya, Atlet Anggar & Siswi Kelas 11-1",
+    "club": "martial_arts",
+    "club_role": "Kapten Tamu Klub Anggar Modern (*Modern Fencing*)",
+    "archetype": "popular_kids",
+    "social_class": "elite",
+    "age": 16,
+    "birthday": "23 September",
+    "zodiac": "Libra",
+    "mbti": "ENTP",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=vesna_strivozha",
+    "stats": {
+      "physique": 15,
+      "intelligent": 14,
+      "looks": 17,
+      "mind": 14,
+      "talent": 17,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 14,
+      "composure_max": 14
+    },
+    "likes": [
+      "Latihan anggar pedang rapier di aula berkaca saat pagi berkabut",
+      "Tarian pesta dansa musim semi (*Spring Morning Dance*)",
+      "Matahari cerah setelah badai salju panjang",
+      "Kue tartlet madu dingin dengan hiasan kelopak gula es",
+      "Melihat kucing liar bermain di taman (suka menyelamatkan hewan kecil)"
+    ],
+    "dislikes": [
+      "Protokol bangsawan yang terlalu kaku dan membosankan",
+      "Ksatria atau petarung yang menggunakan trik curang dan racun",
+      "Orang yang menyentuh ujung pedang anggarnya tanpa izin",
+      "Hari yang terlalu panas dan lembap di musim panas"
+    ],
+    "personality": {
+      "traits": "Bebas, berjiwa petualang, menjunjung tinggi kehormatan pedang, namun sangat suka bercanda dan bermain trik santai di waktu luangnya. Meskipun berasal dari klan Strivozha yang terhormat, Vesna membenci formalitas aristokrat yang sombong dan lebih suka bergaul akrab dengan murid biasa yang tulus.",
+      "flaws": "Terkadang terlalu percaya diri dengan kelincahan fisiknya hingga meremehkan bahaya politik kotor geng jalanan.",
+      "dere_pattern": "Tipe Ojou-sama Ksatria yang Bebas (Knight-Princess Dere). Menghargai keberanian dan integritas. Jika jatuh cinta, ia akan menantang pemain berdansa di bawah guyuran bunga sakura dan menghadiahkan lencana kristal es pelindung keluarga Strivozha."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah bangsawan bergaris halus yang sangat cantik memesona bak peri es mitologi Slavic. Memiliki sepasang telinga panjang berujung runcing (*elongated pointed elf-ears*) khas garis darah Vila kuno. Sepasang matanya berwarna biru toska (*radiant aquamarine/cyan*) dengan pola pupil bintang berujung runcing yang berkilau pendar, dihiasi rona merah muda lembut di kedua pipinya. Senyumannya cerah, anggun, dan penuh percaya diri.\n* **Rambut:** Rambut pirang emas bercahaya (*vibrant golden-blonde*) panjang yang ditata menjadi kuncir kuda tinggi (*high sweeping ponytail*) yang memilin menjadi spiral drill tebal anggun di bagian belakang, diikat dengan pita sutra berwarna toska-hijau laut (*teal ribbon bow*). Poni depannya lurus rapi membingkai dahi dengan juntaian ikal melingkar lembut di samping pipi dan melewati telinga peri runcingnya.\n* **Postur & Gestur:** Bertubuh ramping semampai bak atlet seluncur es (*figure skater grace*, tinggi 166 cm), gerakannya luar biasa lincah dan berwibawa. Sering meletakkan satu tangan di pinggang rampingnya sementara tangan kanannya memutar pedang anggar rapier dengan presisi mematikan.\n* **Seragam & Gaya Berpakaian:** Modifikasi seragam anggar Housen berpotongan korset putih-toska muda (*seafoam/cyan*) tanpa bahu dengan piping putih dan aksen filigri emas aristokratik. Di pinggulnya terikat pita besar berwarna persik (*coral/peach ribbon bow*) dengan gesper lambang emas kepingan salju. Mengenakan sarung tangan putih anggar berenda dan sepatu bot anggar putih berhak emas.\n* **Aksesori & Barang Bawaan:** Tiara kristal es perak bermahkotakan batu permata sian berlian di keningnya, pedang rapier anggar berujung kristal mawar es, dan bros lambang Snezhnaya Druzhna di kerahnya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Latihan anggar pedang rapier di aula berkaca saat pagi berkabut"
+      ],
+      "normal": [
+        "Matahari cerah setelah badai salju panjang"
+      ],
+      "disliked": [
+        "Protokol bangsawan yang terlalu kaku dan membosankan"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_yuki_haruto",
+    "slug": "yuki_haruto",
+    "name": "Yuki Haruto (結城 悠斗)",
+    "furigana": "結城 悠斗",
+    "nickname": [
+      "Haruto",
+      "Haru-kun",
+      "Si Rubah Lensa",
+      "Mata-mata Sekolah"
+    ],
+    "tagline": "Lensa kamera gw ga pernah bohong. Lu mau tau titik persembunyian anak-anak Touki di pelabuhan? Gw punya foto satelit dan denah gudangnya... tentu dengan harga barter informasi yang pas, kawan.",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Ketua Ekskul Fotografi & Informan Rahasia Sekolah",
+    "club": "photography",
+    "club_role": "Ketua Ekskul Fotografi & Jurnalistik",
+    "archetype": "popular_kids",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "14 Februari",
+    "zodiac": "Aquarius",
+    "mbti": "ENTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=yuki_haruto",
+    "stats": {
+      "physique": 11,
+      "intelligent": 15,
+      "looks": 16,
+      "mind": 14,
+      "talent": 15,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 14
+    },
+    "likes": [
+      "Menangkap ekspresi candid murid sekolah yang sedang tersipu",
+      "Kamera mirrorless lensa prime 50mm f/1.2",
+      "Kopi susu dingin di taman tengah",
+      "Gosip hangat seputar persaingan faksi sekolah"
+    ],
+    "dislikes": [
+      "Foto yang buram atau out of focus",
+      "Guru yang menyita kartu memori kameranya",
+      "Orang yang berpose terlalu kaku dan palsu"
+    ],
+    "personality": {
+      "traits": "Ceria, ramah, pandai bergaul dengan semua lingkaran sosial, namun menyimpan jaringan informasi intelijen sekolah yang sangat luas.",
+      "flaws": "Suka mengintip dan merekam peristiwa berbahaya tanpa memikirkan keselamatan dirinya sendiri.",
+      "dere_pattern": "Tipe Charming Information Broker. Memberikan peta taktis dan intel foto lawan secara gratis demi keselamatan teman dekatnya."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tampan modis dengan senyuman rubah ramah (*sly fox smile*), sepasang mata violet gelap (*dark violet eyes*) yang jeli mengamati sekeliling. Telinga kirinya dihiasi anting perak kecil.\n* **Rambut:** Rambut cokelat abu-abu pirang (*ash-brown wavy hair*) berombak santai yang sebagian diikat kuncir kecil di belakang kepala (*mini half-up bun*).\n* **Postur & Gestur:** Ramping lincah (176 cm), kamera mirrorless hitam selalu tergantung santai di lehernya, siap membidik dalam sepersekian detik.\n* **Seragam & Gaya Berpakaian:** Blazer Housen yang tidak dikancingkan, kemeja putih kasual dengan dasi longgar, celana panjang slim-fit dengan sepatu kets modis.\n* **Aksesori & Barang Bawaan:** Kamera Sony Alpha mirrorless dengan tali kulit cokelat, tas selempang lensa, dan beberapa kartu SD cadangan.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Menangkap ekspresi candid murid sekolah yang sedang tersipu"
+      ],
+      "normal": [
+        "Kopi susu dingin di taman tengah"
+      ],
+      "disliked": [
+        "Foto yang buram atau out of focus"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_saegusa_koharu",
     "slug": "saegusa_koharu",
     "name": "Saegusa Koharu (三枝 小春)",
@@ -1859,7 +3939,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 12,
     "class_room": "12-1",
     "category_id": "class_3_1",
-    "role": "Love Interest / Ketua Klub Drama & Koordinator Panggung Budaya",
+    "role": "Ketua Klub Drama & Koordinator Panggung Budaya",
     "club": "drama",
     "club_role": "Ketua Klub Drama & Sutradara Panggung Utama (Senior Kelas 12)",
     "archetype": "popular_kids",
@@ -1989,7 +4069,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 12,
     "class_room": "12-1",
     "category_id": "class_3_1",
-    "role": "Love Interest / Senior Kapten Kendo & Mentor Dojo (Kelas 12-1)",
+    "role": "Senior Kapten Kendo & Mentor Dojo (Kelas 12-1)",
     "club": "kendo",
     "club_role": "Senior Kapten Kendo & Mentor Kehormatan Dojo",
     "archetype": "jock",
@@ -2119,7 +4199,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": 12,
     "class_room": "12-2",
     "category_id": "class_3_2",
-    "role": "Love Interest / Ketua Klub Memasak & Koordinator Kafe Sekolah",
+    "role": "Ketua Klub Memasak & Koordinator Kafe Sekolah",
     "club": "cooking",
     "club_role": "Ketua Klub Memasak (Senior Kelas 12)",
     "archetype": "normies",
@@ -2236,6 +4316,238 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_heinrich_vogel",
+    "slug": "heinrich_vogel",
+    "name": "Dr. Heinrich Vogel (ハインリヒ・フォーゲル)",
+    "furigana": "ハインリヒ・フォーゲル",
+    "nickname": [
+      "Dr. Vogel",
+      "Sensei Vogel",
+      "Ilmuwan Gila",
+      "Profesor Belerang"
+    ],
+    "tagline": "Wunderbar! Kenapa kalian memikirkan perkelahian jalanan primitif dengan otot, kalau sedikit campuran serbuk belerang dan kalium nitrat ini bisa menciptakan tirai asap tebal yang menutupi pelarian kalian dalam hitungan detik? Sains adalah seni penyelamatan sejati!",
+    "grade": "Faculty",
+    "class_room": "Faculty (Laboratorium Kimia Gedung Sains Lantai 2)",
+    "category_id": "faculty",
+    "role": "Guru Kimia & Pembimbing Kelompok Ilmiah Remaja (KIR)",
+    "club": "science",
+    "club_role": "Guru Pembimbing Kelompok Ilmiah Remaja (KIR)",
+    "archetype": "faculty",
+    "social_class": "middle_class",
+    "age": 39,
+    "birthday": "11 November",
+    "zodiac": "Scorpio",
+    "mbti": "INTP",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=heinrich_vogel",
+    "stats": {
+      "physique": 10,
+      "intelligent": 18,
+      "looks": 13,
+      "mind": 16,
+      "talent": 16,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 10,
+      "composure_max": 16
+    },
+    "likes": [
+      "Reaksi kimia eksotermik yang menghasilkan percikan warna-warni dan ledakan kecil",
+      "Membaca jurnal ilmiah kuantum terbaru sambil mengaduk teh dengan batang kaca",
+      "Siswa yang memiliki rasa penasaran sains tanpa takut kotor",
+      "Kue pretzel asin mentega dan sosis bratwurst panggang",
+      "Menemukan kegunaan taktis dari senyawa kimia sederhana"
+    ],
+    "dislikes": [
+      "Regulasi pemesanan bahan reagen kimia yang birokratis dari wakasek",
+      "Siswa yang ceroboh menuangkan air ke dalam asam sulfat pekat",
+      "Hari-hari yang membosankan tanpa ada eksperimen baru di lab",
+      "Bau pengharum ruangan sintetis murahan"
+    ],
+    "personality": {
+      "traits": "Eksentrik, cerdas luar biasa, bicara cepat dengan intonasi antusias, dan sangat menyukai eksperimen terapan. Ia melihat dunia sebagai reaksi kimia raksasa.",
+      "flaws": "Sering mengabaikan protokol keamanan dasar demi melihat hasil reaksi kimia spektakuler.",
+      "dere_pattern": "Tipe Mad Scientist Ally. Bersedia meracikkan bom asap kimia, flashbang sederhana, atau cairan pelarut karat gembok untuk membantu misi penyelamatan pemain."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah pria ekspatriat Jerman berusia 39 tahun yang tampan berkarakter, hidung mancung tajam, dan sepasang mata hijau hazel (*hazel-green eyes*) yang selalu menyala penuh gairah intelektual. Sering terlihat senyuman eksentrik yang sulit ditebak di sudut bibirnya.\n* **Rambut:** Rambut pirang jerami (*straw-blonde*) bergelombang acak-acakan yang agak panjang sebahu bawah telinga.\n* **Postur & Gestur:** Tinggi kurus semampai (181 cm), sering bergerak cepat dari satu meja lab ke meja lain, memegang tabung reaksi dengan gestur anggun.\n* **Seragam & Gaya Berpakaian:** Mengenakan jas laboratorium putih panjang (*white lab coat*) yang memiliki bekas noda kimia tipis di ujung saku, kemeja putih berlengan digulung, rompi rajut wol cokelat kotak-kotak (*tweed vest*), dasi hijau tua longgar, dan celana kain cokelat tua.\n* **Aksesori & Barang Bawaan:** Kacamata pelindung lab (*safety goggles*) berbingkai karet yang selalu terpasang di dahinya, pipet ukur di saku dada, dan buku catatan rumus bersampul kulit tua.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Reaksi kimia eksotermik yang menghasilkan percikan warna-warni dan ledakan kecil"
+      ],
+      "normal": [
+        "Siswa yang memiliki rasa penasaran sains tanpa takut kotor"
+      ],
+      "disliked": [
+        "Regulasi pemesanan bahan reagen kimia yang birokratis dari wakasek"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_gonda_gennosuke",
+    "slug": "gonda_gennosuke",
+    "name": "Gonda Gennosuke (権田 源之助)",
+    "furigana": "権田 源之助",
+    "nickname": [
+      "Pak Gonda",
+      "Gonda-san",
+      "Paman Satpam",
+      "Beruang Gerbang"
+    ],
+    "tagline": "Anak-anak... kalau kalian mau keluar lewat pintu belakang, jangan sampai ketahuan Pak Kurosaki ya. Ini bapak bawain taiyaki hangat dua biji. Jaga diri kalian baik-baik di jalanan luar, dan pastikan kalian pulang utuh sebelum matahari tenggelam!",
+    "grade": "Faculty",
+    "class_room": "Faculty (Pos Keamanan Gerbang Sakura)",
+    "category_id": "faculty",
+    "role": "Kepala Petugas Keamanan Gerbang Utama Housen",
+    "club": "outdoor",
+    "club_role": "Kepala Petugas Keamanan Sekolah",
+    "archetype": "faculty",
+    "social_class": "worker",
+    "age": 52,
+    "birthday": "10 Juni",
+    "zodiac": "Gemini",
+    "mbti": "ISFJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=gonda_gennosuke",
+    "stats": {
+      "physique": 16,
+      "intelligent": 11,
+      "looks": 11,
+      "mind": 15,
+      "talent": 12,
+      "luck": 14
+    },
+    "vitals": {
+      "physical_hp_max": 18,
+      "composure_max": 16
+    },
+    "likes": [
+      "Menyesap teh hijau hangat dari termos tua di pos gerbang",
+      "Makan roti taiyaki isi pasta kacang merah hangat",
+      "Menyapa murid yang datang pagi dengan senyuman hangat",
+      "Merawat tanaman bonsai mini di samping pos satpam",
+      "Mendengarkan siaran pertandingan bisbol sore hari lewat radio kecil"
+    ],
+    "dislikes": [
+      "Preman luar sekolah yang nongkrong mengganggu siswi di dekat halte bus",
+      "Hari hujan badai yang membuat daun sakura menyumbat selokan gerbang",
+      "Orang tua murid sombong yang memarkir mobil sembarangan di depan gerbang",
+      "Melihat murid Housen pulang dengan wajah terluka atau menangis"
+    ],
+    "personality": {
+      "traits": "Sangat ramah, protektif, pemaaf, dan tahu seluk-beluk jam kabur seluruh murid nakal. Ia adalah benteng pertama yang melindungi Housen dari ancaman dunia luar.",
+      "flaws": "Sering tidak tega menghukum murid dan mudah disogok dengan cemilan manis atau sapaan hangat.",
+      "dere_pattern": "Tipe Kind Uncle / Guardian Mentor. Membukakan gerbang belakang sekolah secara rahasia, memberikan alibi aman jika murid terlambat kembali dari misi."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah bundar kebapakan berusia 52 tahun dengan kulit kecokelatan terpapar matahari, kerutan tawa hangat di sudut mata (*kind laugh lines*), dan kumis tebal abu-abu keperakan (*thick grey walrus mustache*) yang ramah.\n* **Rambut:** Rambut hitam berseling uban pendek dipotong rapi tertutup topi seragam.\n* **Postur & Gestur:** Bertubuh tinggi besar gempal bak beruang ramah (183 cm, 92 kg). Langkahnya tenang dan mantap, memancarkan rasa aman bagi seluruh murid.\n* **Seragam & Gaya Berpakaian:** Mengenakan seragam petugas keamanan resmi Housen berwarna biru tua (*navy security uniform*) lengkap dengan tanda pangkat emas di pundak, dasi hitam, ikat pinggang kulit hitam tebal, dan topi pet satpam biru tua yang sering dimiringkan santai.\n* **Aksesori & Barang Bawaan:** Ring kunci master gerbang sekolah kuningan tebal, senter patroli berat, radio genggam walkie-talkie di pundak, dan bungkus kantong kertas cokelat berisi kue hangat.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Menyesap teh hijau hangat dari termos tua di pos gerbang"
+      ],
+      "normal": [
+        "Menyapa murid yang datang pagi dengan senyuman hangat"
+      ],
+      "disliked": [
+        "Preman luar sekolah yang nongkrong mengganggu siswi di dekat halte bus"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_hasumi_chihiro",
     "slug": "hasumi_chihiro",
     "name": "Hasumi Chihiro (蓮見 千尋)",
@@ -2250,7 +4562,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": "Faculty",
     "class_room": "10-1 (Wali Kelas) & Ruang Guru (Staff Room)",
     "category_id": "faculty",
-    "role": "Love Interest / Wali Kelas 10-1 & Guru Sastra Jepang",
+    "role": "Wali Kelas 10-1 & Guru Sastra Jepang",
     "club": "literature",
     "club_role": "Guru Pembina (Faculty Advisor)",
     "archetype": "faculty",
@@ -2278,7 +4590,8 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
       "Kopi kaleng hitam tanpa gula & bir kaleng dingin sepulang mengajar",
       "Jam mengajar yang selesai 10 menit lebih cepat agar bisa rebahan",
       "Murid yang mandiri, tidak banyak drama, & tidak menambah tumpukan revisi esai",
-      "Bantuan membawakan tumpukan kertas ujian & dipijat pundaknya yang pegal"
+      "Bantuan membawakan tumpukan kertas ujian & dipijat pundaknya yang pegal",
+      "Kucing kampung belang tiga gembul peliharaannya di apartemen (Kitikiti Patuti) & foto-foto cakar empuknya"
     ],
     "dislikes": [
       "Rapat dewan guru mendadak di hari Jumat sore yang bertele-tele",
@@ -2387,6 +4700,124 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_kashisaka_seichi",
+    "slug": "kashisaka_seichi",
+    "name": "Kashisaka Seichi (樫坂 征一)",
+    "furigana": "樫坂 征一",
+    "nickname": [
+      "Pak Seichi",
+      "Kashisaka-sensei",
+      "Pelatih Tinju",
+      "Banteng Gymnasium"
+    ],
+    "tagline": "Tangan lu dikasih tuhan buat melindungi kawan dan membimbing yang lemah, bukan buat mukul orang di gang sempit! Pasang sarung tinju lu, masuk ke ring. Kalau lu bisa tahan tiga ronde lawan bapak, baru bapak dengerin alasan lu bolos!",
+    "grade": "Faculty",
+    "class_room": "Faculty (Gymnasium & Ruang Olahraga)",
+    "category_id": "faculty",
+    "role": "Guru Pendidikan Jasmani & Pelatih Tinju Housen",
+    "club": "sports",
+    "club_role": "Guru Pembina Olahraga & Pelatih Tinju",
+    "archetype": "faculty",
+    "social_class": "worker",
+    "age": 34,
+    "birthday": "28 Juli",
+    "zodiac": "Leo",
+    "mbti": "ESTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kashisaka_seichi",
+    "stats": {
+      "physique": 18,
+      "intelligent": 12,
+      "looks": 14,
+      "mind": 16,
+      "talent": 13,
+      "luck": 11
+    },
+    "vitals": {
+      "physical_hp_max": 20,
+      "composure_max": 16
+    },
+    "likes": [
+      "Suara samsak tinju yang berdentum keras terkena pukulan bersih",
+      "Melihat murid berandal belajar menyalurkan amarahnya ke olahraga positif",
+      "Dada ayam rebus, nasi mangkuk besar, dan susu kedelai dingin",
+      "Peluit perak yang selalu tergantung di lehernya",
+      "Membantu anak-anak bermasalah menemukan tujuan hidup"
+    ],
+    "dislikes": [
+      "Pengecut yang memukul orang lain dari belakang",
+      "Rokok di area sekolah (ia punya indera penciuman sangat tajam)",
+      "Murid yang menyerah sebelum ronde pertarungan selesai",
+      "Rapat birokrasi guru yang memotong jam latihan fisik"
+    ],
+    "personality": {
+      "traits": "Tegas, bersuara menggelegar, namun memiliki hati yang sangat hangat dan kebapakan. Bagi Seichi, tidak ada anak nakal yang tidak bisa diselamatkan; ring tinju adalah tempatnya mendidik jiwa mereka.",
+      "flaws": "Kurang peka terhadap intrik politik yayasan dan sering bertindak mendahului izin kepala sekolah jika menyangkut keselamatan muridnya.",
+      "dere_pattern": "Tipe Tough-Love Coach Mentor. Membelikan makan siang bergizi bagi murid yang kelelahan, memuji perkembangan teknik fisik dengan tepukan pundak yang mantap."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah maskulin tampan berusia 34 tahun dengan tulang pipi tegas, dagu berbelah tipis, dan alis tebal berkarakter. Sepasang matanya berwarna cokelat tua hangat (*warm rugged brown eyes*) yang bisa berubah menjadi tatapan elang petarung saat melangkah ke matras.\n* **Rambut:** Rambut hitam pekat berpotongan *crew-cut* rapi dan maskulin.\n* **Postur & Gestur:** Bertubuh kekar seperti banteng tempur dengan bahu bidang dan dada tebal (185 cm, 86 kg). Sering berdiri tegap bersedekap dengan peluit perak tergantung di dada.\n* **Seragam & Gaya Berpakaian:** Mengenakan setelan jaket training olahraga Housen berwarna merah marun dan putih dengan ritsleting terbuka sedikit, kaos polo putih berkerah, celana training hitam sporty, dan sepatu lari ASICS tebal.\n* **Aksesori & Barang Bawaan:** Peluit perak bertali merah di leher, stopwatch digital di pergelangan tangan kiri, handuk putih kecil di pundak, dan plester olahraga di buku jemari tangannya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 18,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Suara samsak tinju yang berdentum keras terkena pukulan bersih"
+      ],
+      "normal": [
+        "Dada ayam rebus",
+        "nasi mangkuk besar",
+        "dan susu kedelai dingin"
+      ],
+      "disliked": [
+        "Pengecut yang memukul orang lain dari belakang"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_kujou_reiko",
     "slug": "kujou_reiko",
     "name": "Kujou Reiko (九条 麗子)",
@@ -2400,8 +4831,8 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "tagline": "Selamat pagi seluruh murid Housen Academy yang saya banggakan. Jadilah pribadi berbudi luhur, berprestasi, dan menjunjung tinggi kehormatan nama baik sekolah... (Pintu kantor tertutup rapat — BRUKK! Melepas sepatu heels dan teriak heboh)... YAAASHHH! Akhirnya pidato kram mulut itu kelar juga! Hei kamu, bocah yang barusan masuk, cepet tutup gordennya! Bantuin saya pencet tombol roll gacha 10-pull sekarang, kalau saya ga dapet karakter SSR ini, sekolah saya liburin tiga hari!",
     "grade": "Faculty",
     "class_room": "Ruang Kepala Sekolah (Principal's Office / Lantai 3 VIP)",
-    "category_id": "faculty",
-    "role": "Love Interest / Kepala Sekolah Housen Academy",
+    "category_id": "osis",
+    "role": "Kepala Sekolah Housen Academy",
     "club": "student_council",
     "club_role": "Kepala Sekolah & Pembina Eksekutif Tertinggi",
     "archetype": "faculty",
@@ -2538,6 +4969,238 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_kurosaki_jin",
+    "slug": "kurosaki_jin",
+    "name": "Kurosaki Jin (黒崎 刃)",
+    "furigana": "黒崎 刃",
+    "nickname": [
+      "Pak Kurosaki",
+      "Wakasek Kesiswaan",
+      "Pedang Hitam Disiplin",
+      "Tuan Pinstripe"
+    ],
+    "tagline": "Housen Academy berdiri di atas kehormatan dan tradisi seratus tahun. Selama saya menjabat sebagai Wakil Kepala Sekolah, tidak ada satu pun berandal jalanan atau murid pembangkang yang diizinkan merusak nama suci yayasan ini!",
+    "grade": "Faculty",
+    "class_room": "Faculty (Kantor Kesiswaan Lantai 3)",
+    "category_id": "faculty",
+    "role": "Wakil Kepala Sekolah Bidang Kesiswaan & Kedisiplinan",
+    "club": "student_council",
+    "club_role": "Penasihat Dewan Kesiswaan & Pengawas Yayasan",
+    "archetype": "faculty",
+    "social_class": "elite",
+    "age": 45,
+    "birthday": "3 September",
+    "zodiac": "Virgo",
+    "mbti": "ESTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kurosaki_jin",
+    "stats": {
+      "physique": 12,
+      "intelligent": 17,
+      "looks": 14,
+      "mind": 17,
+      "talent": 13,
+      "luck": 10
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 18
+    },
+    "likes": [
+      "Ketepatan waktu hingga satuan detik dan kepatuhan mutlak pada regulasi",
+      "Kerapian berkas laporan kesiswaan tanpa koreksi tipo",
+      "Kopi espresso hitam pekat tanpa gula",
+      "Melihat peringkat akreditasi Housen berada di puncak nasional",
+      "Pena fountain berlapis emas hitam yang selalu ia rawat"
+    ],
+    "dislikes": [
+      "Tawuran jalanan yang mencemari reputasi dan akreditasi sekolah",
+      "Siswa dengan rambut dicat, tindik, atau seragam tidak rapi",
+      "Kepala Sekolah Reiko yang menandatangani izin tanpa berdiskusi dengannya",
+      "Guru yang bersikap terlalu santai dan tidak disiplin"
+    ],
+    "personality": {
+      "traits": "Birokratik, sangat dingin, perfeksionis, dan tidak kenal kompromi. Namun di balik kekakuannya, motivasinya murni untuk melindungi masa depan karir para murid agar tidak hancur oleh catatan kriminal kepolisian.",
+      "flaws": "Sering gagal memahami sisi psikologis remaja dan terlalu memprioritaskan citra yayasan di atas perasaan individu.",
+      "dere_pattern": "Tipe Strict Authority to Reluctant Ally. Jika pemain membuktikan integritasnya dengan menyelesaikan krisis Touki tanpa mencemari nama sekolah, Kurosaki akan menutup mata atas pelanggaran prosedur dan diam-diam membantu secara legal."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus tegas dengan rahang persegi kaku, tatapan mata abu-abu baja dingin (*steel-grey eyes*) di balik kacamata persegi tanpa bingkai (*rimless rectangular glasses*) yang selalu memantulkan cahaya lampu kantor secara tajam.\n* **Rambut:** Rambut hitam lurus disisir klimis ke belakang (*slicked-back raven hair*) dengan sentuhan uban perak terhormat di bagian kedua pelipisnya.\n* **Postur & Gestur:** Tinggi tegak (179 cm), postur kaku seperti perwira militer, selalu memegang map inspeksi kulit hitam atau tongkat kayu penunjuk disiplin kecil.\n* **Seragam & Gaya Berpakaian:** Setelan jas formal tiga potong (*three-piece suit*) berwarna abu-abu arang bergaris pinstripe halus, dasi sutra merah marun gelap yang diikat simpul Windsor sempurna, dan sepatu oxford kulit hitam mengilap tanpa debu.\n* **Aksesori & Barang Bawaan:** Kacamata rimless anti-pantulan, pena montblanc emas hitam, dan buku pedoman sanksi kedisiplinan kementerian.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 18,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Ketepatan waktu hingga satuan detik dan kepatuhan mutlak pada regulasi"
+      ],
+      "normal": [
+        "Kopi espresso hitam pekat tanpa gula"
+      ],
+      "disliked": [
+        "Tawuran jalanan yang mencemari reputasi dan akreditasi sekolah"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_moriyama_daisuke",
+    "slug": "moriyama_daisuke",
+    "name": "Moriyama Daisuke (森山 大輔)",
+    "furigana": "森山 大輔",
+    "nickname": [
+      "Pak Moriyama",
+      "Moriyama-sensei",
+      "Konselor Lembut",
+      "Penyembuh Jiwa"
+    ],
+    "tagline": "Terkadang yang kamu butuhkan bukan nasihat moral, melainkan satu tempat aman di mana kamu boleh menangis tanpa takut dihakimi. Duduklah di sofa ini, minumlah teh hangat ini, dan ceritakan semuanya.",
+    "grade": "Faculty",
+    "class_room": "Faculty (Ruang BK Gedung Utama Lantai 2)",
+    "category_id": "faculty",
+    "role": "Guru Bimbingan Konseling & Psikologi Sekolah",
+    "club": "literature",
+    "club_role": "Konselor Kesehatan Mental & Konseling Remaja",
+    "archetype": "faculty",
+    "social_class": "middle_class",
+    "age": 29,
+    "birthday": "17 April",
+    "zodiac": "Aries",
+    "mbti": "INFJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=moriyama_daisuke",
+    "stats": {
+      "physique": 10,
+      "intelligent": 15,
+      "looks": 15,
+      "mind": 17,
+      "talent": 14,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 10,
+      "composure_max": 18
+    },
+    "likes": [
+      "Menyeduh teh chamomile hangat dengan tetesan madu liar",
+      "Mendengarkan curahan hati murid tanpa memotong pembicaraan",
+      "Musik instrumen piano lo-fi yang menenangkan di ruang konseling",
+      "Aroma tanaman lavender dalam pot kecil di atas mejanya",
+      "Melihat murid yang depresi kembali tersenyum lega"
+    ],
+    "dislikes": [
+      "Orang tua yang memaksakan mimpi masa mudanya ke pundak anak",
+      "Penghakiman sosial sepihak terhadap murid yang mengalami masalah keluarga",
+      "Pertengkaran kasar yang meninggalkan trauma batin mendalam",
+      "Minuman yang terlalu manis atau berkarbonasi tajam"
+    ],
+    "personality": {
+      "traits": "Sangat empatik, pendengar yang luar biasa bijak, tidak pernah menghakimi, dan memegang teguh kerahasiaan konseling murid.",
+      "flaws": "Sering menyerap energi kesedihan orang lain secara berlebihan hingga kelelahan mental sendiri saat akhir pekan.",
+      "dere_pattern": "Tipe Gentle Counselor Dere. Membantu memulihkan poin Composure pemain secara instan lewat sesi konseling privat yang hangat."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tampan berkarakter lembut menenangkan, kulit bersih terawat, dan sepasang mata hangat berwarna cokelat madu lembut (*gentle honey-brown eyes*) di balik kacamata kawat perak bulat tipis (*thin silver round wireframe glasses*).\n* **Rambut:** Rambut cokelat kastanye (*chestnut brown*) ikal bergelombang lembut alami sebahu atas yang ditata rapi namun santai.\n* **Postur & Gestur:** Ramping dan elegan (176 cm), gestur tubuhnya sangat terbuka, bertutur kata dengan nada suara lembut bariton yang mampu meredakan kecemasan.\n* **Seragam & Gaya Berpakaian:** Mengenakan kardigan rajut berkancing wol berwarna krem lembut (*cozy beige cardigan*) di atas kemeja biru muda pastel tanpa dasi, celana katun abu-abu terang, dan sepatu santai kulit cokelat.\n* **Aksesori & Barang Bawaan:** Kacamata bulat perak, cangkir keramik teh herbal, buku catatan psikologi bergaris halus, dan bantal sofa empuk penenang stres di ruang kerjanya.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Menyeduh teh chamomile hangat dengan tetesan madu liar"
+      ],
+      "normal": [
+        "Musik instrumen piano lo-fi yang menenangkan di ruang konseling"
+      ],
+      "disliked": [
+        "Orang tua yang memaksakan mimpi masa mudanya ke pundak anak"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
     "id": "li_saionji_kaede",
     "slug": "saionji_kaede",
     "name": "Saionji Kaede (西園寺 楓)",
@@ -2552,7 +5215,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": "Faculty",
     "class_room": "10-2 (Wali Kelas) & Kantor Guru Olahraga (Gymnasium Office)",
     "category_id": "faculty",
-    "role": "Love Interest / Guru Pendidikan Jasmani, Wali Kelas 10-2 & Koordinator Orientasi",
+    "role": "Guru Pendidikan Jasmani, Wali Kelas 10-2 & Koordinator Orientasi",
     "club": "sports",
     "club_role": "Guru Pembina Klub Olahraga & Koordinator Fisik Sekolah",
     "archetype": "faculty",
@@ -2683,7 +5346,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": "Faculty",
     "class_room": "Ruang UKS (Infirmary / Hokenshitsu Lantai 1)",
     "category_id": "faculty",
-    "role": "Love Interest / Dokter & Perawat UKS (Hokenshitsu) & Konselor Kesehatan",
+    "role": "Dokter & Perawat UKS (Hokenshitsu) & Konselor Kesehatan",
     "club": "science",
     "club_role": "Staf Medis Sekolah & Pembina Pendamping Riset Kesehatan",
     "archetype": "faculty",
@@ -2813,7 +5476,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "grade": "Faculty",
     "class_room": "Perpustakaan Besar Housen Academy (Grand Library)",
     "category_id": "faculty",
-    "role": "Love Interest / Staf Pustakawan Utama & Pengawas Arsip Akademik",
+    "role": "Staf Pustakawan Utama & Pengawas Arsip Akademik",
     "club": "literatur",
     "club_role": "Staf Pengelola Perpustakaan & Pengawas Tes Akademik",
     "archetype": "faculty",
@@ -2927,6 +5590,350 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
       "5–6 ♥ (Pesan di Kartu Peminjaman): — Menuliskan catatan kecil penyemangat di pembatas buku yang dipinjam protagonis; pipinya langsung merah padam saat ditanya.",
       "7–8 ♥ (Meja Khusus di Pojok Jendela): — Mengajak protagonis mencicipi teh dan kue kering buatannya di ruang arsip belakang perpustakaan.",
       "9 ♥ (Kisah Cinta Milik Sendiri): — Memberanikan diri menggenggam ujung lengan baju protagonis agar tidak cepat-cepat pulang saat perpustakaan hendak tutup."
+    ]
+  },
+  {
+    "id": "li_kurogane_tetsuo",
+    "slug": "kurogane_tetsuo",
+    "name": "Kurogane Tetsuo (黒鉄 鉄生)",
+    "furigana": "黒鉄 鉄生",
+    "nickname": [
+      "Tetsuo-san",
+      "Iron Tetsuo",
+      "Legenda Phoenix Hitam",
+      "Bos Bengkel"
+    ],
+    "tagline": "Dunia luar gerbang sekolah itu kejam, anak muda. Di sana ga ada bel pergantian pelajaran atau guru yang bakal misahin perkelahian. Tapi selama lu masih bawa nama Housen di dada lu... gw ga bakal biarin anjing-anjing pelabuhan itu nginjak harga diri kalian.",
+    "grade": "Alumni",
+    "class_room": "Alumni Housen (Angkatan 2024) / Bengkel Motor Distrik 3",
+    "category_id": "outside_school",
+    "role": "Pendiri & Pemimpin Tertinggi Geng Kokuhou (Alumnus Housen)",
+    "club": "outdoor",
+    "club_role": "Pendiri & Alumnus Pelindung Kokuhou",
+    "archetype": "delinquent",
+    "social_class": "worker",
+    "age": 20,
+    "birthday": "12 Januari",
+    "zodiac": "Capricorn",
+    "mbti": "ISTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kurogane_tetsuo",
+    "stats": {
+      "physique": 18,
+      "intelligent": 13,
+      "looks": 15,
+      "mind": 17,
+      "talent": 14,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 22,
+      "composure_max": 18
+    },
+    "likes": [
+      "Deru mesin motor 4-tak yang disetel dengan presisi sempurna",
+      "Menyesap kopi hitam panas di depan pintu bengkel saat fajar",
+      "Melihat adik-adik kelas Housen pulang sekolah dengan aman",
+      "Kunci inggris baja tempaan dan aroma oli pelumas mesin",
+      "Mendengarkan rekaman radio rock lawas era Showa"
+    ],
+    "dislikes": [
+      "Sindikat kriminal dewasa yang memanfaatkan anak SMA untuk narkoba/judi",
+      "Sekolah rival yang menculik dan menyandera orang tak berdaya",
+      "Orang yang mengendarai motor modifikasi tanpa merawat mesinnya",
+      "Birokrat munafik yang hanya peduli pencitraan sekolah"
+    ],
+    "personality": {
+      "traits": "Tenang, matang, protektif, dan berwibawa mutlak. Kata-katanya singkat namun mengikat layaknya sumpah besi. Ia adalah figur ayah/kakak tertua bagi seluruh berandal muda Housen.",
+      "flaws": "Terlalu memikul seluruh dosa dan luka generasi muda di pundaknya sendiri, enggan membagi beban hidupnya pada orang lain.",
+      "dere_pattern": "Tipe Stoic Big-Boss Mentor. Mengawasi dari kejauhan, datang menolong di detik paling kritis dengan raungan knalpot motornya, lalu membelikan satu krat minuman hangat tanpa banyak bicara."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah pria muda dewasa berusia 20 tahun dengan garis rahang kokoh, tatapan mata arang gelap (*deep charcoal eyes*) yang dingin, dalam, dan berwibawa bak dinding benteng. Terdapat bekas luka bakar knalpot kecil di leher kanan yang menambah aura maskulinnya.\n* **Rambut:** Rambut hitam pendek tebal dipotong model *textured crop/crew fade* yang praktis dan maskulin.\n* **Postur & Gestur:** Bertubuh tinggi tegap, sangat berotot liat hasil bertahun-tahun mengangkat blok mesin motor (186 cm, 88 kg). Gerakannya tenang, tidak terburu-buru, memancarkan aura predator yang sudah kenyang bertarung.\n* **Seragam & Gaya Berpakaian:** Mengenakan jaket kulit motor hitam usang (*distressed black leather rider jacket*) dengan sulaman benang hitam samar lambang burung phoenix di punggung, kaos henley abu-abu pudar, celana jins denim tebal bernoda oli di lutut, dan sepatu boots kerja kulit bertulang baja (*steel-toe boots*).\n* **Aksesori & Barang Bawaan:** Kunci bengkel lipat serbaguna, pemantik api zippo perak tua peninggalan ayahnya, dan sarung tangan mekanik kulit di saku belakang.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 18,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Deru mesin motor 4-tak yang disetel dengan presisi sempurna"
+      ],
+      "normal": [
+        "Melihat adik-adik kelas Housen pulang sekolah dengan aman"
+      ],
+      "disliked": [
+        "Sindikat kriminal dewasa yang memanfaatkan anak SMA untuk narkoba/judi"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_samejima_ren",
+    "slug": "samejima_ren",
+    "name": "Samejima Ren (鮫島 蓮)",
+    "furigana": "鮫島 蓮",
+    "nickname": [
+      "Same-Ren",
+      "Hiu Putih Touki",
+      "Si Otak Kacamata",
+      "Strategist Touki"
+    ],
+    "tagline": "Otot hanyalah alat tawar-menawar yang primitif. Yang mengendalikan hasil perang adalah siapa yang memegang informasi dan rute logistik musuh. Housen sudah masuk ke dalam jaring laba-laba kami sejak kalian menginjak gerbang sekolah pagi ini.",
+    "grade": 11,
+    "class_room": "SMA Kejuruan Touki (Kelas 11-Elektronika)",
+    "category_id": "touki",
+    "role": "Otak Strategi & Hacker Jalanan Touki ('White Shark')",
+    "club": "gaming",
+    "club_role": "Otak Strategi & Intelijen Touki",
+    "archetype": "nerd",
+    "social_class": "middle_class",
+    "age": 17,
+    "birthday": "19 Januari",
+    "zodiac": "Capricorn",
+    "mbti": "INTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=samejima_ren",
+    "stats": {
+      "physique": 11,
+      "intelligent": 17,
+      "looks": 14,
+      "mind": 16,
+      "talent": 15,
+      "luck": 12
+    },
+    "vitals": {
+      "physical_hp_max": 12,
+      "composure_max": 16
+    },
+    "likes": [
+      "Meretas kamera CCTV publik distrik pelabuhan",
+      "Mengamati data pergerakan polisi lewat radio scanner",
+      "Kopi dingin kaleng hitam tanpa gula",
+      "Skema pemerasan rapi tanpa meninggalkan bukti jejak fisik"
+    ],
+    "dislikes": [
+      "Kekerasan tanpa otak yang tidak menghasilkan keuntungan uang",
+      "Peretasan yang digagalkan oleh firewall tak dikenal",
+      "Rencana yang hancur oleh kebodohan anak buah"
+    ],
+    "personality": {
+      "traits": "Sangat analitis, dingin, licik, sosiopatik santai, tidak peduli pada darah atau loyalitas emosional selama rencananya sukses.",
+      "flaws": "Meremehkan kekuatan ikatan persahabatan dan keberanian irasional murid-murid Housen.",
+      "dere_pattern": "Otak Kejahatan Antagonis. Menjadi target peretasan balasan oleh Takamine Ryo dan Alya."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah tirus pucat dingin dengan sepasang mata biru pucat bak es beku (*pale icy-blue eyes*), kacamata persegi tipis tanpa bingkai (*frameless rectangular glasses*), senyuman tipis kalkulatif bak hiu pemangsa.\n* **Rambut:** Rambut platinum-abu perak (*platinum-grey*) lurus yang disisir belah tengah licin rapi (*neat center-parted hair*).\n* **Postur & Gestur:** Bertubuh tinggi kurus (178 cm), tangannya selalu memegang smartphone terenkripsi hitam, selalu menjaga jarak dari arena baku hantam fisik.\n* **Seragam & Gaya Berpakaian:** Blazer hitam seragam kejuruan Touki yang sangat bersih dan rapi (kontras tajam dengan anggota geng Touki lainnya yang dekil), kemeja abu-abu berkancing penuh tanpa dasi.\n* **Aksesori & Barang Bawaan:** Kacamata frameless, smartphone ganda terenkripsi, kabel USB hacking portabel, dan pemancar jammer sinyal saku.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 17,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Meretas kamera CCTV publik distrik pelabuhan"
+      ],
+      "normal": [
+        "Kopi dingin kaleng hitam tanpa gula"
+      ],
+      "disliked": [
+        "Kekerasan tanpa otak yang tidak menghasilkan keuntungan uang"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
+    ]
+  },
+  {
+    "id": "li_onizuka_gouki",
+    "slug": "onizuka_gouki",
+    "name": "Onizuka Gouki (鬼塚 剛鬼)",
+    "furigana": "鬼塚 剛鬼",
+    "nickname": [
+      "Aka-Oni",
+      "Ogre Merah",
+      "Penguasa Pelabuhan",
+      "Bos Touki"
+    ],
+    "tagline": "Housen itu cuma sarang anak-anak manja berdasi rapi yang ga pernah ngerasain lapar di perutnya! Di pelabuhan Touki ini, taring dan darah yang memutuskan siapa penguasa sejati! Bawa Kurogane Tetsuo ke hadapan gw, atau teman kalian ga bakal pernah pulang!",
+    "grade": 12,
+    "class_room": "SMA Kejuruan Touki (Kelas 12-Teknik Mesin)",
+    "category_id": "touki",
+    "role": "Ketua Umum Geng SMA Touki ('The Red Ogre')",
+    "club": "martial_arts",
+    "club_role": "Ketua Umum Geng SMA Touki",
+    "archetype": "delinquent",
+    "social_class": "lower_class",
+    "age": 18,
+    "birthday": "6 Juni",
+    "zodiac": "Gemini",
+    "mbti": "ESTJ",
+    "gender": "Male",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=onizuka_gouki",
+    "stats": {
+      "physique": 19,
+      "intelligent": 12,
+      "looks": 11,
+      "mind": 17,
+      "talent": 13,
+      "luck": 10
+    },
+    "vitals": {
+      "physical_hp_max": 26,
+      "composure_max": 18
+    },
+    "likes": [
+      "Melihat lawan berlutut memohon ampun di bawah kakinya",
+      "Daging panggang setengah matang berdarah",
+      "Suara rantai motor dan dentuman drum minyak",
+      "Membuktikan supremasi Touki di seluruh kota"
+    ],
+    "dislikes": [
+      "Anak-anak elitis Housen yang merasa dirinya lebih suci dari anak jalanan",
+      "Kurogane Tetsuo (dendam masa lalu)",
+      "Kekalahan dalam duel satu lawan satu"
+    ],
+    "personality": {
+      "traits": "Brutal, tiran jalanan tanpa ampun, haus kekuasaan, memimpin ratusan berandal dermaga lewat teror fisik dan kekuatan mutlak.",
+      "flaws": "Terlalu dibutakan oleh amarah dendam lamanya pada Kurogane Tetsuo.",
+      "dere_pattern": "Antagonis Utama / Respected Rival. Jika ditumbangkan secara jantan satu lawan satu, Onizuka akan mengakui kekalahannya dan memerintahkan Touki mundur dari Housen."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah bengis mengerikan berusia 18 tahun dengan rahang masif, tatapan mata kuning keemasan buas (*bloodshot amber-gold eyes*) bak iblis oni, bekas luka cakaran dalam (*claw-like facial scar*) yang membentang dari pelipis kanan melintasi pipi hingga ke leher.\n* **Rambut:** Rambut mohawk kasar berduri berwarna hitam pekat dengan ujung-ujungnya dicat merah darah (*crimson-tipped spiky mohawk*).\n* **Postur & Gestur:** Monster bertubuh raksasa luar biasa berotot tebal bak gorilla gunung (195 cm, 110 kg), urat-urat lengannya mencuat tebal, memancarkan aura haus darah yang mencekik.\n* **Seragam & Gaya Berpakaian:** Gakuran hitam robek tanpa lengan (*sleeveless torn black gakuran*) dengan sulaman benang merah bergambar topeng iblis Oni di punggung, memperlihatkan tato tribal hitam di kedua pundak dan lengannya, rantai motor tebal melilit pinggangnya sebagai sabuk.\n* **Aksesori & Barang Bawaan:** Cincin besi tengkorak di jemari tangannya, pipa besi baja cor 1 meter di tangan kanan, dan sepatu bot militer bertali kawat baja.",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 19,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Waspada / Formal Berjarak",
+          "description": "Mengamati dari kejauhan, menjawab secara efisien dan hemat kata. (Pertemuan pertama dan interaksi formal di sekolah.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Rekan Kerja & Sekutu",
+          "description": "Mulai berbagi informasi, makanan kecil, dan mengobrol santai tanpa curiga. (Diskusi strategi rahasia atau bantuan tugas harian.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Kepercayaan Khusus / Salting",
+          "description": "Menunjukkan sisi rapuh di balik persona kuatnya, gugup bila berdekatan. (Momen intim berdua saat senja atau saling merawat luka.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Ikatan Jiwa / Penuh Kasih",
+          "description": "Selalu memprioritaskan keselamatan pemain, cemburu bila pemain terancam. (Hadiah istimewa dan pengakuan kesetiaan mendalam.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Abadi / Sumpah Sejati",
+          "description": "Hubungan komitmen mutlak, kebal terhadap kepanikan mental saat bersama. (Momen penembakan emosional dan sumpah masa depan bersama.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Melihat lawan berlutut memohon ampun di bawah kakinya"
+      ],
+      "normal": [
+        "Suara rantai motor dan dentuman drum minyak"
+      ],
+      "disliked": [
+        "Anak-anak elitis Housen yang merasa dirinya lebih suci dari anak jalanan"
+      ]
+    },
+    "date_spots": [
+      "Area Markas Rahasia / Sudut Favorit: — Tempat privat yang mencerminkan jati diri karakter.",
+      "Atap Gedung Sekolah Saat Senja: — Memandangi pemandangan kota di bawah langit jingga keemasan.",
+      "Kedai Pinggir Kota / Kafe Tenang: — Menikmati makanan hangat berdua tanpa pengawasan pihak lain.",
+      "Taman Sakura Tepi Sungai: — Berjalan beriringan di bawah guguran kelopak bunga musim semi."
     ]
   }
 ];

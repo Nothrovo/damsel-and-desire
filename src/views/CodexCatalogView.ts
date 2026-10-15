@@ -7,6 +7,9 @@ import { router } from "../router/router";
 import type { CodexCategory } from "../types";
 
 const CATEGORY_ICONS: Record<string, string> = {
+  osis: "👑",
+  kokuhou: "🦅",
+  touki: "👹",
   class_1_1: "🌸",
   class_1_2: "🎒",
   class_2_1: "⚔️",
@@ -14,7 +17,6 @@ const CATEGORY_ICONS: Record<string, string> = {
   class_3_1: "🎓",
   class_3_2: "👔",
   faculty: "🏛️",
-  love_interest: "💖",
   clubs: "🏆",
   outside_school: "🌆",
   other: "✨"

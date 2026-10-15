@@ -159,17 +159,19 @@ function buildCanonDetail(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSec
 }
 
 export const DEFAULT_CODEX_CATEGORIES: CodexCategory[] = [
-  { id: "class_1_1", name: "Kelas 1-1", description: "Siswa-siswi tahun pertama kelas 1-1 (Grade 10)", sort_order: 1, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "class_1_2", name: "Kelas 1-2", description: "Siswa-siswi tahun pertama kelas 1-2 (Grade 10)", sort_order: 2, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "class_2_1", name: "Kelas 2-1", description: "Siswa-siswi tahun kedua kelas 2-1 (Grade 11)", sort_order: 3, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "class_2_2", name: "Kelas 2-2", description: "Siswa-siswi tahun kedua kelas 2-2 (Grade 11)", sort_order: 4, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "class_3_1", name: "Kelas 3-1", description: "Siswa-siswi tahun ketiga kelas 3-1 (Grade 12 / Senior)", sort_order: 5, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "class_3_2", name: "Kelas 3-2", description: "Siswa-siswi tahun ketiga kelas 3-2 (Grade 12 / Senior)", sort_order: 6, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "faculty", name: "Guru & Staf Sekolah", description: "Pengajar, staf konseling, kepala sekolah, dan tenaga kesehatan", sort_order: 7, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "love_interest", name: "Target Asmara (Love Interest)", description: "Heroine & target asmara terdaftar di Housen Academy", sort_order: 8, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "clubs", name: "Klub Ekstrakurikuler", description: "Tokoh penting dan faksi 16 klub ekskul", sort_order: 9, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "outside_school", name: "Di Luar Sekolah", description: "Keluarga, alumni, pemilik toko, dan rival sekolah lain", sort_order: 10, show_totals: false, default_visibility_mode: "placeholder" },
-  { id: "other", name: "Lainnya", description: "Karakter pendukung lainnya", sort_order: 11, show_totals: false, default_visibility_mode: "placeholder" }
+  { id: "osis", name: "Presidium OSIS & Komite Disiplin", description: "Jajaran pimpinan dewan siswa dan penegak ketertiban akademi", sort_order: 1, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "kokuhou", name: "Geng Berandal Kokuhou (黒鳳)", description: "Aliansi berandal pelindung belakang sekolah dan wilayah Housen", sort_order: 2, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "touki", name: "SMA Kejuruan Touki (東鬼高校)", description: "Geng berandal bengis kawasan pelabuhan dermaga industri", sort_order: 3, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_1_1", name: "Kelas 10-1", description: "Siswa-siswi tahun pertama kelas 10-1 (Grade 10)", sort_order: 4, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_1_2", name: "Kelas 10-2", description: "Siswa-siswi tahun pertama kelas 10-2 (Grade 10)", sort_order: 5, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_2_1", name: "Kelas 11-1", description: "Siswa-siswi tahun kedua kelas 11-1 (Grade 11)", sort_order: 6, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_2_2", name: "Kelas 11-2", description: "Siswa-siswi tahun kedua kelas 11-2 (Grade 11)", sort_order: 7, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_3_1", name: "Kelas 12-1", description: "Siswa-siswi tahun ketiga kelas 12-1 (Grade 12 / Senior)", sort_order: 8, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "class_3_2", name: "Kelas 12-2", description: "Siswa-siswi tahun ketiga kelas 12-2 (Grade 12 / Senior)", sort_order: 9, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "faculty", name: "Guru & Staf Sekolah", description: "Pengajar, staf konseling, kepala sekolah, dan staf keamanan/medis", sort_order: 10, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "clubs", name: "Klub Ekstrakurikuler", description: "Tokoh penting dan faksi 16 klub ekskul", sort_order: 11, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "outside_school", name: "Di Luar Sekolah & Alumni", description: "Alumni legendaris, keluarga, dan tokoh luar sekolah", sort_order: 12, show_totals: false, default_visibility_mode: "placeholder" },
+  { id: "other", name: "Lainnya", description: "Karakter pendukung lainnya", sort_order: 13, show_totals: false, default_visibility_mode: "placeholder" }
 ];
 
 // ----------------------------------------------------------------------------

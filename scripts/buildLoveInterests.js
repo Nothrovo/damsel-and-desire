@@ -6,8 +6,17 @@ const TARGET_DIR = "Characters/Love Interests";
 const OUTPUT_FILE = "src/data/loveInterestCompendium.ts";
 
 function mapClassRoomToCategory(meta) {
+  if (meta?.category_id) return meta.category_id;
+  if (meta?.faction) return meta.faction;
   const gradeStr = String(meta?.grade || "").toLowerCase();
   const cr = String(meta?.class_room || "").toLowerCase();
+  const roleStr = String(meta?.role || "").toLowerCase();
+  const clubStr = String(meta?.ekskul || meta?.club || "").toLowerCase();
+
+  if (cr.includes("touki") || roleStr.includes("touki")) return "touki";
+  if (cr.includes("kokuhou") || roleStr.includes("kokuhou")) return "kokuhou";
+  if (clubStr === "student_council" || roleStr.includes("osis") || roleStr.includes("komite disiplin")) return "osis";
+
   if (
     gradeStr.includes("faculty") ||
     cr.includes("faculty") ||
@@ -26,6 +35,7 @@ function mapClassRoomToCategory(meta) {
   if (cr.includes("11-2") || cr.includes("2-2")) return "class_2_2";
   if (cr.includes("10-1") || cr.includes("1-1")) return "class_1_1";
   if (cr.includes("10-2") || cr.includes("1-2")) return "class_1_2";
+  if (cr.includes("alumni") || cr.includes("outside")) return "outside_school";
   return "other";
 }
 
@@ -56,18 +66,21 @@ function parseHeartMilestones(text) {
 
   if (milestones.length > 0) return milestones;
 
-  // Format B: Table: | **1 ♥** | *Status* | Perilaku | Event |
-  const tableRowRegex = /\|\s*\*\*([0-9]+)\s*♥\*\*\s*\|\s*\*?([^*|]+)\*?\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
+  // Format B: Table: | **1 ♥** | *Status* | Perilaku | Event | or | **1–2 ♥** |
+  const tableRowRegex = /\|\s*\*\*([0-9–\-]+)\s*♥\*\*\s*\|\s*\*?([^*|]+)\*?\s*\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g;
   while ((match = tableRowRegex.exec(text)) !== null) {
-    const val = parseInt(match[1].trim(), 10);
+    const rawRange = match[1].trim();
+    const parts = rawRange.split(/[–\-]/).map((n) => parseInt(n.trim(), 10));
+    const minHearts = parts[0] || 1;
+    const maxHearts = parts.length > 1 ? parts[1] : minHearts;
     const title = match[2].trim();
     const behavior = match[3].trim();
     const event = match[4].trim();
 
     milestones.push({
-      range: `${val} ♥`,
-      minHearts: val,
-      maxHearts: val,
+      range: `${rawRange} ♥`,
+      minHearts,
+      maxHearts,
       title,
       description: `${behavior}${event ? ` (${event})` : ""}`
     });
@@ -196,7 +209,7 @@ function scanDir(dir, list = []) {
       ent.name.endsWith(".md") &&
       !ent.name.startsWith("_") &&
       !ent.name.includes("TEMPLATE") &&
-      !ent.name.includes("PROMPTS") &&
+      !ent.name.toLowerCase().includes("prompt") &&
       !ent.name.includes("COMPENDIUM")
     ) {
       list.push({ filePath: full, dirPath: dir, fileName: ent.name });
@@ -284,7 +297,7 @@ export function buildLoveInterests() {
       grade: meta.grade || 10,
       class_room: meta.class_room || "",
       category_id: mapClassRoomToCategory(meta),
-      role: meta.role || "Love Interest",
+      role: (meta.role || "Siswa Housen Academy").replace(/^Love Interest\s*\/\s*(?:Target Asmara\s*)?/i, "").trim() || "Siswa Housen Academy",
       club: meta.ekskul || "",
       club_role: meta.club_role || "",
       archetype: meta.archetype || "",

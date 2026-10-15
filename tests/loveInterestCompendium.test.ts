@@ -12,9 +12,9 @@ import {
 import type { TargetSecret } from "../src/types";
 
 describe("Love Interest Compendium & Dynamic Resolver", () => {
-  it("loads all 21 canon love interests from the compendium", () => {
+  it("loads all 47 canon characters from the compendium", () => {
     const list = getAllLoveInterests();
-    expect(list.length).toBe(21);
+    expect(list.length).toBe(47);
 
     for (const li of list) {
       expect(li.slug).toBeTruthy();
