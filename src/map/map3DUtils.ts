@@ -699,8 +699,8 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
   const hillGroup = new THREE.Group();
   hillGroup.name = "confession_tree_hill";
 
-  // Position behind (north of) the athletic field — above the track top edge (y=20)
-  const hillWorld = svgToWorld3D(343, -40, viewBox);
+  // Position behind (north of) the athletic field — just above track top edge (y=20)
+  const hillWorld = svgToWorld3D(343, 5, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
 
@@ -820,7 +820,7 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
 export function createSakuraPetalSystem(
   viewBox: string
 ): { points: THREE.Points; update: (time: number) => void } {
-  const hillWorld = svgToWorld3D(343, -40, viewBox);
+  const hillWorld = svgToWorld3D(343, 5, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
   const canopyY = 7 + 18; // treeBaseY + highest canopy y
