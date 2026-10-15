@@ -172,8 +172,13 @@ export class Map3DRenderer {
     this.controls.minZoom = 0.4;
     this.controls.maxZoom = 4.0;
     this.controls.enablePan = true;
-    this.controls.panSpeed = 0.8;
-    this.controls.screenSpacePanning = false;
+    this.controls.panSpeed = 1.0;
+    this.controls.screenSpacePanning = true; // true works better with OrthographicCamera
+    this.controls.mouseButtons = {
+      LEFT: THREE.MOUSE.ROTATE,
+      MIDDLE: THREE.MOUSE.DOLLY,
+      RIGHT: THREE.MOUSE.PAN
+    };
     this.controls.target.copy(initTarget);
 
     // 5. Lighting Setup — Golden Hour
