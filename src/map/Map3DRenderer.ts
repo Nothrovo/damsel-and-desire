@@ -171,6 +171,9 @@ export class Map3DRenderer {
     this.controls.minPolarAngle = Math.PI / 6;
     this.controls.minZoom = 0.4;
     this.controls.maxZoom = 4.0;
+    this.controls.enablePan = true;
+    this.controls.panSpeed = 0.8;
+    this.controls.screenSpacePanning = false;
     this.controls.target.copy(initTarget);
 
     // 5. Lighting Setup — Golden Hour

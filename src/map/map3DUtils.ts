@@ -700,7 +700,7 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
   hillGroup.name = "confession_tree_hill";
 
   // Position behind (north of) the athletic field — above the track top edge (y=20)
-  const hillWorld = svgToWorld3D(343, -15, viewBox);
+  const hillWorld = svgToWorld3D(343, -40, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
 
@@ -820,7 +820,7 @@ export function createConfessionTreeHill(viewBox: string): THREE.Group {
 export function createSakuraPetalSystem(
   viewBox: string
 ): { points: THREE.Points; update: (time: number) => void } {
-  const hillWorld = svgToWorld3D(343, -15, viewBox);
+  const hillWorld = svgToWorld3D(343, -40, viewBox);
   const hx = hillWorld.x;
   const hz = hillWorld.z;
   const canopyY = 7 + 18; // treeBaseY + highest canopy y
@@ -1070,6 +1070,83 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
       courtSlab.position.set(worldPos.x, 0.2, worldPos.z + courtyardRelZ);
       bGroup.add(courtSlab);
 
+      // Cross pathways
+      const pathMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+      const hPath = new THREE.Mesh(
+        new THREE.BoxGeometry(courtyardW * 0.8, 0.1, 4),
+        pathMat
+      );
+      hPath.position.set(worldPos.x, 0.45, worldPos.z + courtyardRelZ);
+      hPath.receiveShadow = true;
+      bGroup.add(hPath);
+      const vPath = new THREE.Mesh(
+        new THREE.BoxGeometry(4, 0.1, courtyardD * 0.8),
+        pathMat
+      );
+      vPath.position.set(worldPos.x, 0.45, worldPos.z + courtyardRelZ);
+      vPath.receiveShadow = true;
+      bGroup.add(vPath);
+
+      // Center fountain basin (torus)
+      const fountainTorus = new THREE.Mesh(
+        new THREE.TorusGeometry(5, 1, 8, 16),
+        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6, metalness: 0.3 })
+      );
+      fountainTorus.rotation.x = Math.PI / 2;
+      fountainTorus.position.set(worldPos.x, 1.2, worldPos.z + courtyardRelZ);
+      fountainTorus.castShadow = true;
+      bGroup.add(fountainTorus);
+
+      // Water disc inside fountain
+      const fountainWater = new THREE.Mesh(
+        new THREE.CylinderGeometry(4.5, 4.5, 0.2, 12),
+        new THREE.MeshStandardMaterial({
+          color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.35,
+          roughness: 0.1, metalness: 0.3
+        })
+      );
+      fountainWater.position.set(worldPos.x, 1.5, worldPos.z + courtyardRelZ);
+      bGroup.add(fountainWater);
+
+      // Water jet
+      const waterJet = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.2, 3.5, 6),
+        new THREE.MeshStandardMaterial({
+          color: 0x38bdf8, transparent: true, opacity: 0.5,
+          roughness: 0.0, metalness: 0.1
+        })
+      );
+      waterJet.position.set(worldPos.x, 3, worldPos.z + courtyardRelZ);
+      bGroup.add(waterJet);
+
+      // 4 corner garden patches
+      const gardenPatchMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.9 });
+      const gpW = courtyardW / 3;
+      const gpD = courtyardD / 3;
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+        const gp = new THREE.Mesh(new THREE.BoxGeometry(gpW, 0.3, gpD), gardenPatchMat);
+        gp.position.set(
+          worldPos.x + sx * courtyardW * 0.25,
+          0.35,
+          worldPos.z + courtyardRelZ + sz * courtyardD * 0.25
+        );
+        gp.receiveShadow = true;
+        bGroup.add(gp);
+      });
+
+      // 2 courtyard benches along pathway
+      const benchMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85 });
+      [[-1, 0], [1, 0]].forEach(([sx]) => {
+        const bench = new THREE.Mesh(new THREE.BoxGeometry(4, 0.4, 1.2), benchMat);
+        bench.position.set(
+          worldPos.x + sx * 12,
+          0.6,
+          worldPos.z + courtyardRelZ + 8
+        );
+        bench.castShadow = true;
+        bGroup.add(bench);
+      });
+
       // South Entrance Portico Canopy
       const canopy = new THREE.Mesh(
         new THREE.BoxGeometry(32, 2.5, 10),
@@ -1239,18 +1316,6 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
       grass.receiveShadow = true;
       fieldGroup.add(grass);
 
-      const podiumGeom = new THREE.CylinderGeometry(8, 8, 1.5, 16);
-      const podiumMat = new THREE.MeshStandardMaterial({ color: 0x047857 });
-      const podium = new THREE.Mesh(podiumGeom, podiumMat);
-      podium.position.set(worldPos.x, 1.0, worldPos.z - d / 2 + 10);
-      fieldGroup.add(podium);
-
-      const poleGeom = new THREE.CylinderGeometry(0.5, 0.5, 16, 8);
-      const poleMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8 });
-      const pole = new THREE.Mesh(poleGeom, poleMat);
-      pole.position.set(worldPos.x, 9.0, worldPos.z - d / 2 + 10);
-      fieldGroup.add(pole);
-
       track.userData = {
         isRoom: true,
         roomId: room.id,
@@ -1301,6 +1366,38 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
       innerWall1.position.set(worldPos.x, hHeight / 2, worldPos.z);
       mazeGroup.add(innerWall1);
 
+      // Inner wall 2 (vertical segment)
+      const innerWall2 = new THREE.Mesh(new THREE.BoxGeometry(wallThickness, hHeight, d * 0.4), hedgeMat);
+      innerWall2.position.set(worldPos.x + w / 4, hHeight / 2, worldPos.z - d / 4);
+      innerWall2.castShadow = true;
+      mazeGroup.add(innerWall2);
+
+      // Inner wall 3 (horizontal segment)
+      const innerWall3 = new THREE.Mesh(new THREE.BoxGeometry(w * 0.35, hHeight, wallThickness), hedgeMat);
+      innerWall3.position.set(worldPos.x - w / 5, hHeight / 2, worldPos.z + d / 4);
+      innerWall3.castShadow = true;
+      mazeGroup.add(innerWall3);
+
+      // Center fountain basin
+      const mazeFountainBasin = new THREE.Mesh(
+        new THREE.CylinderGeometry(3, 3, 1.5, 10),
+        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6, metalness: 0.3 })
+      );
+      mazeFountainBasin.position.set(worldPos.x, 0.75, worldPos.z);
+      mazeFountainBasin.castShadow = true;
+      mazeGroup.add(mazeFountainBasin);
+
+      // Fountain water surface
+      const mazeFountainWater = new THREE.Mesh(
+        new THREE.CylinderGeometry(2.5, 2.5, 0.2, 10),
+        new THREE.MeshStandardMaterial({
+          color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.4,
+          roughness: 0.1, metalness: 0.3
+        })
+      );
+      mazeFountainWater.position.set(worldPos.x, 1.6, worldPos.z);
+      mazeGroup.add(mazeFountainWater);
+
       base.userData = {
         isRoom: true,
         roomId: room.id,
@@ -1317,7 +1414,248 @@ export function createCampusFacilitiesGroup(campusFloor: Floor): THREE.Group {
       return;
     }
 
-    // --- GARDENS (West/East Zen & Botanical) ---
+    // --- WEST ZEN GARDEN ---
+    if (room.id === 'campus_west_zen_garden') {
+      const wzGroup = new THREE.Group();
+
+      // Base slab
+      const wzBase = new THREE.Mesh(
+        new THREE.BoxGeometry(w, 1.0, d),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.95 })
+      );
+      wzBase.position.set(worldPos.x, 0.5, worldPos.z);
+      wzBase.receiveShadow = true;
+      wzBase.userData = {
+        isRoom: true, roomId: room.id, room: room,
+        baseColor: 0x334155, emissiveColor: 0xe11d48, category: room.category
+      };
+      wzGroup.add(wzBase);
+
+      // 3 Zen rocks (non-uniform scaled spheres)
+      const zenRockMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 });
+      const rockOffsets = [
+        { x: -w / 4, z: -d / 4, sx: 1.3, sy: 0.7, sz: 1.0 },
+        { x: w / 5, z: d / 6, sx: 1.1, sy: 0.6, sz: 1.2 },
+        { x: -w / 6, z: d / 4, sx: 1.0, sy: 0.8, sz: 1.1 }
+      ];
+      rockOffsets.forEach(ro => {
+        const rock = new THREE.Mesh(new THREE.SphereGeometry(2, 8, 6), zenRockMat);
+        rock.scale.set(ro.sx, ro.sy, ro.sz);
+        rock.position.set(worldPos.x + ro.x, 1.4, worldPos.z + ro.z);
+        rock.castShadow = true;
+        wzGroup.add(rock);
+      });
+
+      // Lentera batu (Tōrō) — stone lantern
+      const toroMat = new THREE.MeshStandardMaterial({ color: 0x6b7280, roughness: 0.7 });
+      const toroBase = new THREE.Mesh(new THREE.BoxGeometry(2, 0.5, 2), toroMat);
+      toroBase.position.set(worldPos.x + w / 4, 1.25, worldPos.z - d / 4);
+      wzGroup.add(toroBase);
+      const toroShaft = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), toroMat);
+      toroShaft.position.set(worldPos.x + w / 4, 3.0, worldPos.z - d / 4);
+      wzGroup.add(toroShaft);
+      const toroRoof = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.6, 2.5), toroMat);
+      toroRoof.position.set(worldPos.x + w / 4, 4.8, worldPos.z - d / 4);
+      toroRoof.castShadow = true;
+      wzGroup.add(toroRoof);
+
+      // Bamboo clump (4 thin cylinders)
+      const bambooMat = new THREE.MeshStandardMaterial({ color: 0x14532d, roughness: 0.8 });
+      for (let bi = 0; bi < 4; bi++) {
+        const bamboo = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 6, 6), bambooMat);
+        bamboo.position.set(
+          worldPos.x - w / 3 + (bi % 2) * 1.2,
+          4.0,
+          worldPos.z - d / 3 + Math.floor(bi / 2) * 1.0
+        );
+        bamboo.castShadow = true;
+        wzGroup.add(bamboo);
+      }
+
+      // Raked sand lines (4 parallel thin slabs)
+      const sandLineMat = new THREE.MeshStandardMaterial({ color: 0x4b5563, roughness: 0.9 });
+      for (let si = 0; si < 4; si++) {
+        const sandLine = new THREE.Mesh(new THREE.BoxGeometry(w * 0.7, 0.05, 0.3), sandLineMat);
+        sandLine.position.set(
+          worldPos.x,
+          1.05,
+          worldPos.z - d * 0.2 + si * (d * 0.12)
+        );
+        wzGroup.add(sandLine);
+      }
+
+      group.add(wzGroup);
+      const label = createRoomLabelSprite(room, viewBox, 6);
+      group.add(label);
+      return;
+    }
+
+    // --- EAST ZEN GARDEN ---
+    if (room.id === 'campus_east_zen_garden') {
+      const ezGroup = new THREE.Group();
+
+      // Base slab
+      const ezBase = new THREE.Mesh(
+        new THREE.BoxGeometry(w, 1.0, d),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.95 })
+      );
+      ezBase.position.set(worldPos.x, 0.5, worldPos.z);
+      ezBase.receiveShadow = true;
+      ezBase.userData = {
+        isRoom: true, roomId: room.id, room: room,
+        baseColor: 0x334155, emissiveColor: 0xe11d48, category: room.category
+      };
+      ezGroup.add(ezBase);
+
+      // Koi pond (emissive water cylinder)
+      const koiPond = new THREE.Mesh(
+        new THREE.CylinderGeometry(7, 7, 0.3, 12),
+        new THREE.MeshStandardMaterial({
+          color: 0x0284c7, emissive: 0x0284c7, emissiveIntensity: 0.35,
+          roughness: 0.1, metalness: 0.3
+        })
+      );
+      koiPond.position.set(worldPos.x + w / 8, 1.15, worldPos.z + d / 8);
+      ezGroup.add(koiPond);
+
+      // Mini Torii gate
+      const toriiMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.6 });
+      const toriiX = worldPos.x - w / 3;
+      const toriiZ = worldPos.z - d / 4;
+      // 2 pillars
+      for (let tp = 0; tp < 2; tp++) {
+        const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 5, 8), toriiMat);
+        pillar.position.set(toriiX + (tp === 0 ? -2 : 2), 3.5, toriiZ);
+        pillar.castShadow = true;
+        ezGroup.add(pillar);
+      }
+      // Lintel
+      const lintel = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 0.5), toriiMat);
+      lintel.position.set(toriiX, 5.5, toriiZ);
+      ezGroup.add(lintel);
+      // Curved roof
+      const toriiRoof = new THREE.Mesh(
+        new THREE.BoxGeometry(6, 0.4, 0.8),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
+      );
+      toriiRoof.position.set(toriiX, 6.0, toriiZ);
+      toriiRoof.castShadow = true;
+      ezGroup.add(toriiRoof);
+
+      // Lentera batu (Tōrō) — stone lantern
+      const ezToroMat = new THREE.MeshStandardMaterial({ color: 0x6b7280, roughness: 0.7 });
+      const ezToroX = worldPos.x + w / 4;
+      const ezToroZ = worldPos.z - d / 3;
+      const ezToroBase = new THREE.Mesh(new THREE.BoxGeometry(2, 0.5, 2), ezToroMat);
+      ezToroBase.position.set(ezToroX, 1.25, ezToroZ);
+      ezGroup.add(ezToroBase);
+      const ezToroShaft = new THREE.Mesh(new THREE.BoxGeometry(1, 3, 1), ezToroMat);
+      ezToroShaft.position.set(ezToroX, 3.0, ezToroZ);
+      ezGroup.add(ezToroShaft);
+      const ezToroRoof = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.6, 2.5), ezToroMat);
+      ezToroRoof.position.set(ezToroX, 4.8, ezToroZ);
+      ezToroRoof.castShadow = true;
+      ezGroup.add(ezToroRoof);
+
+      // 2 zen rocks
+      const ezRockMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 });
+      const ezRockOffsets = [
+        { x: -w / 5, z: d / 5, sx: 1.0, sy: 0.6, sz: 0.9 },
+        { x: w / 6, z: -d / 6, sx: 0.9, sy: 0.5, sz: 1.0 }
+      ];
+      ezRockOffsets.forEach(ro => {
+        const rock = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 6), ezRockMat);
+        rock.scale.set(ro.sx, ro.sy, ro.sz);
+        rock.position.set(worldPos.x + ro.x, 1.3, worldPos.z + ro.z);
+        rock.castShadow = true;
+        ezGroup.add(rock);
+      });
+
+      group.add(ezGroup);
+      const label = createRoomLabelSprite(room, viewBox, 6);
+      group.add(label);
+      return;
+    }
+
+    // --- BOTANICAL GARDEN ---
+    if (room.id === 'campus_garden') {
+      const bgGroup = new THREE.Group();
+
+      // Base slab
+      const bgBase = new THREE.Mesh(
+        new THREE.BoxGeometry(w, 1.2, d),
+        new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.95 })
+      );
+      bgBase.position.set(worldPos.x, 0.6, worldPos.z);
+      bgBase.receiveShadow = true;
+      bgBase.userData = {
+        isRoom: true, roomId: room.id, room: room,
+        baseColor: 0x064e3b, emissiveColor: 0xe11d48, category: room.category
+      };
+      bgGroup.add(bgBase);
+
+      // Flower clusters (7 scattered spheres with varied colors)
+      const flowerDefs = [
+        { color: 0xf472b6, r: 2.0, x: -w / 4, z: -d / 4 },
+        { color: 0xf472b6, r: 1.8, x: w / 5, z: d / 6 },
+        { color: 0x60a5fa, r: 2.2, x: -w / 6, z: d / 4 },
+        { color: 0xfbbf24, r: 1.5, x: w / 4, z: -d / 6 },
+        { color: 0xfbbf24, r: 2.5, x: -w / 3, z: d / 8 },
+        { color: 0xe2e8f0, r: 1.8, x: w / 8, z: -d / 3 },
+        { color: 0xef4444, r: 2.0, x: -w / 8, z: d / 3 }
+      ];
+      flowerDefs.forEach(fd => {
+        const flower = new THREE.Mesh(
+          new THREE.SphereGeometry(fd.r, 6, 5),
+          new THREE.MeshStandardMaterial({ color: fd.color, roughness: 0.75 })
+        );
+        flower.position.set(worldPos.x + fd.x, 1.2 + fd.r * 0.5, worldPos.z + fd.z);
+        flower.castShadow = true;
+        bgGroup.add(flower);
+      });
+
+      // 2 park benches
+      const parkBenchMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85 });
+      [{ x: -w / 3, z: 0, ry: 0 }, { x: w / 3, z: d / 6, ry: Math.PI }].forEach(bp => {
+        // Seat
+        const seat = new THREE.Mesh(new THREE.BoxGeometry(5, 0.5, 1.5), parkBenchMat);
+        seat.position.set(worldPos.x + bp.x, 1.45, worldPos.z + bp.z);
+        seat.rotation.y = bp.ry;
+        seat.castShadow = true;
+        bgGroup.add(seat);
+        // Backrest
+        const backrest = new THREE.Mesh(new THREE.BoxGeometry(5, 1.5, 0.3), parkBenchMat);
+        backrest.position.set(worldPos.x + bp.x, 2.2, worldPos.z + bp.z - 0.6);
+        backrest.rotation.y = bp.ry;
+        backrest.castShadow = true;
+        bgGroup.add(backrest);
+      });
+
+      // 3 small trees
+      const treeTrunkMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.9 });
+      const treeCanopyMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.85 });
+      [
+        { x: w / 4, z: d / 4 },
+        { x: -w / 5, z: -d / 5 },
+        { x: w / 6, z: -d / 4 }
+      ].forEach(tp => {
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 4, 6), treeTrunkMat);
+        trunk.position.set(worldPos.x + tp.x, 3.2, worldPos.z + tp.z);
+        trunk.castShadow = true;
+        bgGroup.add(trunk);
+        const canopy = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6), treeCanopyMat);
+        canopy.position.set(worldPos.x + tp.x, 6.2, worldPos.z + tp.z);
+        canopy.castShadow = true;
+        bgGroup.add(canopy);
+      });
+
+      group.add(bgGroup);
+      const label = createRoomLabelSprite(room, viewBox, 8);
+      group.add(label);
+      return;
+    }
+
+    // --- GARDENS (fallback for any other garden rooms) ---
     const isZen = room.id.includes("zen");
     const gardenHeight = isZen ? 1.0 : 1.2;
     const geom = new THREE.BoxGeometry(w, gardenHeight, d);
