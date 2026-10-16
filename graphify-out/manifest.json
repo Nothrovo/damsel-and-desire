@@ -42,10 +42,10 @@
     "semantic_hash": "4deba6f1504c73f51e34593061ef3069"
   },
   "scripts/syncCanonNpcs.js": {
-    "mtime": 1791611582.0961602,
-    "seen": 1791967754.3210578,
-    "ast_hash": "a2014d3d35a42ce3d0e7e0be83f6b326",
-    "semantic_hash": "a2014d3d35a42ce3d0e7e0be83f6b326"
+    "mtime": 1792132181.9739501,
+    "seen": 1792132472.237001,
+    "ast_hash": "af2dfaa6ab1680c041f48fa614e49e67",
+    "semantic_hash": ""
   },
   "scripts/syncProgressionData.js": {
     "mtime": 1791472732.354416,
@@ -84,9 +84,9 @@
     "semantic_hash": "64cdca6153d1b49fd018fa4d8a047a2b"
   },
   "src/api/codex.ts": {
-    "mtime": 1792084365.7856684,
-    "seen": 1792084976.6508048,
-    "ast_hash": "82bef002fbf86855c00c2b1249d78a08",
+    "mtime": 1792132420.589427,
+    "seen": 1792132472.2370174,
+    "ast_hash": "59892fda80165f1a156e6c8c8e5cc3f5",
     "semantic_hash": ""
   },
   "src/api/compendium.ts": {
@@ -264,8 +264,8 @@
     "semantic_hash": "07432f568ac4c94669246aa20fb25c6d"
   },
   "src/data/canonSession1Npcs.ts": {
-    "mtime": 1791611598.8800433,
-    "seen": 1791967754.3212457,
+    "mtime": 1792132325.1338007,
+    "seen": 1792132472.237083,
     "ast_hash": "7fc3f8aa892eb7f059330084cd01d704",
     "semantic_hash": "7fc3f8aa892eb7f059330084cd01d704"
   },
@@ -546,16 +546,16 @@
     "semantic_hash": "04c1fe18e29eaaea7371aa01e6e20aca"
   },
   "src/views/CodexCatalogView.ts": {
-    "mtime": 1792084372.8471487,
-    "seen": 1792084976.6509728,
-    "ast_hash": "9c24285244878f5c5a43998aa97a6060",
+    "mtime": 1792132271.418128,
+    "seen": 1792132472.2371857,
+    "ast_hash": "8144388739b54ae55ca6a5133464a67c",
     "semantic_hash": ""
   },
   "src/views/CodexCategoryView.ts": {
-    "mtime": 1791613446.2038448,
-    "seen": 1791967754.321488,
-    "ast_hash": "7c08d40fc19a696bfce094c907a5007f",
-    "semantic_hash": "7c08d40fc19a696bfce094c907a5007f"
+    "mtime": 1792132292.5637953,
+    "seen": 1792132472.2371879,
+    "ast_hash": "7c69c1d249cfe50923a04c8d5b62a2a9",
+    "semantic_hash": ""
   },
   "src/views/CodexDetailView.ts": {
     "mtime": 1791613461.485429,
@@ -912,8 +912,8 @@
     "semantic_hash": ""
   },
   "PLAYERS_HANDBOOK.html": {
-    "mtime": 1792084952.5507436,
-    "seen": 1792084976.6511095,
+    "mtime": 1792132447.5010817,
+    "seen": 1792132472.237324,
     "ast_hash": "86ec8b2f4b78da06b57a4591b5c617ac",
     "semantic_hash": ""
   },
@@ -1245,6 +1245,12 @@
     "mtime": 1792037326.0546823,
     "seen": 1792084976.6511133,
     "ast_hash": "1a50f76757f168e894b91fdeb3383f9f",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql": {
+    "mtime": 1792132192.3287501,
+    "seen": 1792132472.2372584,
+    "ast_hash": "6c7d0f4e43251b8215685594a176e58c",
     "semantic_hash": ""
   }
 }

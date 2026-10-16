@@ -2,19 +2,40 @@ import fs from "fs";
 import path from "path";
 import { parseMarkdownCharacter } from "./validateCodex.js";
 
-const NEW_NPC_FILES = [
-  "Characters/Love Interests/Class 11-2/Setsuna/KISARAGI SETSUNA (如月 刹那).md",
-  "Characters/Love Interests/Faculty/Kaede/SAIONJI KAEDE (西園寺 楓).md",
-  "Characters/Love Interests/Faculty/Mei/SHIRANUI MEI (不知火 芽衣).md",
-  "Characters/Love Interests/Faculty/Fumiko/TSUKISHIMA FUMIKO (月島 文子).md",
-  "Characters/Love Interests/Class 12-1/Rin/TACHIBANA RIN (橘 凛).md",
-  "Characters/Love Interests/Class 12-1/Koharu/SAEGUSA KOHARU (三枝 小春).md",
-  "Characters/Love Interests/Class 12-2/Hinata/WAKABA HINATA (若葉 日向).md"
-];
+const TARGET_DIR = "Characters/Love Interests";
+
+function scanDir(dir, list = []) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const ent of entries) {
+    const full = path.join(dir, ent.name);
+    if (ent.isDirectory()) {
+      scanDir(full, list);
+    } else if (
+      ent.isFile() &&
+      ent.name.endsWith(".md") &&
+      !ent.name.startsWith("_") &&
+      !ent.name.includes("TEMPLATE") &&
+      !ent.name.toLowerCase().includes("prompt") &&
+      !ent.name.includes("COMPENDIUM")
+    ) {
+      list.push({ filePath: full, dirPath: dir, fileName: ent.name });
+    }
+  }
+  return list;
+}
 
 function mapClassRoomToCategory(meta) {
+  if (meta?.category_id) return meta.category_id;
+  if (meta?.faction) return meta.faction;
   const gradeStr = String(meta?.grade || "").toLowerCase();
   const cr = String(meta?.class_room || "").toLowerCase();
+  const roleStr = String(meta?.role || "").toLowerCase();
+  const clubStr = String(meta?.ekskul || meta?.club || "").toLowerCase();
+
+  if (cr.includes("touki") || roleStr.includes("touki")) return "touki";
+  if (cr.includes("kokuhou") || roleStr.includes("kokuhou")) return "kokuhou";
+  if (clubStr === "student_council" || roleStr.includes("osis") || roleStr.includes("komite disiplin")) return "osis";
+
   if (
     gradeStr.includes("faculty") ||
     cr.includes("faculty") ||
@@ -33,6 +54,7 @@ function mapClassRoomToCategory(meta) {
   if (cr.includes("11-2") || cr.includes("2-2")) return "class_2_2";
   if (cr.includes("10-1") || cr.includes("1-1")) return "class_1_1";
   if (cr.includes("10-2") || cr.includes("1-2")) return "class_1_2";
+  if (cr.includes("alumni") || cr.includes("outside")) return "outside_school";
   return "other";
 }
 
@@ -83,7 +105,7 @@ function buildPayload(parsed, sortOrder) {
     tagline: sections.tagline || "",
     grade: meta.grade || 10,
     class_room: meta.class_room || "",
-    role: meta.role || "Murid",
+    role: (meta.role || "Siswa Housen Academy").replace(/^Love Interest\s*\/\s*(?:Target Asmara\s*)?/i, "").trim() || "Siswa Housen Academy",
     club: meta.ekskul || "",
     club_role: meta.club_role || "Anggota",
     age: meta.age || 16,
@@ -98,7 +120,7 @@ function buildPayload(parsed, sortOrder) {
     vitals: meta.vitals || {}
   };
 
-  const appSecs = findSectionsByKeyword(sections, ["Penampilan Fisik"]);
+  const appSecs = findSectionsByKeyword(sections, ["Penampilan Fisik", "Gaya Visual"]);
   const appearanceMarkdown = appSecs.map((s) => s.body).join("\n\n");
   const appearanceContent = {
     avatar_url: avatarUrl,
@@ -106,7 +128,7 @@ function buildPayload(parsed, sortOrder) {
     raw_markdown: appearanceMarkdown
   };
 
-  const persSecs = findSectionsByKeyword(sections, ["Kepribadian"]);
+  const persSecs = findSectionsByKeyword(sections, ["Kepribadian", "Pola Emosional"]);
   const fullPersonalityMd = persSecs.map((s) => s.body).join("\n\n");
   const persH3 = extractH3Subsections(fullPersonalityMd);
 
@@ -132,6 +154,7 @@ function buildPayload(parsed, sortOrder) {
   const relSecs = findSectionsByKeyword(sections, [
     "Jaringan Relasi",
     "Relationships",
+    "Hubungan Sosial",
     "Dialog Khas",
     "Lokasi Kencan",
     "Preferensi Hadiah"
@@ -207,12 +230,15 @@ function buildPayload(parsed, sortOrder) {
   };
 }
 
-const payloads = NEW_NPC_FILES.map((fp, idx) => {
-  const parsed = parseMarkdownCharacter(fp);
+const allFiles = scanDir(TARGET_DIR);
+console.log(`Ditemukan ${allFiles.length} file karakter untuk disinkronkan.`);
+
+const payloads = allFiles.map((fileObj, idx) => {
+  const parsed = parseMarkdownCharacter(fileObj.filePath);
   if (!parsed.valid) {
-    throw new Error(`Invalid markdown ${fp}: ${parsed.errors.join(", ")}`);
+    throw new Error(`Invalid markdown ${fileObj.filePath}: ${parsed.errors.join(", ")}`);
   }
-  return buildPayload(parsed, 20 + idx);
+  return buildPayload(parsed, 10 + idx);
 });
 
 // 1. Write src/data/canonSession1Npcs.ts
@@ -220,19 +246,45 @@ const tsContent = `// Auto-generated from Characters/Love Interests markdown fil
 export const CANON_SESSION1_NPCS = ${JSON.stringify(payloads, null, 2)} as const;
 `;
 fs.writeFileSync("src/data/canonSession1Npcs.ts", tsContent, "utf-8");
-console.log("✓ Generated src/data/canonSession1Npcs.ts");
+console.log(`✓ Generated src/data/canonSession1Npcs.ts (${payloads.length} characters)`);
 
-// 2. Write supabase/migrations/20261009000002_seed_session1_canon_npcs.sql
+// 2. Write supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql
 function sqlEscapeJson(obj) {
   return JSON.stringify(obj).replace(/'/g, "''");
 }
 
 let sqlLines = [
   "-- ============================================================================",
-  "-- Migration: 20261009000002_seed_session1_canon_npcs.sql",
-  "-- Description: Seed 7 Canon NPCs / Love Interests for Session 1 (April Events)",
+  "-- Migration: 20261015000001_seed_all_canon_npcs_and_factions.sql",
+  "-- Description: Official Factions (OSIS, Kokuhou, Touki), Categories & 47 Canon NPCs Seed",
   "-- ============================================================================",
   "",
+  "-- 1. Seed Official Codex Categories",
+  "INSERT INTO public.codex_categories (id, name, description, sort_order, show_totals, default_visibility_mode) VALUES",
+  "  ('osis', 'Presidium OSIS & Komite Disiplin', 'Jajaran pimpinan dewan siswa dan penegak ketertiban akademi', 1, false, 'placeholder'),",
+  "  ('kokuhou', 'Geng Berandal Kokuhou (黒鳳)', 'Aliansi berandal pelindung belakang sekolah dan wilayah Housen', 2, false, 'placeholder'),",
+  "  ('touki', 'SMA Kejuruan Touki (東鬼高校)', 'Geng berandal bengis kawasan pelabuhan dermaga industri', 3, false, 'placeholder'),",
+  "  ('class_1_1', 'Kelas 10-1', 'Siswa-siswi tahun pertama kelas 10-1 (Grade 10)', 4, false, 'placeholder'),",
+  "  ('class_1_2', 'Kelas 10-2', 'Siswa-siswi tahun pertama kelas 10-2 (Grade 10)', 5, false, 'placeholder'),",
+  "  ('class_2_1', 'Kelas 11-1', 'Siswa-siswi tahun kedua kelas 11-1 (Grade 11)', 6, false, 'placeholder'),",
+  "  ('class_2_2', 'Kelas 11-2', 'Siswa-siswi tahun kedua kelas 11-2 (Grade 11)', 7, false, 'placeholder'),",
+  "  ('class_3_1', 'Kelas 12-1', 'Siswa-siswi tahun ketiga kelas 12-1 (Grade 12 / Senior)', 8, false, 'placeholder'),",
+  "  ('class_3_2', 'Kelas 12-2', 'Siswa-siswi tahun ketiga kelas 12-2 (Grade 12 / Senior)', 9, false, 'placeholder'),",
+  "  ('faculty', 'Guru & Staf Sekolah', 'Pengajar, staf konseling, kepala sekolah, dan staf keamanan/medis', 10, false, 'placeholder'),",
+  "  ('clubs', 'Klub Ekstrakurikuler', 'Tokoh penting dan faksi 16 klub ekskul', 11, false, 'placeholder'),",
+  "  ('outside_school', 'Di Luar Sekolah & Alumni', 'Alumni legendaris, keluarga, dan tokoh luar sekolah', 12, false, 'placeholder'),",
+  "  ('other', 'Lainnya', 'Karakter pendukung lainnya', 13, false, 'placeholder')",
+  "ON CONFLICT (id) DO UPDATE SET",
+  "  name = EXCLUDED.name,",
+  "  description = EXCLUDED.description,",
+  "  sort_order = EXCLUDED.sort_order,",
+  "  default_visibility_mode = EXCLUDED.default_visibility_mode;",
+  "",
+  "-- Migrate any remaining legacy love_interest characters before removing the category",
+  "UPDATE public.codex_characters SET category_id = 'class_1_1' WHERE category_id = 'love_interest';",
+  "DELETE FROM public.codex_categories WHERE id = 'love_interest';",
+  "",
+  "-- 2. Seed All 47 Canon NPCs and Sections",
   "DO $$",
   "DECLARE",
   "  v_char_id UUID;",
@@ -265,7 +317,7 @@ for (const p of payloads) {
 `);
   }
 
-  // Also reveal identity & appearance (Tier 1) by default for Session 1 Key NPCs so players can see them in Codex!
+  // Reveal identity & appearance (Tier 1) by default so players can see characters in Codex!
   sqlLines.push(`  INSERT INTO public.codex_reveals (character_id, section_key, revealed_by)
   VALUES (v_char_id, 'identity', 'SYSTEM_SEED'), (v_char_id, 'appearance', 'SYSTEM_SEED')
   ON CONFLICT (character_id, section_key) DO NOTHING;
@@ -273,9 +325,6 @@ for (const p of payloads) {
 }
 
 sqlLines.push("END $$;", "");
-fs.writeFileSync(
-  "supabase/migrations/20261009000002_seed_session1_canon_npcs.sql",
-  sqlLines.join("\n"),
-  "utf-8"
-);
-console.log("✓ Generated supabase/migrations/20261009000002_seed_session1_canon_npcs.sql");
+const migrationPath = "supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql";
+fs.writeFileSync(migrationPath, sqlLines.join("\n"), "utf-8");
+console.log(`✓ Generated ${migrationPath}`);

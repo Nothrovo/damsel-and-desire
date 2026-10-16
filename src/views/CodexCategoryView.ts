@@ -146,7 +146,7 @@ async function loadCategoryData(categoryId: string, _silent: boolean = false) {
   const categories = await fetchCodexCategories();
   const currentCategory = categories.find(c => c.id === categoryId) || {
     id: categoryId,
-    name: categoryId === "love_interest" ? "Target Asmara" : categoryId,
+    name: categoryId,
     description: "Arsip karakter SMA Housen Academy",
     sort_order: 0,
     show_totals: false,
@@ -159,11 +159,6 @@ async function loadCategoryData(categoryId: string, _silent: boolean = false) {
         <h1 style="font-family:var(--font-heading);font-size:2rem;color:var(--amber-gold);margin:0;">
           ${currentCategory.name}
         </h1>
-        ${currentCategory.id === "love_interest" ? `
-          <span style="background:var(--rose-primary);color:#fff;font-size:0.75rem;padding:3px 10px;border-radius:var(--radius-full);font-weight:700;letter-spacing:0.04em;">
-            ROMANCE
-          </span>
-        ` : ""}
       </div>
       <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">
         ${currentCategory.description || "Daftar murid dan tokoh di kategori ini."}
@@ -178,12 +173,7 @@ async function loadCategoryData(categoryId: string, _silent: boolean = false) {
   try {
     if (isDmActive && dmToken) {
       const allDmChars = await dmListAll(dmToken);
-      // Filter by category or if category is love_interest, include is_love_interest == true
-      if (categoryId === "love_interest") {
-        allLoadedCards = allDmChars.filter(c => c.is_love_interest || c.category_id === "love_interest");
-      } else {
-        allLoadedCards = allDmChars.filter(c => c.category_id === categoryId);
-      }
+      allLoadedCards = allDmChars.filter(c => c.category_id === categoryId);
     } else {
       allLoadedCards = await fetchCodexList(categoryId);
     }

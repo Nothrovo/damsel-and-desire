@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 import { CANON_SESSION1_NPCS } from "../data/canonSession1Npcs";
-import { getLoveInterestBySlug } from "../data/loveInterestCompendium";
+import { getAllLoveInterests, getLoveInterestBySlug } from "../data/loveInterestCompendium";
 import type {
   CodexCategory,
   CodexCharacterCard,
@@ -186,7 +186,29 @@ export async function fetchCodexCategories(): Promise<CodexCategory[]> {
       .order("sort_order", { ascending: true });
 
     if (!error && data && data.length > 0) {
-      return data as CodexCategory[];
+      // 1. Filter out deprecated/removed category 'love_interest'
+      const list = (data as CodexCategory[]).filter((c) => c.id !== "love_interest");
+
+      // 2. Ensure new official categories exist (osis, kokuhou, touki, etc.)
+      const existingIds = new Set(list.map((c) => c.id));
+      for (const defCat of DEFAULT_CODEX_CATEGORIES) {
+        if (!existingIds.has(defCat.id)) {
+          list.push(defCat);
+        }
+      }
+
+      // 3. Harmonize names, descriptions and sort_order with latest official definitions
+      for (const cat of list) {
+        const def = DEFAULT_CODEX_CATEGORIES.find((d) => d.id === cat.id);
+        if (def) {
+          cat.sort_order = def.sort_order;
+          cat.name = def.name;
+          cat.description = def.description;
+        }
+      }
+
+      list.sort((a, b) => a.sort_order - b.sort_order);
+      return list;
     }
   } catch (e) {
     console.warn("Gagal memuat kategori dari Supabase, menggunakan default:", e);
@@ -207,22 +229,70 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     console.error("Gagal memanggil list_codex:", e);
   }
 
+  // Harmonisasi category_id di remoteList sesuai canon compendium
+  for (const card of remoteList) {
+    if (card.slug) {
+      const canon = getLoveInterestBySlug(card.slug);
+      if (canon && canon.category_id) {
+        card.category_id = canon.category_id;
+      }
+    }
+  }
+
+  // Jika categoryId diminta, filter remoteList yang sudah diharmonisasikan
+  if (categoryId) {
+    remoteList = remoteList.filter((c) => c.category_id === categoryId);
+  }
+
   const existingSlugs = new Set(remoteList.map((c) => c.slug).filter(Boolean));
   const localRevealsMap = getLocalCanonRevealsMap();
 
   for (const npc of CANON_SESSION1_NPCS) {
     if (existingSlugs.has(npc.slug)) continue;
-    const matchesCategory =
-      !categoryId ||
-      npc.categoryId === categoryId ||
-      (categoryId === "love_interest" && npc.isLoveInterest);
+    const canon = getLoveInterestBySlug(npc.slug);
+    const catId = canon?.category_id || npc.categoryId;
+    const matchesCategory = !categoryId || catId === categoryId;
     if (!matchesCategory) continue;
 
     const revealed = localRevealsMap[npc.slug] ?? [];
     const card = buildCanonCard(npc, revealed);
     if (card) {
+      card.category_id = catId;
       remoteList.push(card);
+      existingSlugs.add(npc.slug);
     }
+  }
+
+  // Lengkapi dengan seluruh karakter canon dari compendium
+  const allCompendium = getAllLoveInterests();
+  for (const compChar of allCompendium) {
+    if (existingSlugs.has(compChar.slug)) continue;
+    const matchesCategory = !categoryId || compChar.category_id === categoryId;
+    if (!matchesCategory) continue;
+
+    const revealed = localRevealsMap[compChar.slug] ?? ["identity", "appearance"];
+    const hasIdentity = revealed.includes("identity");
+    const hasAppearance = revealed.includes("appearance");
+    const isLocked = revealed.length === 0;
+
+    remoteList.push({
+      id: compChar.id,
+      slug: compChar.slug,
+      category_id: compChar.category_id,
+      sort_order: 10,
+      locked: isLocked,
+      is_love_interest: true,
+      name: hasIdentity ? compChar.name : "???",
+      furigana: hasIdentity ? compChar.furigana : "",
+      tagline: hasIdentity ? compChar.tagline : "",
+      avatar_url: hasAppearance ? resolvePortraitUrl(compChar.avatar_url, compChar.slug) : "",
+      class_room: hasIdentity ? compChar.class_room : "",
+      role: hasIdentity ? compChar.role : "",
+      club: hasIdentity ? compChar.club : "",
+      home_room_id: null,
+      revealed_sections: revealed
+    });
+    existingSlugs.add(compChar.slug);
   }
 
   // Harmonisasi card dengan definisi canon compendium resmi
@@ -279,6 +349,127 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
     const localRevealsMap = getLocalCanonRevealsMap();
     const revealed = localRevealsMap[canonNpc.slug] ?? [];
     return buildCanonDetail(canonNpc, revealed);
+  }
+
+  const compChar = getLoveInterestBySlug(idOrSlug);
+  if (compChar) {
+    const localRevealsMap = getLocalCanonRevealsMap();
+    const revealed = localRevealsMap[compChar.slug] ?? ["identity", "appearance"];
+    const isLocked = revealed.length === 0;
+    if (isLocked) {
+      return {
+        id: compChar.id,
+        category_id: compChar.category_id,
+        sort_order: 10,
+        locked: true,
+        is_love_interest: true
+      };
+    }
+
+    const sections: CodexSectionDetail[] = [
+      {
+        section_key: "identity",
+        tier: 1,
+        locked: !revealed.includes("identity"),
+        content: {
+          name: compChar.name,
+          furigana: compChar.furigana,
+          nickname: compChar.nickname,
+          tagline: compChar.tagline,
+          grade: compChar.grade,
+          class_room: compChar.class_room,
+          role: compChar.role,
+          club: compChar.club,
+          club_role: compChar.club_role,
+          age: compChar.age,
+          birthday: compChar.birthday,
+          zodiac: compChar.zodiac,
+          mbti: compChar.mbti,
+          gender: compChar.gender,
+          archetype: compChar.archetype,
+          social_class: compChar.social_class,
+          stats: compChar.stats,
+          vitals: compChar.vitals
+        }
+      },
+      {
+        section_key: "appearance",
+        tier: 1,
+        locked: !revealed.includes("appearance"),
+        content: {
+          avatar_url: resolvePortraitUrl(compChar.avatar_url, compChar.slug),
+          raw_markdown: compChar.appearance
+        }
+      },
+      {
+        section_key: "personality",
+        tier: 2,
+        locked: !revealed.includes("personality"),
+        content: {
+          likes: compChar.likes,
+          dislikes: compChar.dislikes,
+          raw_markdown: `### Karakter Dasar\n${compChar.personality?.traits || ""}\n\n### Celah Emosional\n${compChar.personality?.flaws || ""}\n\n### Pola Kasmaran\n${compChar.personality?.dere_pattern || ""}`
+        }
+      },
+      {
+        section_key: "background",
+        tier: 2,
+        locked: !revealed.includes("background"),
+        content: {
+          raw_markdown: `Karakter resmi ${compChar.name} di Housen Academy (${compChar.class_room}).`
+        }
+      },
+      {
+        section_key: "relationships",
+        tier: 2,
+        locked: !revealed.includes("relationships"),
+        content: {
+          raw_markdown: `Afiliasi resmi: ${compChar.category_id.toUpperCase()} • ${compChar.role}`
+        }
+      },
+      {
+        section_key: "mind",
+        tier: 3,
+        locked: !revealed.includes("mind"),
+        content: {
+          heart_meter: compChar.heart_meter,
+          confession_dc: compChar.heart_meter?.confession_target_dc || 17,
+          heart_meter_base: compChar.heart_meter?.base || 1,
+          raw_markdown: compChar.personality?.dere_pattern || ""
+        }
+      },
+      {
+        section_key: "secrets",
+        tier: 3,
+        locked: !revealed.includes("secrets"),
+        content: {
+          raw_markdown: `Catatan rahasia untuk ${compChar.name}.`
+        }
+      },
+      {
+        section_key: "dm_notes",
+        tier: 99,
+        locked: true,
+        content: {
+          notes: `Arketipe: ${compChar.archetype} | Kelas: ${compChar.class_room} | Peran: ${compChar.role}`
+        }
+      }
+    ];
+
+    return {
+      id: compChar.id,
+      slug: compChar.slug,
+      category_id: compChar.category_id,
+      sort_order: 10,
+      locked: false,
+      is_love_interest: true,
+      name: revealed.includes("identity") ? compChar.name : "???",
+      furigana: revealed.includes("identity") ? compChar.furigana : "",
+      tagline: revealed.includes("identity") ? compChar.tagline : "",
+      avatar_url: revealed.includes("appearance") ? resolvePortraitUrl(compChar.avatar_url, compChar.slug) : "",
+      home_room_id: null,
+      sections
+    };
   }
 
   return null;
@@ -428,10 +619,11 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
       const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
       const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
       const dmNotesSec = npc.sections.find((s) => s.sectionKey === "dm_notes")?.content as Record<string, any> | undefined;
+      const canon = getLoveInterestBySlug(npc.slug);
       list.push({
         id: npc.id,
         slug: npc.slug,
-        category_id: npc.categoryId,
+        category_id: canon?.category_id || npc.categoryId,
         sort_order: npc.sortOrder,
         visibility_mode: npc.visibilityMode as any,
         is_love_interest: npc.isLoveInterest,
@@ -446,6 +638,32 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
         revealed_sections: localRevealsMap[npc.slug] ?? [],
         dm_notes: dmNotesSec?.notes || ""
       });
+      finalSlugs.add(npc.slug);
+    }
+
+    // Tambahkan seluruh karakter dari compendium
+    const allCompendium = getAllLoveInterests();
+    for (const compChar of allCompendium) {
+      if (finalSlugs.has(compChar.slug)) continue;
+      list.push({
+        id: compChar.id,
+        slug: compChar.slug,
+        category_id: compChar.category_id,
+        sort_order: 10,
+        visibility_mode: "placeholder",
+        is_love_interest: true,
+        name: compChar.name,
+        furigana: compChar.furigana,
+        tagline: compChar.tagline,
+        avatar_url: resolvePortraitUrl(compChar.avatar_url, compChar.slug),
+        class_room: compChar.class_room,
+        role: compChar.role,
+        club: compChar.club,
+        home_room_id: null,
+        revealed_sections: localRevealsMap[compChar.slug] ?? ["identity", "appearance"],
+        dm_notes: `Arketipe: ${compChar.archetype} | Kelas: ${compChar.class_room}`
+      });
+      finalSlugs.add(compChar.slug);
     }
 
     // Harmonisasi dengan definisi canon compendium resmi
@@ -454,6 +672,7 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
         char.avatar_url = resolvePortraitUrl(char.avatar_url, char.slug);
         const canon = getLoveInterestBySlug(char.slug);
         if (canon) {
+          if (canon.category_id) char.category_id = canon.category_id;
           char.role = canon.role;
           char.club = canon.club;
           char.class_room = canon.class_room;

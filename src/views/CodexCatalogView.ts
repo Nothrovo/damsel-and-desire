@@ -84,6 +84,38 @@ export async function renderCodexCatalogView(): Promise<void> {
   renderCategoriesGrid(categories);
 }
 
+function getCategoryFooterLabel(catId: string): string {
+  switch (catId) {
+    case "osis":
+      return "Presidium & Komite";
+    case "kokuhou":
+      return "Aliansi Berandal";
+    case "touki":
+      return "Geng Kejuruan";
+    case "faculty":
+      return "Dewan Guru & Staf";
+    case "clubs":
+      return "Ekstrakurikuler";
+    case "outside_school":
+      return "Alumni & Kota";
+    default:
+      return "Direktori Kelas";
+  }
+}
+
+function getCategoryAccentBorder(catId: string): string {
+  switch (catId) {
+    case "osis":
+      return "rgba(245, 158, 11, 0.4)";
+    case "kokuhou":
+      return "rgba(225, 29, 72, 0.4)";
+    case "touki":
+      return "rgba(139, 92, 246, 0.4)";
+    default:
+      return "var(--border-card)";
+  }
+}
+
 function renderCategoriesGrid(categories: CodexCategory[]) {
   const container = document.getElementById("codexCategoriesGrid");
   if (!container) return;
@@ -99,22 +131,18 @@ function renderCategoriesGrid(categories: CodexCategory[]) {
 
   container.innerHTML = categories.map((cat) => {
     const icon = CATEGORY_ICONS[cat.id] || "📁";
-    const isLoveInterest = cat.id === "love_interest";
+    const borderStyle = getCategoryAccentBorder(cat.id);
+    const footerLabel = getCategoryFooterLabel(cat.id);
 
     return `
-      <div class="codex-category-card" data-cat-id="${cat.id}" style="background:var(--bg-card);border:1px solid ${isLoveInterest ? "rgba(225,29,72,0.4)" : "var(--border-card)"};border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all 0.25s ease;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);">
-        ${isLoveInterest ? `
-          <div style="position:absolute;top:0;right:0;background:var(--rose-primary);color:#fff;font-size:0.65rem;font-weight:700;padding:4px 10px;border-bottom-left-radius:var(--radius-sm);letter-spacing:0.05em;font-family:var(--font-heading);">
-            ROMANCE
-          </div>
-        ` : ""}
+      <div class="codex-category-card" data-cat-id="${cat.id}" style="background:var(--bg-card);border:1px solid ${borderStyle};border-radius:var(--radius-lg);padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:all 0.25s ease;position:relative;overflow:hidden;box-shadow:var(--shadow-sm);">
         <div>
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.75rem;">
-            <div style="width:44px;height:44px;border-radius:var(--radius-md);background:${isLoveInterest ? "rgba(225,29,72,0.15)" : "rgba(255,255,255,0.05)"};display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid ${isLoveInterest ? "var(--rose-primary)" : "var(--border-subtle)"};">
+            <div style="width:44px;height:44px;border-radius:var(--radius-md);background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:1px solid var(--border-subtle);">
               ${icon}
             </div>
             <div>
-              <h3 style="font-family:var(--font-heading);margin:0;font-size:1.15rem;color:${isLoveInterest ? "var(--rose-light)" : "var(--text-main)"};">
+              <h3 style="font-family:var(--font-heading);margin:0;font-size:1.15rem;color:var(--text-main);">
                 ${cat.name}
               </h3>
             </div>
@@ -126,9 +154,9 @@ function renderCategoriesGrid(categories: CodexCategory[]) {
 
         <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border-subtle);padding-top:1rem;margin-top:auto;">
           <span style="font-size:0.8rem;color:var(--text-muted);">
-            ${isLoveInterest ? "Heroine & Target Asmara" : "Direktori Kelas"}
+            ${footerLabel}
           </span>
-          <span style="color:${isLoveInterest ? "var(--rose-primary)" : "var(--amber-gold)"};font-weight:600;font-size:0.85rem;display:flex;align-items:center;gap:4px;">
+          <span style="color:var(--amber-gold);font-weight:600;font-size:0.85rem;display:flex;align-items:center;gap:4px;">
             Buka Direktori →
           </span>
         </div>
@@ -151,9 +179,9 @@ function renderCategoriesGrid(categories: CodexCategory[]) {
       (card as HTMLElement).style.borderColor = "var(--amber-gold)";
     });
     card.addEventListener("mouseleave", () => {
-      const isLoveInterest = card.getAttribute("data-cat-id") === "love_interest";
+      const catId = card.getAttribute("data-cat-id") || "";
       (card as HTMLElement).style.transform = "translateY(0)";
-      (card as HTMLElement).style.borderColor = isLoveInterest ? "rgba(225,29,72,0.4)" : "var(--border-card)";
+      (card as HTMLElement).style.borderColor = getCategoryAccentBorder(catId);
     });
   });
 }
