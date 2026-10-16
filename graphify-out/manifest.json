@@ -42,9 +42,9 @@
     "semantic_hash": "4deba6f1504c73f51e34593061ef3069"
   },
   "scripts/syncCanonNpcs.js": {
-    "mtime": 1792132181.9739501,
-    "seen": 1792132472.237001,
-    "ast_hash": "af2dfaa6ab1680c041f48fa614e49e67",
+    "mtime": 1792153342.0697129,
+    "seen": 1792153406.03257,
+    "ast_hash": "029cb16498e5be3731192e5ed589e3b0",
     "semantic_hash": ""
   },
   "scripts/syncProgressionData.js": {
@@ -264,10 +264,10 @@
     "semantic_hash": "07432f568ac4c94669246aa20fb25c6d"
   },
   "src/data/canonSession1Npcs.ts": {
-    "mtime": 1792132325.1338007,
-    "seen": 1792132472.237083,
-    "ast_hash": "7fc3f8aa892eb7f059330084cd01d704",
-    "semantic_hash": "7fc3f8aa892eb7f059330084cd01d704"
+    "mtime": 1792153352.0530937,
+    "seen": 1792153406.0327742,
+    "ast_hash": "99eeb6749998dc4aff960510c4c07c99",
+    "semantic_hash": ""
   },
   "src/data/fallbackCompendium.ts": {
     "mtime": 1791472722.5411084,
@@ -372,9 +372,9 @@
     "semantic_hash": "f3956f59dc9f46eb048016adcc4efd04"
   },
   "src/data/loveInterestCompendium.ts": {
-    "mtime": 1792084801.7135546,
-    "seen": 1792084976.6509101,
-    "ast_hash": "6836b0e54e5eb74e1c8a35537162060f",
+    "mtime": 1792153317.800025,
+    "seen": 1792153406.03283,
+    "ast_hash": "ba893206461aff9603c9b033f8632950",
     "semantic_hash": ""
   },
   "src/data/schoolCalendarData.ts": {
@@ -666,9 +666,9 @@
     "semantic_hash": "9d85bf5faef312a954836355b85c1705"
   },
   "tests/loveInterestCompendium.test.ts": {
-    "mtime": 1792084834.788868,
-    "seen": 1792084976.6510634,
-    "ast_hash": "b32ec29a4c29aa53df933209be4d7605",
+    "mtime": 1792153357.6872666,
+    "seen": 1792153406.03328,
+    "ast_hash": "55878e65dce545fd044ed1eb1d68c5ba",
     "semantic_hash": ""
   },
   "tests/map3D.test.ts": {
@@ -912,8 +912,8 @@
     "semantic_hash": ""
   },
   "PLAYERS_HANDBOOK.html": {
-    "mtime": 1792132447.5010817,
-    "seen": 1792132472.237324,
+    "mtime": 1792153393.3594873,
+    "seen": 1792153406.0334888,
     "ast_hash": "86ec8b2f4b78da06b57a4591b5c617ac",
     "semantic_hash": ""
   },
@@ -1074,128 +1074,128 @@
     "semantic_hash": ""
   },
   "public/portraits/asahina_tenka.png": {
-    "mtime": 1792084801.653557,
-    "seen": 1792084976.651173,
+    "mtime": 1792153317.7300258,
+    "seen": 1792153406.033741,
     "ast_hash": "972f5e49520429b793007868eaf28084",
     "semantic_hash": ""
   },
   "public/portraits/hasumi_chihiro.png": {
-    "mtime": 1792084801.6702232,
-    "seen": 1792084976.651175,
+    "mtime": 1792153317.7533588,
+    "seen": 1792153406.033748,
     "ast_hash": "309171fcec5f1da9944ef5bc27171805",
     "semantic_hash": ""
   },
   "public/portraits/hoshina_nayu.png": {
-    "mtime": 1792084801.6302247,
-    "seen": 1792084976.651177,
+    "mtime": 1792153317.690026,
+    "seen": 1792153406.0337548,
     "ast_hash": "038d23ac644a1ce1c0952ae20fd0a550",
     "semantic_hash": ""
   },
   "public/portraits/kanzaki_takeru.png": {
-    "mtime": 1792084801.6435575,
-    "seen": 1792084976.651179,
+    "mtime": 1792153317.713359,
+    "seen": 1792153406.0337625,
     "ast_hash": "44175bab24eeb76216cd59fe4797a9d7",
     "semantic_hash": ""
   },
   "public/portraits/kazuki_ren.png": {
-    "mtime": 1792084801.633558,
-    "seen": 1792084976.6511807,
+    "mtime": 1792153317.6966927,
+    "seen": 1792153406.033769,
     "ast_hash": "73d73969a7e175191f4c9c0ef739f7c7",
     "semantic_hash": ""
   },
   "public/portraits/kirishima_iori.png": {
-    "mtime": 1792084801.6235583,
-    "seen": 1792084976.651183,
+    "mtime": 1792153317.6833594,
+    "seen": 1792153406.0337765,
     "ast_hash": "c1b09a75cd972fdc602081e6ebe14a62",
     "semantic_hash": ""
   },
   "public/portraits/kisaragi_setsuna.png": {
-    "mtime": 1792084801.6602235,
-    "seen": 1792084976.6511848,
+    "mtime": 1792153317.7366922,
+    "seen": 1792153406.0337832,
     "ast_hash": "e57c796a6b6855481238b433761ca878",
     "semantic_hash": ""
   },
   "public/portraits/kujou_reiko.png": {
-    "mtime": 1792084801.6835558,
-    "seen": 1792084976.6511867,
+    "mtime": 1792153317.7700253,
+    "seen": 1792153406.0337899,
     "ast_hash": "2894d08183780be676d0c2934004427b",
     "semantic_hash": ""
   },
   "public/portraits/kumada_riki.png": {
-    "mtime": 1792084801.633558,
-    "seen": 1792084976.6511889,
+    "mtime": 1792153317.7000258,
+    "seen": 1792153406.033797,
     "ast_hash": "23ff8fcb3a51c6b777954078850a261d",
     "semantic_hash": ""
   },
   "public/portraits/kurokawa_shiori.png": {
-    "mtime": 1792084801.6402245,
-    "seen": 1792084976.6511905,
+    "mtime": 1792153317.7066925,
+    "seen": 1792153406.0338042,
     "ast_hash": "887ffed4422ef3ad931b14598ed4291f",
     "semantic_hash": ""
   },
   "public/portraits/miruam_solari.png": {
-    "mtime": 1792084801.650224,
-    "seen": 1792084976.6511927,
+    "mtime": 1792153317.7266924,
+    "seen": 1792153406.0338106,
     "ast_hash": "6e96eed00ef421958ff15145dd688693",
     "semantic_hash": ""
   },
   "public/portraits/momoi_yuzu.png": {
-    "mtime": 1792084801.6468909,
-    "seen": 1792084976.6511946,
+    "mtime": 1792153317.7166924,
+    "seen": 1792153406.0338166,
     "ast_hash": "67fdb10f99f517a2e89a7a443e4bc55b",
     "semantic_hash": ""
   },
   "public/portraits/saegusa_koharu.png": {
-    "mtime": 1792084801.6635568,
-    "seen": 1792084976.6511965,
+    "mtime": 1792153317.7433589,
+    "seen": 1792153406.033823,
     "ast_hash": "a41131de019eb3595d32c878c1850edf",
     "semantic_hash": ""
   },
   "public/portraits/saionji_kaede.png": {
-    "mtime": 1792084801.6768894,
-    "seen": 1792084976.6511984,
+    "mtime": 1792153317.7633586,
+    "seen": 1792153406.0338295,
     "ast_hash": "620e5a43502fe74b60ebe125e16ca391",
     "semantic_hash": ""
   },
   "public/portraits/sendou_airi.png": {
-    "mtime": 1792084801.6102257,
-    "seen": 1792084976.6512003,
+    "mtime": 1792153317.6666927,
+    "seen": 1792153406.0338352,
     "ast_hash": "8fb7a164deb5c22f18de64ef3ebc5150",
     "semantic_hash": ""
   },
   "public/portraits/shinohara_kotone.png": {
-    "mtime": 1792084801.6268916,
-    "seen": 1792084976.6512022,
+    "mtime": 1792153317.6866927,
+    "seen": 1792153406.033841,
     "ast_hash": "53bd104ac7b71cbfa52b67220f14d77e",
     "semantic_hash": ""
   },
   "public/portraits/shiranui_mei.png": {
-    "mtime": 1792084801.6802227,
-    "seen": 1792084976.651204,
+    "mtime": 1792153317.766692,
+    "seen": 1792153406.0338464,
     "ast_hash": "83561a7bcebe280d68fe0d785e9bca9d",
     "semantic_hash": ""
   },
   "public/portraits/tachibana_rin.png": {
-    "mtime": 1792084801.66689,
-    "seen": 1792084976.6512063,
+    "mtime": 1792153317.7466922,
+    "seen": 1792153406.0338516,
     "ast_hash": "c742b2c6478d7515dee97271a6a90c30",
     "semantic_hash": ""
   },
   "public/portraits/takamine_ryo.png": {
-    "mtime": 1792084801.6368911,
-    "seen": 1792084976.651208,
+    "mtime": 1792153317.7033591,
+    "seen": 1792153406.0338585,
     "ast_hash": "223664dd3c5f2a54ff0e5c4ec0df6b3e",
     "semantic_hash": ""
   },
   "public/portraits/tsukishima_fumiko.png": {
-    "mtime": 1792084801.6735563,
-    "seen": 1792084976.65121,
+    "mtime": 1792153317.7566922,
+    "seen": 1792153406.0338647,
     "ast_hash": "50aa5e147d093a43aef5b9624f758064",
     "semantic_hash": ""
   },
   "public/portraits/wakaba_hinata.png": {
-    "mtime": 1792084801.6702232,
-    "seen": 1792084976.6512117,
+    "mtime": 1792153317.7500255,
+    "seen": 1792153406.0338702,
     "ast_hash": "87eaa6225b6cd38f47128d8524922392",
     "semantic_hash": ""
   },
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql": {
-    "mtime": 1792132192.3287501,
-    "seen": 1792132472.2372584,
-    "ast_hash": "6c7d0f4e43251b8215685594a176e58c",
+    "mtime": 1792153352.0664268,
+    "seen": 1792153406.0332086,
+    "ast_hash": "2a2fb054fca590116f3df6c378c19ad7",
     "semantic_hash": ""
   }
 }

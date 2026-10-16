@@ -1713,6 +1713,124 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     ]
   },
   {
+    "id": "li_choi_dal_dal",
+    "slug": "choi_dal_dal",
+    "name": "Choi Dal Dal (최달달)",
+    "furigana": "최달달",
+    "nickname": [
+      "Dal Dal",
+      "Daldal-chan",
+      "Harimau Imut",
+      "Ratu Tendangan Taekwondo",
+      "Master Bento"
+    ],
+    "tagline": "Siapa yang bilang atlet taekwondo ga bisa jadi koki manis?! Buka mulutmu, aaaa~ ini bento spesial dengan resep rahasia ibuku! Enak kan? ...Tapi awas ya, kalau kamu sampai terluka di luar sana, orang yang mukul kamu bakal kupelintir lehernya pakai tendangan tumitku!",
+    "grade": 11,
+    "class_room": "11-1",
+    "category_id": "class_2_1",
+    "role": "Kapten Klub Taekwondo & Koki Siswa Kelas 11-1",
+    "club": "martial_arts",
+    "club_role": "Kapten Divisi Taekwondo (Kelas 11)",
+    "archetype": "jock",
+    "social_class": "middle_class",
+    "age": 16,
+    "birthday": "5 Mei",
+    "zodiac": "Taurus",
+    "mbti": "ESFP",
+    "gender": "Female",
+    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=choi_dal_dal",
+    "stats": {
+      "physique": 16,
+      "intelligent": 12,
+      "looks": 16,
+      "mind": 13,
+      "talent": 17,
+      "luck": 13
+    },
+    "vitals": {
+      "physical_hp_max": 16,
+      "composure_max": 14
+    },
+    "likes": [
+      "Memasak bento daging babi manis pedas (Jeyuk Bokkeum) & sup rumahan resep keluarga",
+      "Latihan tendangan tornado berputar 540 derajat di dojo bela diri",
+      "Jepit rambut telinga harimau kuning bergaris hitam kesayangannya",
+      "Dipuji cantik, feminin, dan harum oleh cowok yang ia sukai",
+      "Melihat orang yang ia sayangi makan masakannya sampai habis licin"
+    ],
+    "dislikes": [
+      "Siapa pun yang menghina rasa masakannya atau resep ibunya",
+      "Orang jahat yang melukai kawan/orang yang disukai di luar arena (Pemicu Mode Berserk)",
+      "Diperlakukan hanya sebagai 'atlet kekar' dan bukan sebagai cewek manis",
+      "Kalah dalam duel perebutan hati cowok idaman"
+    ],
+    "personality": {
+      "traits": "Ceria, percaya diri, blak-blakan, penuh kasih sayang (*nurturing*), dan memiliki energi masa muda yang meluap-luap. Dal Dal adalah perpaduan unik antara ksatria petarung tangguh dan calon ibu rumah tangga yang sangat feminin. Ia selalu berusaha membuktikan bahwa seorang petarung wanita tetap bisa menjadi sosok yang anggun, manis, dan dicintai.",
+      "flaws": "*Tiga Tombol Kemarahan Berserk:*\n1. Menghina kualitas masakannya.\n2. Menghina masakan keluarganya / resep ibunya.\n3. Siapa pun yang berani melukai orang yang ia sayangi di luar arena!\nSelain itu, ia memiliki rasa cemas tersembunyi bila orang yang ia sukai hanya melihatnya sebagai \"teman sparing otot\" dan bukan sebagai perempuan sejati.",
+      "dere_pattern": "Tipe **Deredere Agresif-Manis / Caring Heroine**. Begitu jatuh hati, Dal Dal tidak akan menyembunyikannya: ia akan membawakan bento buatan tangan setiap pagi, menyuapkan makanan secara langsung (*feed reaction*), menggandeng lengan pemain tanpa ragu di koridor, dan melayangkan tendangan kapak mematikan pada siapa saja yang mencoba mengganggu kencan mereka."
+    },
+    "appearance": "* **Ciri Fisik & Wajah:** Wajah imut menggemaskan (*bubbly, sweet, and expressive*) dengan pipi halus merona merah muda alami, bibir merah ranum berkilau (*cherry lips*) yang sangat memikat, dan sepasang mata bulat besar berwarna oranye-amber madu (*warm honey-amber eyes*) yang selalu berbinar ceria.\n* **Rambut:** Rambut pirang madu cerah (*bright golden honey-blonde*) berpotongan pendek model bob bertekstur sebahu (*textured short bob hair*) dengan poni samping tipis. Ciri visual paling ikonik: sepasang jepit rambut berbentuk telinga harimau kuning bergaris belang hitam (*yellow-black tiger ear hair clips / toramimi*) di kedua sisi kepalanya yang tampak berkedut ekspresif mengikuti perubahan suasana hatinya.\n* **Postur & Gestur:** Bertubuh mungil (*petite*, tinggi 154 cm) namun luar biasa padat atletis dengan siluet ramping berlekuk indah dan kaki petarung yang lentur kuat. Sering melompat kecil saat gembira atau refleks memasang kuda-kuda satu kaki terangkat (*flamingo taekwondo stance*).\n* **Seragam & Gaya Berpakaian:** Modifikasi seragam pelaut Housen Academy dengan kerah kuning gading bergaris putih, pita oranye ceria, rok lipit pendek di atas lutut, dan kaus kaki putih sebetis dengan sepatu kets lincah. Di jam istirahat, ia sering memakai celemek dapur bergambar beruang lucu saat menyajikan bento.\n* **Aksesori & Barang Bawaan:** Kotak bento bertumpuk dibungkus kain furoshiki motif harimau, sabuk hitam taekwondo (*black belt*) di tas olahraganya, dan pelindung tulang kering kaki (*shin guards*).",
+    "heart_meter": {
+      "base": 1,
+      "confession_target_dc": 16,
+      "milestones": [
+        {
+          "range": "1–2 ♥",
+          "minHearts": 1,
+          "maxHearts": 2,
+          "title": "Tawaran Bento Ceria",
+          "description": "Menilai selera makan pemain, membagikan lauk bento ekstra dengan senyuman manis. (Pertemuan pertama di dojo atau teras kantin.)"
+        },
+        {
+          "range": "3–4 ♥",
+          "minHearts": 3,
+          "maxHearts": 4,
+          "title": "Koki Pribadi Setia",
+          "description": "Membawakan bento lengkap setiap pagi, menuntut piring dikembalikan dalam keadaan bersih licin. (Makan siang berdua di bawah pohon sakura belakang dojo.)"
+        },
+        {
+          "range": "5–6 ♥",
+          "minHearts": 5,
+          "maxHearts": 6,
+          "title": "Gelisah Ingin Dipuji Cantik",
+          "description": "Berdandan ekstra feminin, tersipu parah saat pemain memuji aroma parfum manisnya. (Mengobati memar pemain pasca-bentrokan dengan lembut.)"
+        },
+        {
+          "range": "7–8 ♥",
+          "minHearts": 7,
+          "maxHearts": 8,
+          "title": "Pelindung Berserk Penuh Kasih",
+          "description": "Tidak ragu menendang musuh yang berani menyentuh pemain, merajuk manja jika pemain telat pulang. (Kencan memasak privat di dapur apartemennya saat akhir pekan.)"
+        },
+        {
+          "range": "9–10 ♥",
+          "minHearts": 9,
+          "maxHearts": 10,
+          "title": "Kekasih Jiwa & Sumpah Dapur",
+          "description": "Sumpah komitmen abadi untuk memasak bagi pemain seumur hidup, pengakuan cinta di bawah langit senja dojo. (Momen pengakuan cinta manis diiringi air mata bahagia.)"
+        }
+      ]
+    },
+    "gifts": {
+      "favorite": [
+        "Bahan bumbu masak artisan impor (minyak wijen murni",
+        "saus gochujang premium)"
+      ],
+      "normal": [
+        "Cetakan telur bento berbentuk karakter lucu"
+      ],
+      "disliked": [
+        "Makanan instan cepat saji berkualitas buruk"
+      ]
+    },
+    "date_spots": [
+      "Dojo Bela Diri Saat Sepi Sore Hari: — Latihan peregangan berdua yang diakhiri berbagi bekal camilan manis.",
+      "Supermarket & Pasar Tradisional Kota: — Berbelanja bahan makanan segar bersama sambil bergandengan tangan mendorong troli.",
+      "Kafe Dessert Manis Pinggir Kota: — Mencicipi wafel es krim dan mencatat inspirasi resep baru.",
+      "Taman Tepi Sungai Saat Matahari Terbenam: — Berjalan berdua menikmati angin senja sehabis jam latihan."
+    ]
+  },
+  {
     "id": "li_fujiwara_kenji",
     "slug": "fujiwara_kenji",
     "name": "Fujiwara Kenji (藤原 健二)",

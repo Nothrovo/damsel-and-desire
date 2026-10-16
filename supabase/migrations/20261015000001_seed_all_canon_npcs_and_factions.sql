@@ -903,9 +903,88 @@ BEGIN
   ON CONFLICT (character_id, section_key) DO NOTHING;
 
 
+  -- Character: choi_dal_dal (class_2_1)
+  INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
+  VALUES ('choi_dal_dal', 'class_2_1', 21, 'placeholder', true, now())
+  ON CONFLICT (slug) DO UPDATE SET
+    category_id = EXCLUDED.category_id,
+    sort_order = EXCLUDED.sort_order,
+    is_love_interest = EXCLUDED.is_love_interest,
+    updated_at = now()
+  RETURNING id INTO v_char_id;
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'identity', 1, '{"name":"Choi Dal Dal (최달달)","furigana":"최달달","nickname":["Dal Dal","Daldal-chan","Harimau Imut","Ratu Tendangan Taekwondo","Master Bento"],"tagline":"Siapa yang bilang atlet taekwondo ga bisa jadi koki manis?! Buka mulutmu, aaaa~ ini bento spesial dengan resep rahasia ibuku! Enak kan? ...Tapi awas ya, kalau kamu sampai terluka di luar sana, orang yang mukul kamu bakal kupelintir lehernya pakai tendangan tumitku!","grade":11,"class_room":"11-1","role":"Kapten Klub Taekwondo & Koki Siswa Kelas 11-1","club":"martial_arts","club_role":"Kapten Divisi Taekwondo (Kelas 11)","age":16,"birthday":"5 Mei","zodiac":"Taurus","mbti":"ESFP","gender":"Female","archetype":"jock","social_class":"middle_class","primary_stats":["physique","talent"],"stats":{"physique":16,"intelligent":12,"looks":16,"mind":13,"talent":17,"luck":13},"vitals":{"physical_hp_max":16,"composure_max":14}}'::jsonb, 'Karakter belum diperkenalkan.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'appearance', 1, '{"avatar_url":"https://api.dicebear.com/7.x/adventurer/svg?seed=choi_dal_dal","images":[],"raw_markdown":"* **Ciri Fisik & Wajah:** Wajah imut menggemaskan (*bubbly, sweet, and expressive*) dengan pipi halus merona merah muda alami, bibir merah ranum berkilau (*cherry lips*) yang sangat memikat, dan sepasang mata bulat besar berwarna oranye-amber madu (*warm honey-amber eyes*) yang selalu berbinar ceria.\n* **Rambut:** Rambut pirang madu cerah (*bright golden honey-blonde*) berpotongan pendek model bob bertekstur sebahu (*textured short bob hair*) dengan poni samping tipis. Ciri visual paling ikonik: sepasang jepit rambut berbentuk telinga harimau kuning bergaris belang hitam (*yellow-black tiger ear hair clips / toramimi*) di kedua sisi kepalanya yang tampak berkedut ekspresif mengikuti perubahan suasana hatinya.\n* **Postur & Gestur:** Bertubuh mungil (*petite*, tinggi 154 cm) namun luar biasa padat atletis dengan siluet ramping berlekuk indah dan kaki petarung yang lentur kuat. Sering melompat kecil saat gembira atau refleks memasang kuda-kuda satu kaki terangkat (*flamingo taekwondo stance*).\n* **Seragam & Gaya Berpakaian:** Modifikasi seragam pelaut Housen Academy dengan kerah kuning gading bergaris putih, pita oranye ceria, rok lipit pendek di atas lutut, dan kaus kaki putih sebetis dengan sepatu kets lincah. Di jam istirahat, ia sering memakai celemek dapur bergambar beruang lucu saat menyajikan bento.\n* **Aksesori & Barang Bawaan:** Kotak bento bertumpuk dibungkus kain furoshiki motif harimau, sabuk hitam taekwondo (*black belt*) di tas olahraganya, dan pelindung tulang kering kaki (*shin guards*)."}'::jsonb, 'Penampilan visual belum terungkap.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'personality', 2, '{"likes":["Memasak bento daging babi manis pedas (Jeyuk Bokkeum) & sup rumahan resep keluarga","Latihan tendangan tornado berputar 540 derajat di dojo bela diri","Jepit rambut telinga harimau kuning bergaris hitam kesayangannya","Dipuji cantik, feminin, dan harum oleh cowok yang ia sukai","Melihat orang yang ia sayangi makan masakannya sampai habis licin"],"dislikes":["Siapa pun yang menghina rasa masakannya atau resep ibunya","Orang jahat yang melukai kawan/orang yang disukai di luar arena (Pemicu Mode Berserk)","Diperlakukan hanya sebagai ''atlet kekar'' dan bukan sebagai cewek manis","Kalah dalam duel perebutan hati cowok idaman"],"raw_markdown":"### 1. Karakter Dasar & Sifat Dominan\nCeria, percaya diri, blak-blakan, penuh kasih sayang (*nurturing*), dan memiliki energi masa muda yang meluap-luap. Dal Dal adalah perpaduan unik antara ksatria petarung tangguh dan calon ibu rumah tangga yang sangat feminin. Ia selalu berusaha membuktikan bahwa seorang petarung wanita tetap bisa menjadi sosok yang anggun, manis, dan dicintai.\n\n### 2. Celah Emosional & Kelemahan Batin (Flaws & Insecurities)\n*Tiga Tombol Kemarahan Berserk:*\n1. Menghina kualitas masakannya.\n2. Menghina masakan keluarganya / resep ibunya.\n3. Siapa pun yang berani melukai orang yang ia sayangi di luar arena!\nSelain itu, ia memiliki rasa cemas tersembunyi bila orang yang ia sukai hanya melihatnya sebagai \"teman sparing otot\" dan bukan sebagai perempuan sejati.\n\n### 3. Pola Kasmaran & Ikatan Emosional (Dere Pattern)\nTipe **Deredere Agresif-Manis / Caring Heroine**. Begitu jatuh hati, Dal Dal tidak akan menyembunyikannya: ia akan membawakan bento buatan tangan setiap pagi, menyuapkan makanan secara langsung (*feed reaction*), menggandeng lengan pemain tanpa ragu di koridor, dan melayangkan tendangan kapak mematikan pada siapa saja yang mencoba mengganggu kencan mereka."}'::jsonb, 'Kenali dia lebih dekat dalam kehidupan sekolah untuk membuka informasi ini.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'background', 2, '{"raw_markdown":"### Fase Kanak-kanak\nPutri tunggal dari seorang peneliti dan pakar kuliner tradisional Korea. Sejak kecil ibunya mengirimnya ke kelas memasak, sementara Dal Dal belajar Taekwondo untuk menjaga kebugaran tubuhnya.\n\n### Fase Titik Balik\nMenjadi juara turnamen taekwondo junior dan menyadari bahwa kombinasi keahlian memasak dan kekuatan bela dirinya adalah anugerah terbesar untuk merawat orang-orang terkasih.\n\n### Kondisi Terkini di Sekolah\nMasuk ke Housen Academy di kelas 11-1 dan menjabat sebagai Kapten Divisi Taekwondo di dojo bela diri. Sering berkolaborasi dengan Wakaba Hinata di lab boga dan menjadi sekutu tempur penting bagi Presidium OSIS.\n\n### 🏫 Kehidupan Klub & Posisi Sekolah (Bukatsu)\n\nMemimpin sesi latihan tendangan akrobatik di dojo bela diri, melatih kelenturan tubuh anggota junior, dan memasak makanan bernutrisi tinggi untuk para atlet sekolah."}'::jsonb, 'Bicaralah dengannya sepulang sekolah untuk mendengar masa lalunya.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'relationships', 2, '{"raw_markdown":"### 🤝 Hubungan Sosial & Dinamika Karakter\n\n* **Miruam Solari (11-1):** Rekan atlet bela diri; Miruam mengagumi kecepatan tendangan Dal Dal sementara Dal Dal sering mengkritik pola makan Miruam yang kurang berkarbohidrat.\n* **Vesna Strivozha (11-1):** Sahabat tanding; kelincahan anggar Vesna sering diuji melawan kecepatan tendangan tornado Dal Dal.\n* **Wakaba Hinata (12-2):** Teman berbagi resep kue dan bento di lab tata boga.\n* **Tahagusa Kazugumi (11-2):** Menghormati ketangguhan tinju Kazugumi, namun memperingatkan agar anak-anak Kokuhou tidak merusak gerbang sekolah.\n* **Protagonist:** Cowok beruntung yang menjadi sasaran kasih sayang dan bento spesial hariannya.\n\n### 🎁 Preferensi Hadiah (Gift Giving)\n\n* **Sangat Disukai (+3 Heart Points):**\n  * Bahan bumbu masak artisan impor (minyak wijen murni, saus gochujang premium)\n  * Aksesori jepit rambut telinga harimau atau pita rambut modis\n* **Disukai (+1 Heart Point):**\n  * Cetakan telur bento berbentuk karakter lucu\n  * Minuman yogurt dingin segar\n* **Dibenci (-2 Heart Points):**\n  * Makanan instan cepat saji berkualitas buruk\n  * Peralatan beban binaraga yang kasar\n\n### 📍 Rekomendasi Lokasi Kencan (Dating Spots)\n\n1. **Dojo Bela Diri Saat Sepi Sore Hari:** Latihan peregangan berdua yang diakhiri berbagi bekal camilan manis.\n2. **Supermarket & Pasar Tradisional Kota:** Berbelanja bahan makanan segar bersama sambil bergandengan tangan mendorong troli.\n3. **Kafe Dessert Manis Pinggir Kota:** Mencicipi wafel es krim dan mencatat inspirasi resep baru.\n4. **Taman Tepi Sungai Saat Matahari Terbenam:** Berjalan berdua menikmati angin senja sehabis jam latihan.\n\n### 💬 Dialog Khas & Reaksi Situasional\n\n* **Saat Memberikan Bento:**  \n  *\"Ini kubuatkan khusus untukmu lho! Jangan berani-berani disisain ya, awas kalau ga habis!\"*\n* **Saat Melindungi Pemain (Mode Berserk):**  \n  *\"Beraninya tangan kotormu menyentuh dia di depanku... RASAKAN TENDANGAN INI, DASAR BRENGSEK!\"*\n* **Saat Dipuji Feminin:**  \n  *\"E-Eh? B-Benarkah aku terlihat manis hari ini...? (telinga harimaunya berkedut cepat sambil menutupi wajahnya yang merah padam).\"*"}'::jsonb, 'Hubungan sosial dan interaksinya akan terbuka saat lingkaran pertemanannya dikenali.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'mind', 3, '{"heart_meter":{"base":1,"confession_target_dc":16},"confession_dc":16,"heart_meter_base":1,"raw_markdown":"### 2. Celah Emosional & Kelemahan Batin (Flaws & Insecurities)\n\n*Tiga Tombol Kemarahan Berserk:*\n1. Menghina kualitas masakannya.\n2. Menghina masakan keluarganya / resep ibunya.\n3. Siapa pun yang berani melukai orang yang ia sayangi di luar arena!\nSelain itu, ia memiliki rasa cemas tersembunyi bila orang yang ia sukai hanya melihatnya sebagai \"teman sparing otot\" dan bukan sebagai perempuan sejati.\n\n### 3. Pola Kasmaran & Ikatan Emosional (Dere Pattern)\n\nTipe **Deredere Agresif-Manis / Caring Heroine**. Begitu jatuh hati, Dal Dal tidak akan menyembunyikannya: ia akan membawakan bento buatan tangan setiap pagi, menyuapkan makanan secara langsung (*feed reaction*), menggandeng lengan pemain tanpa ragu di koridor, dan melayangkan tendangan kapak mematikan pada siapa saja yang mencoba mengganggu kencan mereka.\n\n### 💖 Sistem Romansa: Heart Meter Progression (1–10 ♥)\n\n| Level ♥ | Status Hubungan | Perilaku & Respon Unik | Event Spesial yang Terbuka |\n| :---: | :--- | :--- | :--- |\n| **1–2 ♥** | *Tawaran Bento Ceria* | Menilai selera makan pemain, membagikan lauk bento ekstra dengan senyuman manis. | Pertemuan pertama di dojo atau teras kantin. |\n| **3–4 ♥** | *Koki Pribadi Setia* | Membawakan bento lengkap setiap pagi, menuntut piring dikembalikan dalam keadaan bersih licin. | Makan siang berdua di bawah pohon sakura belakang dojo. |\n| **5–6 ♥** | *Gelisah Ingin Dipuji Cantik* | Berdandan ekstra feminin, tersipu parah saat pemain memuji aroma parfum manisnya. | Mengobati memar pemain pasca-bentrokan dengan lembut. |\n| **7–8 ♥** | *Pelindung Berserk Penuh Kasih* | Tidak ragu menendang musuh yang berani menyentuh pemain, merajuk manja jika pemain telat pulang. | Kencan memasak privat di dapur apartemennya saat akhir pekan. |\n| **9–10 ♥** | *Kekasih Jiwa & Sumpah Dapur* | Sumpah komitmen abadi untuk memasak bagi pemain seumur hidup, pengakuan cinta di bawah langit senja dojo. | Momen pengakuan cinta manis diiringi air mata bahagia. |"}'::jsonb, 'Hanya terbuka bagi mereka yang telah meraih ikatan hati terdalam.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'secrets', 3, '{"raw_markdown":"### 2. Celah Emosional & Kelemahan Batin (Flaws & Insecurities)\n\n*Tiga Tombol Kemarahan Berserk:*\n1. Menghina kualitas masakannya.\n2. Menghina masakan keluarganya / resep ibunya.\n3. Siapa pun yang berani melukai orang yang ia sayangi di luar arena!\nSelain itu, ia memiliki rasa cemas tersembunyi bila orang yang ia sukai hanya melihatnya sebagai \"teman sparing otot\" dan bukan sebagai perempuan sejati.\n\n### 🌟 Trivia & Fakta Menarik\n\n1. Jepit telinga harimaunya sebenarnya hanya jepit rambut biasa, tapi secara ajaib tampak bergerak saat Dal Dal kaget, senang, atau marah.\n2. Kecepatan tendangannya tercatat sebagai yang tercepat di seluruh divisi bela diri Housen Academy.\n3. Rahasia kelezatan masakannya berasal dari resep kaldu rahasia warisan turun-temurun ibunya."}'::jsonb, 'Hanya terbuka saat kepercayaan mutlak telah terbentuk.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_character_sections (character_id, section_key, tier, content, locked_hint, updated_at)
+  VALUES (v_char_id, 'dm_notes', 99, '{"notes":"Pola & Tag Karakter: canon-character, housen-academy, class_2_1, girls-of-the-wild\nConfession Target DC: 16 (Base Heart: 1 ♥)\nPrimary Stats: physique, talent | Hit Die: d10\n\n--- PANDUAN ROMANSA & EVENT ---\n| Level ♥ | Status Hubungan | Perilaku & Respon Unik | Event Spesial yang Terbuka |\n| :---: | :--- | :--- | :--- |\n| **1–2 ♥** | *Tawaran Bento Ceria* | Menilai selera makan pemain, membagikan lauk bento ekstra dengan senyuman manis. | Pertemuan pertama di dojo atau teras kantin. |\n| **3–4 ♥** | *Koki Pribadi Setia* | Membawakan bento lengkap setiap pagi, menuntut piring dikembalikan dalam keadaan bersih licin. | Makan siang berdua di bawah pohon sakura belakang dojo. |\n| **5–6 ♥** | *Gelisah Ingin Dipuji Cantik* | Berdandan ekstra feminin, tersipu parah saat pemain memuji aroma parfum manisnya. | Mengobati memar pemain pasca-bentrokan dengan lembut. |\n| **7–8 ♥** | *Pelindung Berserk Penuh Kasih* | Tidak ragu menendang musuh yang berani menyentuh pemain, merajuk manja jika pemain telat pulang. | Kencan memasak privat di dapur apartemennya saat akhir pekan. |\n| **9–10 ♥** | *Kekasih Jiwa & Sumpah Dapur* | Sumpah komitmen abadi untuk memasak bagi pemain seumur hidup, pengakuan cinta di bawah langit senja dojo. | Momen pengakuan cinta manis diiringi air mata bahagia. |"}'::jsonb, 'Hanya untuk Game Master.', now())
+  ON CONFLICT (character_id, section_key) DO UPDATE SET
+    tier = EXCLUDED.tier,
+    content = EXCLUDED.content,
+    locked_hint = EXCLUDED.locked_hint,
+    updated_at = now();
+
+  INSERT INTO public.codex_reveals (character_id, section_key, revealed_by)
+  VALUES (v_char_id, 'identity', 'SYSTEM_SEED'), (v_char_id, 'appearance', 'SYSTEM_SEED')
+  ON CONFLICT (character_id, section_key) DO NOTHING;
+
+
   -- Character: kuroda_gin (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kuroda_gin', 'osis', 21, 'placeholder', true, now())
+  VALUES ('kuroda_gin', 'osis', 22, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -984,7 +1063,7 @@ BEGIN
 
   -- Character: yuki_haruto (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('yuki_haruto', 'class_2_1', 22, 'placeholder', true, now())
+  VALUES ('yuki_haruto', 'class_2_1', 23, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1063,7 +1142,7 @@ BEGIN
 
   -- Character: fujiwara_kenji (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('fujiwara_kenji', 'osis', 23, 'placeholder', true, now())
+  VALUES ('fujiwara_kenji', 'osis', 24, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1142,7 +1221,7 @@ BEGIN
 
   -- Character: hatsushiba_miku (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('hatsushiba_miku', 'class_2_1', 24, 'placeholder', true, now())
+  VALUES ('hatsushiba_miku', 'class_2_1', 25, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1221,7 +1300,7 @@ BEGIN
 
   -- Character: miruam_solari (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('miruam_solari', 'osis', 25, 'placeholder', true, now())
+  VALUES ('miruam_solari', 'osis', 26, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1300,7 +1379,7 @@ BEGIN
 
   -- Character: shinoda_renzo (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('shinoda_renzo', 'class_2_1', 26, 'placeholder', true, now())
+  VALUES ('shinoda_renzo', 'class_2_1', 27, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1379,7 +1458,7 @@ BEGIN
 
   -- Character: saotome_riku (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('saotome_riku', 'class_2_1', 27, 'placeholder', true, now())
+  VALUES ('saotome_riku', 'class_2_1', 28, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1458,7 +1537,7 @@ BEGIN
 
   -- Character: kagami_rinoka (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kagami_rinoka', 'class_2_1', 28, 'placeholder', true, now())
+  VALUES ('kagami_rinoka', 'class_2_1', 29, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1537,7 +1616,7 @@ BEGIN
 
   -- Character: kasane_teiko (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kasane_teiko', 'class_2_1', 29, 'placeholder', true, now())
+  VALUES ('kasane_teiko', 'class_2_1', 30, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1616,7 +1695,7 @@ BEGIN
 
   -- Character: asahina_tenka (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('asahina_tenka', 'osis', 30, 'placeholder', true, now())
+  VALUES ('asahina_tenka', 'osis', 31, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1695,7 +1774,7 @@ BEGIN
 
   -- Character: vesna_strivozha (class_2_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('vesna_strivozha', 'class_2_1', 31, 'placeholder', true, now())
+  VALUES ('vesna_strivozha', 'class_2_1', 32, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1774,7 +1853,7 @@ BEGIN
 
   -- Character: mawatari_bando (kokuhou)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('mawatari_bando', 'kokuhou', 32, 'placeholder', true, now())
+  VALUES ('mawatari_bando', 'kokuhou', 33, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1853,7 +1932,7 @@ BEGIN
 
   -- Character: komiya_junta (kokuhou)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('komiya_junta', 'kokuhou', 33, 'placeholder', true, now())
+  VALUES ('komiya_junta', 'kokuhou', 34, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -1932,7 +2011,7 @@ BEGIN
 
   -- Character: tahagusa_kazugumi (kokuhou)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('tahagusa_kazugumi', 'kokuhou', 34, 'placeholder', true, now())
+  VALUES ('tahagusa_kazugumi', 'kokuhou', 35, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2011,7 +2090,7 @@ BEGIN
 
   -- Character: sendo_kyosuke (kokuhou)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('sendo_kyosuke', 'kokuhou', 35, 'placeholder', true, now())
+  VALUES ('sendo_kyosuke', 'kokuhou', 36, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2090,7 +2169,7 @@ BEGIN
 
   -- Character: kisaragi_setsuna (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kisaragi_setsuna', 'osis', 36, 'placeholder', true, now())
+  VALUES ('kisaragi_setsuna', 'osis', 37, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2169,7 +2248,7 @@ BEGIN
 
   -- Character: hanase_tamanibu (class_2_2)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('hanase_tamanibu', 'class_2_2', 37, 'placeholder', true, now())
+  VALUES ('hanase_tamanibu', 'class_2_2', 38, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2248,7 +2327,7 @@ BEGIN
 
   -- Character: ouga_tesshin (kokuhou)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('ouga_tesshin', 'kokuhou', 38, 'placeholder', true, now())
+  VALUES ('ouga_tesshin', 'kokuhou', 39, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2327,7 +2406,7 @@ BEGIN
 
   -- Character: saegusa_koharu (class_3_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('saegusa_koharu', 'class_3_1', 39, 'placeholder', true, now())
+  VALUES ('saegusa_koharu', 'class_3_1', 40, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2406,7 +2485,7 @@ BEGIN
 
   -- Character: tachibana_rin (class_3_1)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('tachibana_rin', 'class_3_1', 40, 'placeholder', true, now())
+  VALUES ('tachibana_rin', 'class_3_1', 41, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2485,7 +2564,7 @@ BEGIN
 
   -- Character: wakaba_hinata (class_3_2)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('wakaba_hinata', 'class_3_2', 41, 'placeholder', true, now())
+  VALUES ('wakaba_hinata', 'class_3_2', 42, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2564,7 +2643,7 @@ BEGIN
 
   -- Character: hasumi_chihiro (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('hasumi_chihiro', 'faculty', 42, 'placeholder', true, now())
+  VALUES ('hasumi_chihiro', 'faculty', 43, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2643,7 +2722,7 @@ BEGIN
 
   -- Character: tsukishima_fumiko (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('tsukishima_fumiko', 'faculty', 43, 'placeholder', true, now())
+  VALUES ('tsukishima_fumiko', 'faculty', 44, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2722,7 +2801,7 @@ BEGIN
 
   -- Character: gonda_gennosuke (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('gonda_gennosuke', 'faculty', 44, 'placeholder', true, now())
+  VALUES ('gonda_gennosuke', 'faculty', 45, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2801,7 +2880,7 @@ BEGIN
 
   -- Character: kurosaki_jin (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kurosaki_jin', 'faculty', 45, 'placeholder', true, now())
+  VALUES ('kurosaki_jin', 'faculty', 46, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2880,7 +2959,7 @@ BEGIN
 
   -- Character: saionji_kaede (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('saionji_kaede', 'faculty', 46, 'placeholder', true, now())
+  VALUES ('saionji_kaede', 'faculty', 47, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -2959,7 +3038,7 @@ BEGIN
 
   -- Character: shiranui_mei (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('shiranui_mei', 'faculty', 47, 'placeholder', true, now())
+  VALUES ('shiranui_mei', 'faculty', 48, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3038,7 +3117,7 @@ BEGIN
 
   -- Character: moriyama_daisuke (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('moriyama_daisuke', 'faculty', 48, 'placeholder', true, now())
+  VALUES ('moriyama_daisuke', 'faculty', 49, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3117,7 +3196,7 @@ BEGIN
 
   -- Character: kujou_reiko (osis)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kujou_reiko', 'osis', 49, 'placeholder', true, now())
+  VALUES ('kujou_reiko', 'osis', 50, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3196,7 +3275,7 @@ BEGIN
 
   -- Character: kashisaka_seichi (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kashisaka_seichi', 'faculty', 50, 'placeholder', true, now())
+  VALUES ('kashisaka_seichi', 'faculty', 51, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3275,7 +3354,7 @@ BEGIN
 
   -- Character: heinrich_vogel (faculty)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('heinrich_vogel', 'faculty', 51, 'placeholder', true, now())
+  VALUES ('heinrich_vogel', 'faculty', 52, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3354,7 +3433,7 @@ BEGIN
 
   -- Character: kurogane_tetsuo (outside_school)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kurogane_tetsuo', 'outside_school', 52, 'placeholder', true, now())
+  VALUES ('kurogane_tetsuo', 'outside_school', 53, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3433,7 +3512,7 @@ BEGIN
 
   -- Character: onizuka_gouki (touki)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('onizuka_gouki', 'touki', 53, 'placeholder', true, now())
+  VALUES ('onizuka_gouki', 'touki', 54, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3512,7 +3591,7 @@ BEGIN
 
   -- Character: kanzawa_ryuuji (touki)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kanzawa_ryuuji', 'touki', 54, 'placeholder', true, now())
+  VALUES ('kanzawa_ryuuji', 'touki', 55, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3591,7 +3670,7 @@ BEGIN
 
   -- Character: samejima_ren (touki)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('samejima_ren', 'touki', 55, 'placeholder', true, now())
+  VALUES ('samejima_ren', 'touki', 56, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,
@@ -3670,7 +3749,7 @@ BEGIN
 
   -- Character: kiba_touya (touki)
   INSERT INTO public.codex_characters (slug, category_id, sort_order, visibility_mode, is_love_interest, updated_at)
-  VALUES ('kiba_touya', 'touki', 56, 'placeholder', true, now())
+  VALUES ('kiba_touya', 'touki', 57, 'placeholder', true, now())
   ON CONFLICT (slug) DO UPDATE SET
     category_id = EXCLUDED.category_id,
     sort_order = EXCLUDED.sort_order,

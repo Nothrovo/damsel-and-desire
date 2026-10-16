@@ -241,12 +241,28 @@ const payloads = allFiles.map((fileObj, idx) => {
   return buildPayload(parsed, 10 + idx);
 });
 
+const SESSION1_SLUGS = [
+  "kisaragi_setsuna",
+  "saionji_kaede",
+  "shiranui_mei",
+  "tsukishima_fumiko",
+  "tachibana_rin",
+  "saegusa_koharu",
+  "wakaba_hinata"
+];
+
+const session1Payloads = SESSION1_SLUGS.map((slug, idx) => {
+  const p = payloads.find((item) => item.slug === slug);
+  if (!p) throw new Error(`Missing session 1 NPC payload for ${slug}`);
+  return { ...p, sortOrder: 20 + idx };
+});
+
 // 1. Write src/data/canonSession1Npcs.ts
 const tsContent = `// Auto-generated from Characters/Love Interests markdown files via scripts/syncCanonNpcs.js
-export const CANON_SESSION1_NPCS = ${JSON.stringify(payloads, null, 2)} as const;
+export const CANON_SESSION1_NPCS = ${JSON.stringify(session1Payloads, null, 2)} as const;
 `;
 fs.writeFileSync("src/data/canonSession1Npcs.ts", tsContent, "utf-8");
-console.log(`✓ Generated src/data/canonSession1Npcs.ts (${payloads.length} characters)`);
+console.log(`✓ Generated src/data/canonSession1Npcs.ts (${session1Payloads.length} session 1 characters)`);
 
 // 2. Write supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql
 function sqlEscapeJson(obj) {
