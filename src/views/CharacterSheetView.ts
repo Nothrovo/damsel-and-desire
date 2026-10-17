@@ -378,11 +378,11 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
             </div>
 
             <div class="id-card-content">
-              <div class="id-photo-container" id="idPhotoContainer" title="Klik atau seret foto ke sini untuk mengganti Pasfoto ID (Maks 2MB)">
+              <div class="id-photo-container" id="idPhotoContainer" title="Klik untuk memperbesar Pasfoto ID">
                 <img id="studentIdPhotoImg" src="${avatar}" alt="${escapeHtml(char.name)}">
                 <div class="id-photo-overlay">
-                  <span class="id-photo-overlay-icon">📷</span>
-                  <span class="id-photo-overlay-text">Ganti Foto</span>
+                  <span class="id-photo-overlay-icon">🔍</span>
+                  <span class="id-photo-overlay-text">Perbesar</span>
                 </div>
                 <div class="id-photo-loading" id="idPhotoLoading" style="display:none;">
                   <span class="spinner-sm"></span>
@@ -858,6 +858,45 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
       ${achievementAwardModal.render()}
       ${addLoveInterestModal.render()}
       ${loveInterestDetailModal.render()}
+
+      <!-- Student ID Photo Enlarge Modal -->
+      <div id="studentPhotoModal" class="modal-overlay" style="display:none;z-index:99999;" role="dialog" aria-modal="true" aria-labelledby="studentPhotoModalTitle">
+        <div class="modal-card" style="max-width:440px;width:92vw;padding:0;overflow:hidden;border:2px solid var(--rose-primary);box-shadow:0 16px 48px rgba(0,0,0,0.85), 0 0 24px rgba(225,29,72,0.25);background:var(--bg-card);border-radius:var(--radius-lg);position:relative;">
+          
+          <div class="modal-header" style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-card);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg, rgba(225,29,72,0.15), rgba(15,23,42,0.9));">
+            <div>
+              <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--rose-light);font-weight:700;">
+                鳳仙学園 高等部 • 学生証
+              </div>
+              <h3 id="studentPhotoModalTitle" style="margin:0;font-size:1.15rem;color:var(--text-main);font-family:var(--font-heading);">
+                ${escapeHtml(char.name)}
+              </h3>
+            </div>
+            <button class="modal-close-btn" id="closeStudentPhotoModalBtn" type="button" aria-label="Tutup" style="font-size:1.5rem;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 8px;line-height:1;">&times;</button>
+          </div>
+
+          <div class="modal-body" style="padding:1.25rem;display:flex;flex-direction:column;align-items:center;gap:1rem;background:radial-gradient(circle at center, rgba(30,41,59,0.4), transparent);">
+            <div style="width:100%;max-width:300px;aspect-ratio:3/4;border-radius:var(--radius-md);overflow:hidden;border:2px solid var(--amber-gold);box-shadow:0 8px 30px rgba(0,0,0,0.6);position:relative;background:#0d111a;">
+              <img id="studentPhotoModalImg" src="${avatar}" alt="${escapeHtml(char.name)}" style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;" />
+              <div class="id-stamp-badge" style="position:absolute;bottom:8px;right:8px;">学園認可</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;width:100%;max-width:300px;font-size:0.8rem;color:var(--text-muted);padding:0.25rem 0.5rem;border-top:1px dashed var(--border-subtle);">
+              <span>NIS: <strong style="color:var(--text-main);">HA-${char.id.slice(0, 8).toUpperCase()}</strong></span>
+              <span>Kelas: <strong style="color:var(--text-main);">${char.grade || 10}-1</strong></span>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding:0.75rem 1.25rem;border-top:1px solid var(--border-card);display:flex;justify-content:space-between;align-items:center;background:var(--bg-surface);">
+            <button class="btn btn-secondary btn-xs" id="btnChangePhotoFromModal" type="button">
+              📷 Unggah Pasfoto Baru
+            </button>
+            <button class="btn btn-primary btn-sm" id="btnCloseStudentPhotoModalBtn" type="button">
+              Tutup
+            </button>
+          </div>
+
+        </div>
+      </div>
 
     </div>
   `;
@@ -1550,6 +1589,26 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   const photoLoading = document.getElementById("idPhotoLoading");
   const studentPhotoImg = document.getElementById("studentIdPhotoImg") as HTMLImageElement | null;
   const sheetAvatarImg = document.getElementById("sheetAvatarImg") as HTMLImageElement | null;
+  const photoModal = document.getElementById("studentPhotoModal");
+  const modalCloseBtn = document.getElementById("closeStudentPhotoModalBtn");
+  const modalFooterCloseBtn = document.getElementById("btnCloseStudentPhotoModalBtn");
+  const btnChangePhotoFromModal = document.getElementById("btnChangePhotoFromModal");
+  const modalPhotoImg = document.getElementById("studentPhotoModalImg") as HTMLImageElement | null;
+
+  const openPhotoModal = () => {
+    if (photoModal) {
+      if (modalPhotoImg && studentPhotoImg) {
+        modalPhotoImg.src = studentPhotoImg.src;
+      }
+      photoModal.style.display = "flex";
+    }
+  };
+
+  const closePhotoModal = () => {
+    if (photoModal) {
+      photoModal.style.display = "none";
+    }
+  };
 
   const handleFileUpload = async (file: File) => {
     try {
@@ -1561,6 +1620,7 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
       // Update UI preview immediately
       if (studentPhotoImg) studentPhotoImg.src = publicUrl;
       if (sheetAvatarImg) sheetAvatarImg.src = publicUrl;
+      if (modalPhotoImg) modalPhotoImg.src = publicUrl;
 
       // Update database and characterStore
       await characterStore.runOptimisticUpdate(
@@ -1582,14 +1642,45 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
       const fallback = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
       if (studentPhotoImg) studentPhotoImg.src = fallback;
       if (sheetAvatarImg) sheetAvatarImg.src = fallback;
+      if (modalPhotoImg) modalPhotoImg.src = fallback;
     } finally {
       if (photoLoading) photoLoading.style.display = "none";
       if (photoInput) photoInput.value = "";
     }
   };
 
-  photoContainer?.addEventListener("click", () => photoInput?.click());
+  // Clicking the photo container enlarges the student photo (NOT file picker)
+  photoContainer?.addEventListener("click", openPhotoModal);
+
+  // Close modal events
+  modalCloseBtn?.addEventListener("click", closePhotoModal);
+  modalFooterCloseBtn?.addEventListener("click", closePhotoModal);
+  photoModal?.addEventListener("click", (e) => {
+    if (e.target === photoModal) {
+      closePhotoModal();
+    }
+  });
+
+  // Switch to upload from inside the modal if user chooses
+  btnChangePhotoFromModal?.addEventListener("click", () => {
+    closePhotoModal();
+    photoInput?.click();
+  });
+
+  // Trigger button below ID card opens file picker directly
   triggerBtn?.addEventListener("click", () => photoInput?.click());
+
+  // Cleanly handle Escape key for the photo modal
+  if ((window as any).__studentPhotoModalKeyHandler) {
+    window.removeEventListener("keydown", (window as any).__studentPhotoModalKeyHandler);
+  }
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape" && photoModal && photoModal.style.display === "flex") {
+      closePhotoModal();
+    }
+  };
+  (window as any).__studentPhotoModalKeyHandler = onKeyDown;
+  window.addEventListener("keydown", onKeyDown);
 
   photoInput?.addEventListener("change", (e: any) => {
     const file = e.target?.files?.[0];
@@ -2212,9 +2303,18 @@ function updateDynamicElements(char: Character) {
   // Identity & Badges
   const nameEl = document.getElementById("sheetCharName");
   if (nameEl) nameEl.textContent = char.name;
+  const avatarUrl = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
   const avatarEl = document.getElementById("sheetAvatarImg") as HTMLImageElement | null;
   if (avatarEl) {
-    avatarEl.src = char.avatar_path || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(char.name)}`;
+    avatarEl.src = avatarUrl;
+  }
+  const studentPhotoEl = document.getElementById("studentIdPhotoImg") as HTMLImageElement | null;
+  if (studentPhotoEl) {
+    studentPhotoEl.src = avatarUrl;
+  }
+  const modalPhotoEl = document.getElementById("studentPhotoModalImg") as HTMLImageElement | null;
+  if (modalPhotoEl) {
+    modalPhotoEl.src = avatarUrl;
   }
   const curArchetype = compArchetypes.find(a => a.id === char.archetype_id);
   const archBadge = document.getElementById("sheetArchetypeBadge");
