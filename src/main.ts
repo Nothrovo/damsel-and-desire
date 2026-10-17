@@ -90,6 +90,7 @@ function initApp() {
   // Register All Routes
   router
     .register("/", renderLandingView)
+    .register("/roster", renderLandingView)
     .register("/characters/new", renderBuilderWizardView)
     .register("/characters/:id/edit", renderBuilderWizardView)
     .register("/characters/:id", renderCharacterSheetView)

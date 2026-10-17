@@ -35,6 +35,7 @@ export interface CodexCharacterCard {
   role?: string;
   club?: string;
   home_room_id?: string | null;
+  gender?: string;
   revealed_sections?: string[];
 }
 

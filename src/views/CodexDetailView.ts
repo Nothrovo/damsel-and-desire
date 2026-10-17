@@ -172,16 +172,32 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
   const tagline = identity.tagline || char.tagline || "";
   const avatar = resolvePortraitUrl(appearance.avatar_url || char.avatar_url, char.slug) || `https://api.dicebear.com/7.x/adventurer/svg?seed=${char.slug || char.id}`;
 
+  const catLabels: Record<string, string> = {
+    osis: "Presidium OSIS",
+    kokuhou: "Geng Kokuhou (黒鳳)",
+    touki: "SMA Kejuruan Touki (東鬼)",
+    faculty: "Dewan Guru & Staf",
+    clubs: "Klub Ekstrakurikuler",
+    outside_school: "Di Luar Sekolah",
+    other: "Direktori Karakter"
+  };
+  const catName = catLabels[char.category_id] || (char.category_id?.startsWith("class_") ? `Kelas ${char.category_id.replace("class_", "").replace("_", "-")}` : "Daftar Direktori");
+  const isMale = String(identity.gender || "").toLowerCase() === "male";
+
   container.innerHTML = `
     <!-- Top Back Link & Category -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
-      <a href="/codex/${char.category_id || 'class_1_1'}" style="text-decoration:none;color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:6px;">
-        <span>← Kembali ke Daftar Kelas</span>
-      </a>
+      <button type="button" id="btnCodexBack" style="background:none;border:none;color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:6px;cursor:pointer;padding:0;">
+        <span>← Kembali ke ${catName}</span>
+      </button>
       <div style="display:flex;gap:8px;align-items:center;">
-        ${char.is_love_interest ? `
+        ${char.is_love_interest && !isMale ? `
           <span style="background:var(--rose-primary);color:#fff;font-size:0.75rem;padding:4px 12px;border-radius:var(--radius-full);font-weight:700;letter-spacing:0.04em;">
             ♥ HEROINE & LOVE INTEREST
+          </span>
+        ` : isMale ? `
+          <span style="background:rgba(30,58,138,0.7);border:1px solid #3b82f6;color:#bfdbfe;font-size:0.75rem;padding:4px 12px;border-radius:var(--radius-full);font-weight:700;letter-spacing:0.04em;">
+            ⚔️ SISWA KANON
           </span>
         ` : ""}
       </div>
@@ -457,6 +473,11 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
       zoomImg.src = avatar;
       zoomModal.style.display = "flex";
     }
+  });
+
+  // Attach Back Navigation
+  document.getElementById("btnCodexBack")?.addEventListener("click", () => {
+    router.navigate(`/codex/${char.category_id || 'class_1_1'}`);
   });
 
   // Attach Thumbnail Clicks

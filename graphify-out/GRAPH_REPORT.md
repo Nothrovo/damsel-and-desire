@@ -1,9 +1,9 @@
 # Graph Report - Damsel and Desire  (2026-10-17)
 
 ## Corpus Check
-- 159 files · ~4,030,566 words
+- 159 files · ~4,030,689 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 6 file(s) not represented in the graph (top: (none) 4, .example 1, .css 1)
+- Unclassified: 5 file(s) not represented in the graph (top: (none) 3, .example 1, .css 1)
 
 ## Summary
 - 1442 nodes · 3568 edges · 106 communities (54 shown, 52 thin omitted)
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5828346f`
+- Built from commit: `7c61b040`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -341,13 +341,13 @@ Nodes (4): EffectiveCharacterStats, AbilityKey, CharacterAbilities, BuilderDraft
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `showToast()` connect `showToast` to `main.ts`, `CampaignDetailView.ts`, `BuilderWizardView.ts`, `CharacterSheetView.ts`, `DmRevealHistoryModal.ts`, `loveInterests.ts`, `achievementAwardModal`, `calendar.ts`, `api/codex.ts`, `CalendarView.ts`, `EditCharacterModal.ts`, `CodexCategoryView.ts`, `LandingView.ts`, `CodexCharacterEditorModal.ts`, `CodexDetailView.ts`, `subclassSelectModal`, `addLoveInterestModal`, `quickVitalsPopover`, `vitest`, `CodexCatalogView.ts`, `AchievementAwardModal.ts`, `featPickerModal`, `getLevelLabel`, `baitoModal`, `savingsModal`, `backstoryModal`?**
-  _High betweenness centrality (0.048) - this node is a cross-community bridge._
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **What connects `@types/three`, `typescript` to the rest of the system?**
   _2 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DamselDesireApp` be split into smaller, more focused modules?**
   _Cohesion score 0.05442329227323628 - nodes in this community are weakly interconnected._
 - **Why does `vitest` connect `vitest` to `featProgression.test.ts`, `codexSecurity.test.ts`, `compendium.ts`, `map3DUtils.ts`, `handbook/index.ts`, `showToast`, `ruleEngine.ts`, `loveInterests.ts`, `calendar.ts`, `progression.ts`, `package.json`, `EditCharacterModal.ts`, `AchievementAwardModal.ts`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
 - **Should `map3DUtils.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05659583420997265 - nodes in this community are weakly interconnected._
 - **Should `codexSecurity.test.ts` be split into smaller, more focused modules?**

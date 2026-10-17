@@ -455,9 +455,14 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
 
           <!-- Top Badges -->
           <div style="position:absolute;top:10px;left:${isDmActive ? "44px" : "10px"};display:flex;gap:6px;flex-wrap:wrap;">
-            ${c.is_love_interest ? `
+            ${c.is_love_interest && (c.gender || "").toLowerCase() !== "male" ? `
               <span style="background:var(--rose-primary);color:#fff;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:var(--radius-full);font-family:var(--font-heading);letter-spacing:0.04em;display:flex;align-items:center;gap:3px;">
                 <span>♥</span> HEROINE
+              </span>
+            ` : ""}
+            ${(c.gender || "").toLowerCase() === "male" ? `
+              <span style="background:rgba(30,58,138,0.7);border:1px solid #3b82f6;color:#bfdbfe;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:var(--radius-full);font-family:var(--font-heading);letter-spacing:0.04em;display:flex;align-items:center;gap:3px;">
+                <span>⚔️</span> SISWA
               </span>
             ` : ""}
             ${c.class_room ? `

@@ -118,6 +118,7 @@ function buildCanonCard(npc: any, revealedSections: string[]): CodexCharacterCar
     role: hasIdentity ? (identitySec?.role || "") : "",
     club: hasIdentity ? (identitySec?.club || "") : "",
     home_room_id: hasIdentity ? npc.homeRoomId : null,
+    gender: hasIdentity ? (identitySec?.gender || "") : "",
     revealed_sections: revealedSections
   };
 }
@@ -340,6 +341,7 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
         card.class_room = canon.class_room;
         if (canon.tagline && (!card.tagline || card.tagline === "???")) card.tagline = canon.tagline;
         if (canon.furigana && !card.furigana) card.furigana = canon.furigana;
+        if (canon.gender) card.gender = canon.gender;
       }
     }
   }
