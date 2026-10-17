@@ -28,6 +28,7 @@ import {
 import { ensureGradeFeatGrants } from "../rules/migration";
 import { getArchetypeReworkData, getSocialClassReworkData } from "../rules/combatActions";
 import { ALL_FEATS } from "../data/featCompendium";
+import { uploadAvatar } from "../api/storage";
 import { showToast } from "../components/Toast";
 import { renderBuilderSkeleton } from "../components/Skeleton";
 import { router } from "../router/router";
@@ -1421,8 +1422,15 @@ function renderStep7Review(container: HTMLElement) {
       <!-- Left Column: Full Identity & Backstory Fields -->
       <div style="display:flex;flex-direction:column;gap:0.85rem;">
         <div class="form-group">
-          <label for="inputDraftAvatarUrl" style="font-size:0.82rem;color:var(--text-muted);">URL Avatar Custom (atau klik ikon 🎲 di atas untuk acak):</label>
-          <input type="text" id="inputDraftAvatarUrl" class="input-text" value="${escapeHtml(draft.avatar)}" placeholder="https://..." style="width:100%;">
+          <label for="inputDraftAvatarUrl" style="font-size:0.82rem;color:var(--text-muted);">Avatar / Pasfoto ID (Unggah Berkas atau Masukkan URL):</label>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="text" id="inputDraftAvatarUrl" class="input-text" value="${escapeHtml(draft.avatar)}" placeholder="https://..." style="flex:1;">
+            <label class="btn btn-secondary btn-sm" style="cursor:pointer;white-space:nowrap;margin:0;">
+              📁 Unggah Foto
+              <input type="file" id="btnUploadBuilderAvatar" accept="image/png,image/jpeg,image/webp" style="display:none;">
+            </label>
+          </div>
+          <span id="builderUploadStatus" style="font-size:0.75rem;color:var(--text-muted);display:block;margin-top:2px;">Format JPG, PNG, atau WebP (Max 2MB).</span>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
@@ -1556,6 +1564,26 @@ function renderStep7Review(container: HTMLElement) {
     draft.avatar = e.target.value.trim();
     const img = document.getElementById("builderAvatarImg") as HTMLImageElement | null;
     if (img && draft.avatar) img.src = draft.avatar;
+  });
+
+  const uploadFileInput = document.getElementById("btnUploadBuilderAvatar") as HTMLInputElement | null;
+  const builderUploadStatus = document.getElementById("builderUploadStatus");
+  uploadFileInput?.addEventListener("change", async () => {
+    const file = uploadFileInput.files?.[0];
+    if (!file) return;
+    if (builderUploadStatus) builderUploadStatus.textContent = "⏳ Mengunggah foto ke storage...";
+    try {
+      const url = await uploadAvatar(file, `builder_${Date.now()}`);
+      draft.avatar = url;
+      if (avatarUrlInput) avatarUrlInput.value = url;
+      const img = document.getElementById("builderAvatarImg") as HTMLImageElement | null;
+      if (img) img.src = url;
+      if (builderUploadStatus) builderUploadStatus.textContent = "✓ Foto berhasil diunggah!";
+      showToast("Foto avatar berhasil diunggah!", "success");
+    } catch (err: any) {
+      if (builderUploadStatus) builderUploadStatus.textContent = `❌ ${err.message || "Gagal mengunggah"}`;
+      showToast(err.message || "Gagal mengunggah foto", "error");
+    }
   });
 
   document.getElementById("inputDraftPersonality")?.addEventListener("input", (e: any) => { draft.personality = e.target.value; });

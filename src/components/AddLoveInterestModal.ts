@@ -1,4 +1,6 @@
 import { fetchDynamicLoveInterests, type LoveInterestDefinition } from "../api/loveInterests";
+import { uploadAvatar } from "../api/storage";
+import { getAllLoveInterests } from "../data/loveInterestCompendium";
 import type { Character, TargetSecret } from "../types";
 import { showToast } from "./Toast";
 
@@ -179,6 +181,20 @@ export class AddLoveInterestModal {
                       Affection Awal: <strong id="addLiCustomAffLabel" style="color:var(--rose-light);">1</strong>/10 ♥
                     </label>
                     <input type="range" id="addLiCustomAffRange" min="1" max="10" value="1" style="width:100%;accent-color:var(--rose-primary);margin-top:8px;" />
+                  </div>
+                </div>
+
+                <div style="margin-bottom:1rem;background:rgba(255,255,255,0.02);border:1px dashed var(--border-card);border-radius:var(--radius-sm);padding:0.75rem;">
+                  <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-dim);margin-bottom:6px;">
+                    Pasfoto ID / Avatar Karakter (Opsional):
+                  </label>
+                  <div style="display:flex;gap:12px;align-items:center;">
+                    <img id="addLiCustomAvatarPreview" src="https://api.dicebear.com/7.x/adventurer/svg?seed=custom" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--rose-primary);" />
+                    <div style="flex:1;">
+                      <input type="file" id="addLiCustomAvatarFileInput" accept="image/png,image/jpeg,image/webp" style="font-size:0.75rem;color:var(--text-muted);width:100%;" />
+                      <input type="hidden" id="addLiCustomAvatarUrlInput" value="" />
+                      <span id="addLiCustomAvatarStatus" style="font-size:0.72rem;color:var(--text-muted);display:block;margin-top:2px;">Unggah foto (JPG/PNG/WebP, max 2MB) atau kosongkan untuk avatar otomatis.</span>
+                    </div>
                   </div>
                 </div>
 
@@ -493,6 +509,28 @@ export class AddLoveInterestModal {
       if (this.onSaveCallback) this.onSaveCallback();
     });
 
+    // Upload custom target avatar handler
+    const customAvatarFileInput = document.getElementById("addLiCustomAvatarFileInput") as HTMLInputElement | null;
+    const customAvatarPreview = document.getElementById("addLiCustomAvatarPreview") as HTMLImageElement | null;
+    const customAvatarUrlInput = document.getElementById("addLiCustomAvatarUrlInput") as HTMLInputElement | null;
+    const customAvatarStatus = document.getElementById("addLiCustomAvatarStatus");
+
+    customAvatarFileInput?.addEventListener("change", async () => {
+      const file = customAvatarFileInput.files?.[0];
+      if (!file) return;
+      if (customAvatarStatus) customAvatarStatus.textContent = "⏳ Mengunggah foto ke storage...";
+      try {
+        const url = await uploadAvatar(file, this.currentCharacter?.owner_id || this.currentCharacter?.id || "custom_li");
+        if (customAvatarUrlInput) customAvatarUrlInput.value = url;
+        if (customAvatarPreview) customAvatarPreview.src = url;
+        if (customAvatarStatus) customAvatarStatus.textContent = "✓ Foto berhasil diunggah!";
+        showToast("Foto avatar target berhasil diunggah!", "success");
+      } catch (err: any) {
+        if (customAvatarStatus) customAvatarStatus.textContent = `❌ ${err.message || "Gagal mengunggah"}`;
+        showToast(err.message || "Gagal mengunggah foto", "error");
+      }
+    });
+
     // Save Custom Button
     document.getElementById("btnSaveCustomLi")?.addEventListener("click", () => {
       if (!this.currentCharacter) return;
@@ -513,6 +551,7 @@ export class AddLoveInterestModal {
       const status = statusInput?.value.trim() || "Secret Crush";
       const secret = secretInput?.value.trim() || "";
       const classRoom = classInput?.value.trim() || "";
+      const customAvatar = (document.getElementById("addLiCustomAvatarUrlInput") as HTMLInputElement)?.value.trim();
 
       if (!this.currentCharacter.targets) {
         this.currentCharacter.targets = [];
@@ -524,7 +563,7 @@ export class AddLoveInterestModal {
         affection: hearts,
         secret,
         class_room: classRoom,
-        avatar_url: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`
+        avatar_url: customAvatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(name)}`
       };
 
       this.currentCharacter.targets.push(targetData);

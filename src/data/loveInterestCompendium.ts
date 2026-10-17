@@ -1489,7 +1489,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Scorpio",
     "mbti": "INTJ",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=alisa_mikhailovna",
+    "avatar_url": "/portraits/alisa_mikhailovna.png",
     "stats": {
       "physique": 11,
       "intelligent": 16,
@@ -1738,7 +1738,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Taurus",
     "mbti": "ESFP",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=choi_dal_dal",
+    "avatar_url": "/portraits/choi_dal_dal.png",
     "stats": {
       "physique": 16,
       "intelligent": 12,
@@ -2085,7 +2085,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Virgo",
     "mbti": "ENFP",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=hatsushiba_miku",
+    "avatar_url": "/portraits/hatsushiba_miku.png",
     "stats": {
       "physique": 10,
       "intelligent": 14,
@@ -2317,7 +2317,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Pisces",
     "mbti": "ESTP",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kanzawa_ryuuji",
+    "avatar_url": "/portraits/kanzawa_ryuuji.png",
     "stats": {
       "physique": 17,
       "intelligent": 11,
@@ -3020,7 +3020,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Virgo",
     "mbti": "ISTP",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=mawatari_bando",
+    "avatar_url": "/portraits/mawatari_bando.png",
     "stats": {
       "physique": 15,
       "intelligent": 13,
@@ -3265,7 +3265,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Capricorn",
     "mbti": "ISFJ",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=ouga_tesshin",
+    "avatar_url": "/portraits/ouga_tesshin.png",
     "stats": {
       "physique": 18,
       "intelligent": 10,
@@ -3721,7 +3721,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Taurus",
     "mbti": "ESTP",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=tahagusa_kazugumi",
+    "avatar_url": "/portraits/tahagusa_kazugumi.png",
     "stats": {
       "physique": 17,
       "intelligent": 11,
@@ -3837,7 +3837,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Libra",
     "mbti": "ENTP",
     "gender": "Female",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=vesna_strivozha",
+    "avatar_url": "/portraits/vesna_strivozha.png",
     "stats": {
       "physique": 15,
       "intelligent": 14,
@@ -5735,7 +5735,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Capricorn",
     "mbti": "ISTJ",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=kurogane_tetsuo",
+    "avatar_url": "/portraits/kurogane_tetsuo.png",
     "stats": {
       "physique": 18,
       "intelligent": 13,
@@ -5851,7 +5851,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Capricorn",
     "mbti": "INTJ",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=samejima_ren",
+    "avatar_url": "/portraits/samejima_ren.png",
     "stats": {
       "physique": 11,
       "intelligent": 17,
@@ -5965,7 +5965,7 @@ export const CANON_LOVE_INTERESTS: LoveInterestDefinition[] = [
     "zodiac": "Gemini",
     "mbti": "ESTJ",
     "gender": "Male",
-    "avatar_url": "https://api.dicebear.com/7.x/adventurer/svg?seed=onizuka_gouki",
+    "avatar_url": "/portraits/onizuka_gouki.png",
     "stats": {
       "physique": 19,
       "intelligent": 12,

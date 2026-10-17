@@ -257,12 +257,30 @@ const session1Payloads = SESSION1_SLUGS.map((slug, idx) => {
   return { ...p, sortOrder: 20 + idx };
 });
 
-// 1. Write src/data/canonSession1Npcs.ts
+// 1. Write src/data/canonSession1Npcs.ts (7 session 1 characters for backward compatibility and tests)
 const tsContent = `// Auto-generated from Characters/Love Interests markdown files via scripts/syncCanonNpcs.js
 export const CANON_SESSION1_NPCS = ${JSON.stringify(session1Payloads, null, 2)} as const;
 `;
 fs.writeFileSync("src/data/canonSession1Npcs.ts", tsContent, "utf-8");
 console.log(`✓ Generated src/data/canonSession1Npcs.ts (${session1Payloads.length} session 1 characters)`);
+
+// 1b. Write src/data/allCanonCharacters.ts (All 48 canon characters with full rich sections)
+const allCanonTsContent = `// Auto-generated from Characters/Love Interests markdown files via scripts/syncCanonNpcs.js
+export const ALL_CANON_NPCS = ${JSON.stringify(payloads, null, 2)} as const;
+
+export function getAllCanonNpcs() {
+  return ALL_CANON_NPCS;
+}
+
+export function getCanonNpcBySlug(slugOrId: string) {
+  const clean = slugOrId.replace(/^(canon_|li_)/, "").toLowerCase();
+  return ALL_CANON_NPCS.find(
+    (c) => c.slug.toLowerCase() === clean || c.id.toLowerCase() === slugOrId.toLowerCase()
+  );
+}
+`;
+fs.writeFileSync("src/data/allCanonCharacters.ts", allCanonTsContent, "utf-8");
+console.log(`✓ Generated src/data/allCanonCharacters.ts (${payloads.length} total canon characters)`);
 
 // 2. Write supabase/migrations/20261015000001_seed_all_canon_npcs_and_factions.sql
 function sqlEscapeJson(obj) {

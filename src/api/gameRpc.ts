@@ -85,12 +85,19 @@ export async function longRestRpc(
         }
         char.vitals = data.vitals || char.vitals;
         char.finances = data.finances || char.finances;
+
+        // Jika fungsi Cloud belum memotong biaya hidup (data.livingCost undefined), potong ¥300 secara lokal
+        if (data.livingCost === undefined) {
+          const livingCost = 300;
+          char.finances.savingsAmount = Math.max(0, (char.finances.savingsAmount || 0) - livingCost);
+        }
+
         characterStore.setCurrentCharacter(char);
       }
       return {
         ...data,
         livingCost: data.livingCost ?? 300,
-        netFinancialChange: data.netFinancialChange ?? (data.totalAdded ?? 0),
+        netFinancialChange: data.netFinancialChange ?? ((data.totalAdded ?? (char?.finances?.dailyMoneyAmount || 0)) - 300),
         totalAdded: data.totalAdded ?? 0,
         featUsage: char?.featUsage
       };

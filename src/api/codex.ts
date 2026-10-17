@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import { CANON_SESSION1_NPCS } from "../data/canonSession1Npcs";
+import { ALL_CANON_NPCS, getCanonNpcBySlug } from "../data/allCanonCharacters";
 import { getAllLoveInterests, getLoveInterestBySlug } from "../data/loveInterestCompendium";
 import type {
   CodexCategory,
@@ -23,8 +24,13 @@ export function getLocalCanonRevealsMap(): Record<string, string[]> {
     // ignore storage errors
   }
   const initial: Record<string, string[]> = {};
+  for (const npc of ALL_CANON_NPCS) {
+    initial[npc.slug] = ["identity", "appearance"];
+  }
   for (const npc of CANON_SESSION1_NPCS) {
-    initial[npc.slug] = [];
+    if (!initial[npc.slug]) {
+      initial[npc.slug] = [];
+    }
   }
   return initial;
 }
@@ -38,8 +44,20 @@ export function saveLocalCanonRevealsMap(map: Record<string, string[]>): void {
 }
 
 function getCanonNpcByIdOrSlug(idOrSlug: string) {
-  return CANON_SESSION1_NPCS.find(
-    (c) => c.slug === idOrSlug || c.id === idOrSlug
+  const cleanId = idOrSlug.replace(/^(canon_|li_)/, "").toLowerCase();
+  return (
+    ALL_CANON_NPCS.find(
+      (c) =>
+        c.slug.toLowerCase() === cleanId ||
+        c.id.toLowerCase() === idOrSlug.toLowerCase() ||
+        c.slug.toLowerCase() === idOrSlug.toLowerCase()
+    ) ||
+    CANON_SESSION1_NPCS.find(
+      (c) =>
+        c.slug.toLowerCase() === cleanId ||
+        c.id.toLowerCase() === idOrSlug.toLowerCase() ||
+        c.slug.toLowerCase() === idOrSlug.toLowerCase()
+    )
   );
 }
 
@@ -68,7 +86,7 @@ export function resolvePortraitUrl(rawUrl?: string | null, slug?: string): strin
   return rawUrl;
 }
 
-function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSections: string[]): CodexCharacterCard | null {
+function buildCanonCard(npc: any, revealedSections: string[]): CodexCharacterCard | null {
   if (!revealedSections || revealedSections.length === 0) {
     if ((npc.visibilityMode as string) === "hidden") return null;
     return {
@@ -80,8 +98,8 @@ function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSecti
     };
   }
 
-  const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
-  const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
+  const identitySec = npc.sections.find((s: any) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+  const appearanceSec = npc.sections.find((s: any) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
   const hasIdentity = revealedSections.includes("identity");
   const hasAppearance = revealedSections.includes("appearance");
 
@@ -104,7 +122,7 @@ function buildCanonCard(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSecti
   };
 }
 
-function buildCanonDetail(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSections: string[]): CodexCharacterDetail | null {
+function buildCanonDetail(npc: any, revealedSections: string[]): CodexCharacterDetail | null {
   if (!revealedSections || revealedSections.length === 0) {
     if ((npc.visibilityMode as string) === "hidden") return null;
     return {
@@ -116,15 +134,15 @@ function buildCanonDetail(npc: (typeof CANON_SESSION1_NPCS)[number], revealedSec
     };
   }
 
-  const identitySec = npc.sections.find((s) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
-  const appearanceSec = npc.sections.find((s) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
+  const identitySec = npc.sections.find((s: any) => s.sectionKey === "identity")?.content as Record<string, any> | undefined;
+  const appearanceSec = npc.sections.find((s: any) => s.sectionKey === "appearance")?.content as Record<string, any> | undefined;
   const hasIdentity = revealedSections.includes("identity");
   const hasAppearance = revealedSections.includes("appearance");
 
   const sections: CodexSectionDetail[] = npc.sections
-    .filter((s) => s.sectionKey !== "dm_notes")
-    .sort((a, b) => a.tier - b.tier || a.sectionKey.localeCompare(b.sectionKey))
-    .map((sec) => {
+    .filter((s: any) => s.sectionKey !== "dm_notes")
+    .sort((a: any, b: any) => a.tier - b.tier || a.sectionKey.localeCompare(b.sectionKey))
+    .map((sec: any) => {
       const isRevealed = revealedSections.includes(sec.sectionKey);
       if (isRevealed) {
         return {
@@ -247,6 +265,22 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
   const existingSlugs = new Set(remoteList.map((c) => c.slug).filter(Boolean));
   const localRevealsMap = getLocalCanonRevealsMap();
 
+  for (const npc of ALL_CANON_NPCS) {
+    if (existingSlugs.has(npc.slug)) continue;
+    const canon = getLoveInterestBySlug(npc.slug);
+    const catId = canon?.category_id || npc.categoryId;
+    const matchesCategory = !categoryId || catId === categoryId;
+    if (!matchesCategory) continue;
+
+    const revealed = localRevealsMap[npc.slug] ?? ["identity", "appearance"];
+    const card = buildCanonCard(npc, revealed);
+    if (card) {
+      card.category_id = catId;
+      remoteList.push(card);
+      existingSlugs.add(npc.slug);
+    }
+  }
+
   for (const npc of CANON_SESSION1_NPCS) {
     if (existingSlugs.has(npc.slug)) continue;
     const canon = getLoveInterestBySlug(npc.slug);
@@ -347,7 +381,7 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
   const canonNpc = getCanonNpcByIdOrSlug(idOrSlug);
   if (canonNpc) {
     const localRevealsMap = getLocalCanonRevealsMap();
-    const revealed = localRevealsMap[canonNpc.slug] ?? [];
+    const revealed = localRevealsMap[canonNpc.slug] ?? ["identity", "appearance"];
     return buildCanonDetail(canonNpc, revealed);
   }
 
@@ -690,10 +724,13 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
 }
 
 export async function dmGetCharacter(sessionToken: string, characterId: string): Promise<any> {
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId);
   const localNpc = getCanonNpcByIdOrSlug(characterId);
-  if (localNpc && characterId.startsWith("canon_")) {
+
+  if (!isUuid && localNpc) {
     const localRevealsMap = getLocalCanonRevealsMap();
-    const revealed = localRevealsMap[localNpc.slug] ?? [];
+    const revealed = localRevealsMap[localNpc.slug] ?? ["identity", "appearance"];
+    const dmNotesSec = localNpc.sections.find((s: any) => s.sectionKey === "dm_notes");
     return {
       id: localNpc.id,
       slug: localNpc.slug,
@@ -703,7 +740,8 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
       home_room_id: localNpc.homeRoomId,
       is_love_interest: localNpc.isLoveInterest,
       revealed_sections: revealed,
-      sections: localNpc.sections.map((s) => ({
+      dm_notes: (dmNotesSec?.content as any)?.notes || "",
+      sections: localNpc.sections.map((s: any) => ({
         section_key: s.sectionKey,
         tier: s.tier,
         revealed: revealed.includes(s.sectionKey),
@@ -713,34 +751,62 @@ export async function dmGetCharacter(sessionToken: string, characterId: string):
     };
   }
 
-  try {
-    const { data, error } = await supabase.rpc("dm_get_character", {
-      p_session_token: sessionToken,
-      p_character_id: characterId
-    });
-    if (error) throw error;
-    if (data && data.slug) {
-      data.avatar_url = resolvePortraitUrl(data.avatar_url, data.slug);
-      const appSec = data.sections?.find((s: any) => s.section_key === "appearance");
-      if (appSec && appSec.content) {
-        appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, data.slug);
-      }
-      const canon = getLoveInterestBySlug(data.slug);
-      if (canon) {
-        const idSec = data.sections?.find((s: any) => s.section_key === "identity");
-        if (idSec && idSec.content) {
-          idSec.content.role = canon.role;
-          idSec.content.club = canon.club;
-          idSec.content.club_role = canon.club_role;
-          idSec.content.class_room = canon.class_room;
+  if (isUuid) {
+    try {
+      const { data, error } = await supabase.rpc("dm_get_character", {
+        p_session_token: sessionToken,
+        p_character_id: characterId
+      });
+      if (!error && data) {
+        if (data.slug) {
+          data.avatar_url = resolvePortraitUrl(data.avatar_url, data.slug);
+          const appSec = data.sections?.find((s: any) => s.section_key === "appearance");
+          if (appSec && appSec.content) {
+            appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, data.slug);
+          }
+          const canon = getLoveInterestBySlug(data.slug);
+          if (canon) {
+            const idSec = data.sections?.find((s: any) => s.section_key === "identity");
+            if (idSec && idSec.content) {
+              idSec.content.role = canon.role;
+              idSec.content.club = canon.club;
+              idSec.content.club_role = canon.club_role;
+              idSec.content.class_room = canon.class_room;
+            }
+          }
         }
+        return data;
       }
+    } catch (e: any) {
+      console.warn("Supabase dm_get_character gagal, cek local fallback:", e);
     }
-    return data;
-  } catch (e: any) {
-    console.error("Gagal memanggil dm_get_character:", e);
-    throw e;
   }
+
+  if (localNpc) {
+    const localRevealsMap = getLocalCanonRevealsMap();
+    const revealed = localRevealsMap[localNpc.slug] ?? ["identity", "appearance"];
+    const dmNotesSec = localNpc.sections.find((s: any) => s.sectionKey === "dm_notes");
+    return {
+      id: localNpc.id,
+      slug: localNpc.slug,
+      category_id: localNpc.categoryId,
+      sort_order: localNpc.sortOrder,
+      visibility_mode: localNpc.visibilityMode,
+      home_room_id: localNpc.homeRoomId,
+      is_love_interest: localNpc.isLoveInterest,
+      revealed_sections: revealed,
+      dm_notes: (dmNotesSec?.content as any)?.notes || "",
+      sections: localNpc.sections.map((s: any) => ({
+        section_key: s.sectionKey,
+        tier: s.tier,
+        revealed: revealed.includes(s.sectionKey),
+        content: s.content,
+        locked_hint: s.lockedHint
+      }))
+    };
+  }
+
+  return null;
 }
 
 export async function dmSetReveal(
@@ -749,15 +815,18 @@ export async function dmSetReveal(
   sectionKey: string,
   revealed: boolean
 ): Promise<boolean> {
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId);
   const localNpc = getCanonNpcByIdOrSlug(characterId);
-  if (localNpc && characterId.startsWith("canon_")) {
+
+  if (!isUuid || localNpc) {
+    const slug = localNpc ? localNpc.slug : characterId.replace(/^(canon_|li_)/, "");
     const map = getLocalCanonRevealsMap();
-    const current = new Set(map[localNpc.slug] ?? []);
+    const current = new Set(map[slug] ?? ["identity", "appearance"]);
     if (revealed) current.add(sectionKey);
     else current.delete(sectionKey);
-    map[localNpc.slug] = Array.from(current);
+    map[slug] = Array.from(current);
     saveLocalCanonRevealsMap(map);
-    return true;
+    if (!isUuid) return true;
   }
 
   try {
@@ -781,19 +850,22 @@ export async function dmSetTierReveal(
   tier: number,
   revealed: boolean
 ): Promise<boolean> {
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId);
   const localNpc = getCanonNpcByIdOrSlug(characterId);
-  if (localNpc && characterId.startsWith("canon_")) {
+
+  if (!isUuid || localNpc) {
+    const slug = localNpc ? localNpc.slug : characterId.replace(/^(canon_|li_)/, "");
     const map = getLocalCanonRevealsMap();
-    const current = new Set(map[localNpc.slug] ?? []);
-    for (const sec of localNpc.sections) {
+    const current = new Set(map[slug] ?? ["identity", "appearance"]);
+    for (const sec of (localNpc?.sections || [])) {
       if (sec.tier === tier && sec.sectionKey !== "dm_notes") {
         if (revealed) current.add(sec.sectionKey);
         else current.delete(sec.sectionKey);
       }
     }
-    map[localNpc.slug] = Array.from(current);
+    map[slug] = Array.from(current);
     saveLocalCanonRevealsMap(map);
-    return true;
+    if (!isUuid) return true;
   }
 
   try {
@@ -812,25 +884,18 @@ export async function dmSetTierReveal(
 }
 
 export async function dmIntroduce(sessionToken: string, characterId: string, slug?: string): Promise<boolean> {
-  if (slug) {
+  const effectiveSlug = slug || getCanonNpcByIdOrSlug(characterId)?.slug || (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId) ? characterId.replace(/^(canon_|li_)/, "") : "");
+  if (effectiveSlug) {
     const map = getLocalCanonRevealsMap();
-    const current = new Set(map[slug] ?? []);
+    const current = new Set(map[effectiveSlug] ?? []);
     current.add("identity");
     current.add("appearance");
-    map[slug] = Array.from(current);
+    map[effectiveSlug] = Array.from(current);
     saveLocalCanonRevealsMap(map);
   }
 
-  const localNpc = getCanonNpcByIdOrSlug(characterId);
-  if (localNpc && characterId.startsWith("canon_")) {
-    const map = getLocalCanonRevealsMap();
-    const current = new Set(map[localNpc.slug] ?? []);
-    current.add("identity");
-    current.add("appearance");
-    map[localNpc.slug] = Array.from(current);
-    saveLocalCanonRevealsMap(map);
-    return true;
-  }
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId);
+  if (!isUuid) return true;
 
   try {
     const { data, error } = await supabase.rpc("dm_introduce", {
@@ -847,24 +912,28 @@ export async function dmIntroduce(sessionToken: string, characterId: string, slu
 
 export async function dmLockAll(sessionToken: string, characterId?: string, slug?: string): Promise<boolean> {
   const map = getLocalCanonRevealsMap();
-  if (slug) {
-    map[slug] = [];
-  } else if (characterId) {
-    const localNpc = getCanonNpcByIdOrSlug(characterId);
-    if (localNpc) {
-      map[localNpc.slug] = [];
+  const effectiveSlug = slug || (characterId ? getCanonNpcByIdOrSlug(characterId)?.slug : "") || (characterId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId) ? characterId.replace(/^(canon_|li_)/, "") : "");
+  
+  if (effectiveSlug) {
+    map[effectiveSlug] = [];
+    saveLocalCanonRevealsMap(map);
+  } else if (!characterId) {
+    for (const npc of ALL_CANON_NPCS) {
+      map[npc.slug] = [];
     }
-  } else {
     for (const npc of CANON_SESSION1_NPCS) {
       map[npc.slug] = [];
     }
+    saveLocalCanonRevealsMap(map);
   }
-  saveLocalCanonRevealsMap(map);
+
+  const isUuid = characterId ? /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(characterId) : false;
+  if (characterId && !isUuid) return true;
 
   try {
     const { data, error } = await supabase.rpc("dm_lock_all", {
       p_session_token: sessionToken,
-      p_character_id: characterId || null
+      p_character_id: isUuid ? characterId : null
     });
     if (error) throw error;
     return Boolean(data?.success);
@@ -893,10 +962,28 @@ export async function dmUpsertCharacter(sessionToken: string, payload: any): Pro
       p_session_token: sessionToken,
       p_payload: payload
     });
-    if (error) throw error;
+    if (error) {
+      // Jika kategori belum ada di database cloud (foreign key constraint), fallback ke 'other' di level baris
+      if (error.message && error.message.includes("category_id_fkey")) {
+        console.warn("Kategori belum ada di database cloud, retry dengan fallback 'other'...");
+        const fallbackPayload = {
+          ...payload,
+          categoryId: "other",
+          category_id: "other"
+        };
+        const { data: fbData, error: fbError } = await supabase.rpc("dm_upsert_character", {
+          p_session_token: sessionToken,
+          p_payload: fallbackPayload
+        });
+        if (!fbError && fbData) {
+          return fbData as any;
+        }
+      }
+      throw error;
+    }
     return data as any;
   } catch (e: any) {
-    return { success: false, error: e.message || "Gagal menyimpan karakter" };
+    return { success: false, error: e.message || "Gagal menyimpan karakter ke database" };
   }
 }
 
@@ -970,13 +1057,12 @@ export async function dmUploadCharacterImage(
   sessionToken: string,
   file: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
-  // 1. Pastikan sesi DM aktif
-  const isValid = await dmVerifySession(sessionToken);
-  if (!isValid) {
+  // 1. Cek sesi token dasar
+  if (!sessionToken) {
     return { success: false, error: "Sesi DM tidak valid atau telah kedaluwarsa." };
   }
 
-  // 2. Coba unggah ke bucket private codex-assets dengan nama file acak (tidak membocorkan nama karakter)
+  // 2. Coba unggah ke bucket codex-assets
   try {
     const ext = (file.name.split(".").pop() || "png").toLowerCase();
     const randomId = typeof crypto !== "undefined" && crypto.randomUUID
@@ -988,21 +1074,23 @@ export async function dmUploadCharacterImage(
       .from("codex-assets")
       .upload(filePath, file, {
         cacheControl: "3600",
-        upsert: true
+        upsert: true,
+        contentType: file.type
       });
 
     if (!uploadError) {
-      // Buat signed URL dengan TTL 60 menit (3600 detik)
-      const { data: signedData, error: signError } = await supabase.storage
+      const { data } = supabase.storage
         .from("codex-assets")
-        .createSignedUrl(filePath, 3600);
+        .getPublicUrl(filePath);
 
-      if (!signError && signedData?.signedUrl) {
-        return { success: true, url: signedData.signedUrl };
+      if (data?.publicUrl) {
+        return { success: true, url: data.publicUrl };
       }
+    } else {
+      console.warn("Storage upload error:", uploadError);
     }
   } catch (e) {
-    // Jika bucket belum dikonfigurasi, otomatis gunakan kompresi lokal (Data URL)
+    // Jika upload bucket gagal, fallback ke kompresi lokal (Data URL)
   }
 
   // 3. Fallback: Kompresi gambar lokal menjadi Data URL yang rapi
@@ -1010,7 +1098,7 @@ export async function dmUploadCharacterImage(
     const compressedDataUrl = await compressImageFile(file, 600, 0.82);
     return { success: true, url: compressedDataUrl };
   } catch (e: any) {
-    return { success: false, error: e.message || "Gagal memproses file gambar." };
+    return { success: false, error: e.message || "Gagal mengunggah foto." };
   }
 }
 
