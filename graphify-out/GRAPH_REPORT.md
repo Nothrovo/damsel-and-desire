@@ -1,7 +1,7 @@
 # Graph Report - Damsel and Desire  (2026-10-18)
 
 ## Corpus Check
-- 159 files · ~4,031,059 words
+- 159 files · ~4,031,126 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 3, .example 1, .css 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d107d07f`
+- Built from commit: `e6c7da28`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -324,13 +324,13 @@ Nodes (4): EffectiveCharacterStats, AbilityKey, CharacterAbilities, BuilderDraft
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `showToast()` connect `showToast` to `main.ts`, `CampaignDetailView.ts`, `types/index.ts`, `BuilderWizardView.ts`, `CharacterSheetView.ts`, `Toast.ts`, `dmRevealHistoryModal`, `loveInterests.ts`, `achievementAwardModal`, `CodexDetailView.ts`, `EditCharacterModal.ts`, `api/codex.ts`, `CodexCharacterEditorModal.ts`, `compendium.ts`, `subclassSelectModal`, `quickVitalsPopover`, `ItemDetailModal.ts`, `CodexCatalogView.ts`, `dmAuthModal`, `vitest`, `FeatPickerModal.ts`, `Character`, `baitoModal`, `savingsModal`, `backstoryModal`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **What connects `@types/three`, `typescript` to the rest of the system?**
   _2 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DamselDesireApp` be split into smaller, more focused modules?**
   _Cohesion score 0.05442329227323628 - nodes in this community are weakly interconnected._
 - **Why does `vitest` connect `vitest` to `map3DUtils.ts`, `compendium.ts`, `rlsPolicies.test.ts`, `types/index.ts`, `handbook/index.ts`, `ItemDetailModal.ts`, `BuilderWizardView.ts`, `Toast.ts`, `loveInterests.ts`, `codexSecurity.test.ts`, `progression.ts`, `package.json`, `EditCharacterModal.ts`, `FeatPickerModal.ts`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Should `map3DUtils.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.05659583420997265 - nodes in this community are weakly interconnected._
 - **Should `main.ts` be split into smaller, more focused modules?**

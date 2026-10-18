@@ -230,11 +230,12 @@ export class SavingsModal {
     const note = noteInput?.value.trim() || defaultNote;
 
     try {
-      await characterStore.runOptimisticUpdate(
-        (draft) => {
-          draft.finances.savingsAmount = Math.max(0, draft.finances.savingsAmount + deltaYen);
-        },
-        () => adjustSavingsRpc(char.id, deltaRp, characterStore.currentCharacter?.version ?? char.version, note, deltaYen)
+      const res = await adjustSavingsRpc(
+        char.id,
+        deltaRp,
+        characterStore.currentCharacter?.version ?? char.version,
+        note,
+        deltaYen
       );
 
       this.hide();

@@ -204,7 +204,7 @@ export async function adjustSavingsRpc(
   try {
     const params: any = {
       p_character_id: characterId,
-      p_delta_rupiah: deltaRupiah,
+      p_delta_rupiah: deltaRupiah !== 0 ? deltaRupiah : computedDeltaYen * 100,
       p_client_version: currentVersion,
       p_note: note
     };
@@ -213,11 +213,27 @@ export async function adjustSavingsRpc(
     }
     let { data, error } = await supabase.rpc("adjust_savings", params);
 
+    // Jika cloud tidak mengenali signature 5-parameter (p_delta_yen), coba retry dengan signature standar 4-parameter
+    if (error && (error.message.includes("schema cache") || error.message.includes("Could not find the function")) && params.p_delta_yen !== undefined) {
+      const fallbackParams = { ...params };
+      delete fallbackParams.p_delta_yen;
+      const retry = await supabase.rpc("adjust_savings", fallbackParams);
+      if (!retry.error && retry.data) {
+        data = retry.data;
+        error = null;
+      }
+    }
+
     if (error && (error.message.includes("ERR_CONCURRENCY_CONFLICT") || error.message.includes("Versi data karakter"))) {
       const { data: latest } = await supabase.from("characters").select("version").eq("id", characterId).single();
       if (latest && typeof latest.version === "number") {
         params.p_client_version = latest.version;
-        const retry = await supabase.rpc("adjust_savings", params);
+        let retry = await supabase.rpc("adjust_savings", params);
+        if (retry.error && (retry.error.message.includes("schema cache") || retry.error.message.includes("Could not find the function")) && params.p_delta_yen !== undefined) {
+          const fallbackParams = { ...params };
+          delete fallbackParams.p_delta_yen;
+          retry = await supabase.rpc("adjust_savings", fallbackParams);
+        }
         if (!retry.error && retry.data) {
           data = retry.data;
           error = null;
@@ -286,12 +302,29 @@ export async function applyVitalChangeRpc(
   currentVersion: number
 ) {
   try {
-    const { data, error } = await supabase.rpc("apply_vital_change", {
+    let { data, error } = await supabase.rpc("apply_vital_change", {
       p_character_id: characterId,
       p_type: type,
       p_delta: delta,
       p_client_version: currentVersion
     });
+
+    if (error && (error.message.includes("ERR_CONCURRENCY_CONFLICT") || error.message.includes("Versi data karakter"))) {
+      const { data: latest } = await supabase.from("characters").select("version").eq("id", characterId).single();
+      if (latest && typeof latest.version === "number") {
+        const retry = await supabase.rpc("apply_vital_change", {
+          p_character_id: characterId,
+          p_type: type,
+          p_delta: delta,
+          p_client_version: latest.version
+        });
+        if (!retry.error && retry.data) {
+          data = retry.data;
+          error = null;
+        }
+      }
+    }
+
     if (!error && data) return data;
   } catch (e) {
     console.warn("RPC apply_vital_change gagal di cloud, fallback lokal:", e);
@@ -301,18 +334,12 @@ export async function applyVitalChangeRpc(
   const char = characterStore.currentCharacter;
   if (!char) throw new Error("Karakter tidak ditemukan.");
 
-  if (type === "phys") {
-    char.vitals.physicalHpCurrent = Math.max(0, Math.min(char.vitals.physicalHpMax, char.vitals.physicalHpCurrent + delta));
-  } else {
-    char.vitals.composureCurrent = Math.max(0, Math.min(char.vitals.composureMax, char.vitals.composureCurrent + delta));
-  }
-
   return {
     characterId,
     type,
     delta,
     newVitals: char.vitals,
-    newVersion: currentVersion + 1
+    newVersion: (char.version || currentVersion) + 1
   };
 }
 

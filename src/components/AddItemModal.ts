@@ -374,14 +374,6 @@ export class AddItemModal {
     const destRadio = document.querySelector('input[name="catalogDest"]:checked') as HTMLInputElement;
     const dest = destRadio?.value === "keepsake" ? "keepsake" : "bag";
 
-    if (dest === "bag") {
-      if (!char.inventory.bagItems) char.inventory.bagItems = [];
-      char.inventory.bagItems.push(itemName);
-    } else {
-      if (!char.inventory.keepsakes) char.inventory.keepsakes = [];
-      char.inventory.keepsakes.push(itemName);
-    }
-
     try {
       await characterStore.runOptimisticUpdate(
         (draft) => {
@@ -474,18 +466,7 @@ export class AddItemModal {
           if (!draft.inventory.customItems) draft.inventory.customItems = {};
           draft.inventory.customItems[cleanName] = customDef;
         },
-        () => {
-          if (dest === "bag") {
-            if (!char.inventory.bagItems) char.inventory.bagItems = [];
-            char.inventory.bagItems.push(cleanName);
-          } else {
-            if (!char.inventory.keepsakes) char.inventory.keepsakes = [];
-            char.inventory.keepsakes.push(cleanName);
-          }
-          if (!char.inventory.customItems) char.inventory.customItems = {};
-          char.inventory.customItems[cleanName] = customDef;
-          return updateCharacterDirect(char.id, { inventory: char.inventory }, characterStore.currentCharacter?.version ?? char.version);
-        }
+        () => updateCharacterDirect(char.id, { inventory: char.inventory }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       // Reset form
