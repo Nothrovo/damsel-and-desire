@@ -372,13 +372,24 @@ export async function createCharacterRpc(payload: any): Promise<Character> {
 export async function updateCharacterDirect(
   id: string,
   updates: Partial<Character>,
-  expectedVersion: number
+  expectedVersion?: number
 ): Promise<Character> {
   const cleanUpdates = sanitizeDbUpdates(updates);
-  const nextVersion = (expectedVersion || 1) + 1;
 
   if (isUuid(id)) {
     try {
+      // 1. Dapatkan version terbaru di database cloud untuk menghindari concurrency conflict
+      const { data: currentDb } = await supabase
+        .from("characters")
+        .select("version")
+        .eq("id", id)
+        .single();
+
+      const baseVersion = currentDb && typeof currentDb.version === "number"
+        ? currentDb.version
+        : (expectedVersion || 1);
+      const nextVersion = baseVersion + 1;
+
       const { data, error } = await supabase
         .from("characters")
         .update({
@@ -408,6 +419,7 @@ export async function updateCharacterDirect(
   }
 
   // Local update fallback
+  const nextVersion = (expectedVersion || 1) + 1;
   const roster = getLocalRoster();
   const idx = roster.findIndex(c => c.id === id);
   if (idx >= 0) {

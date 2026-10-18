@@ -393,7 +393,7 @@ export class AddItemModal {
             draft.inventory.keepsakes.push(itemName);
           }
         },
-        () => updateCharacterDirect(char.id, { inventory: char.inventory }, char.version)
+        () => updateCharacterDirect(char.id, { inventory: char.inventory }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();
@@ -484,7 +484,7 @@ export class AddItemModal {
           }
           if (!char.inventory.customItems) char.inventory.customItems = {};
           char.inventory.customItems[cleanName] = customDef;
-          return updateCharacterDirect(char.id, { inventory: char.inventory }, char.version);
+          return updateCharacterDirect(char.id, { inventory: char.inventory }, characterStore.currentCharacter?.version ?? char.version);
         }
       );
 

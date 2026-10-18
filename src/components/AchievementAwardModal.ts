@@ -11,7 +11,7 @@ export class AchievementAwardModal {
 
   render(): string {
     return `
-      <div id="achievementAwardModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="achievementAwardModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card" style="max-width:850px;width:95%;max-height:90vh;display:flex;flex-direction:column;">
           <div class="modal-header" style="flex-shrink:0;">
             <h3>🏆 Buka Pencapaian / Achievement (DM Mode)</h3>
@@ -155,15 +155,16 @@ export class AchievementAwardModal {
 
       const updatedChar = grantRes.character;
 
-      await updateCharacterDirect(updatedChar.id, {
+      const updated = await updateCharacterDirect(updatedChar.id, {
         abilities: updatedChar.abilities,
         feats: updatedChar.feats,
         feat_grants: updatedChar.featGrants,
         achievements: updatedChar.achievements,
         vitals: updatedChar.vitals,
         changelog: updatedChar.changelog
-      }, updatedChar.version);
+      }, characterStore.currentCharacter?.version ?? updatedChar.version);
 
+      updatedChar.version = updated.version;
       characterStore.setCurrentCharacter(updatedChar);
 
       showToast(`🎉 Achievement "${ach.name}" berhasil dianugerahkan!`, "success");

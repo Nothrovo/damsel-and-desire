@@ -34,7 +34,7 @@ export class FeatPickerModal {
 
   render(): string {
     return `
-      <div id="featPickerModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="featPickerModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card" style="max-width:960px;width:95%;max-height:92vh;display:flex;flex-direction:column;">
           <div class="modal-header" style="flex-shrink:0;">
             <h3 id="featPickerModalTitle">✨ Pilih Feat</h3>
@@ -505,7 +505,7 @@ export class FeatPickerModal {
         throw new Error("Tidak ada slot Feat grant yang valid.");
       }
 
-      await updateCharacterDirect(updatedChar.id, {
+      const updated = await updateCharacterDirect(updatedChar.id, {
         abilities: updatedChar.abilities,
         proficient_skills: updatedChar.proficient_skills,
         proficient_saves: updatedChar.proficient_saves,
@@ -514,8 +514,9 @@ export class FeatPickerModal {
         feat_usage: updatedChar.featUsage,
         vitals: updatedChar.vitals,
         changelog: updatedChar.changelog
-      }, updatedChar.version);
+      }, characterStore.currentCharacter?.version ?? updatedChar.version);
 
+      updatedChar.version = updated.version;
       characterStore.setCurrentCharacter(updatedChar);
 
       showToast(this.options?.isRetrain ? `🔄 Berhasil mengganti Feat menjadi: ${feat.name}!` : `🎉 Berhasil mengambil Feat: ${feat.name}!`, "success");

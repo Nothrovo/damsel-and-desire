@@ -69,6 +69,9 @@ export class BaitoModal {
   }
 
   show() {
+    if (!this.modalEl) {
+      this.modalEl = document.getElementById("baitoModal");
+    }
     const char = characterStore.currentCharacter;
     if (!char) return;
 
@@ -107,7 +110,7 @@ export class BaitoModal {
             job: "-",
             jobWageAmount: 0
           }
-        }, char.version)
+        }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();
@@ -145,7 +148,7 @@ export class BaitoModal {
             job: jobTitle,
             jobWageAmount: wageYen
           }
-        }, char.version)
+        }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();

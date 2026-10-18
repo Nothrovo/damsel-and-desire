@@ -31,7 +31,7 @@ export class LoveInterestDetailModal {
 
   public render(): string {
     return `
-      <div id="loveInterestDetailModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="loveInterestDetailModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card li-detail-modal-card" style="max-width:880px;width:95vw;max-height:92vh;display:flex;flex-direction:column;border:1.5px solid var(--rose-primary);box-shadow:0 16px 48px rgba(225,29,72,0.3);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg-card);">
           
           <!-- Header -->

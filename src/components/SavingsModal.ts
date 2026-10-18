@@ -166,6 +166,9 @@ export class SavingsModal {
   }
 
   show() {
+    if (!this.modalEl) {
+      this.modalEl = document.getElementById("savingsModal");
+    }
     const char = characterStore.currentCharacter;
     if (!char) return;
 
@@ -231,7 +234,7 @@ export class SavingsModal {
         (draft) => {
           draft.finances.savingsAmount = Math.max(0, draft.finances.savingsAmount + deltaYen);
         },
-        () => adjustSavingsRpc(char.id, deltaRp, char.version, note, deltaYen)
+        () => adjustSavingsRpc(char.id, deltaRp, characterStore.currentCharacter?.version ?? char.version, note, deltaYen)
       );
 
       this.hide();

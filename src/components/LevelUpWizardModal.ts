@@ -16,7 +16,7 @@ export class LevelUpWizardModal {
 
   render(): string {
     return `
-      <div id="levelUpWizardModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="levelUpWizardModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card" style="max-width:760px;width:95%;">
           <div class="modal-header">
             <h3>🎓 Naik Kelas / Level-Up Wizard</h3>
@@ -244,7 +244,7 @@ export class LevelUpWizardModal {
           feat_grants: updatedChar.feat_grants,
           schemaVersion: updatedChar.schemaVersion,
           changelog: updatedChar.changelog
-        }, char.version)
+        }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();

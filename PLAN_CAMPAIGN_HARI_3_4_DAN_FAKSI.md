@@ -1,4 +1,4 @@
-# ⚔️ MODUL CAMPAIGN RESMI: HARI 3 & HARI 4 — "OPERASI SAYAP HITAM & PENYELAMATAN DERMAGA TOUKI"
+3# ⚔️ MODUL CAMPAIGN RESMI: HARI 3 & HARI 4 — "OPERASI SAYAP HITAM & PENYELAMATAN DERMAGA TOUKI"
 **Sistem:** Damsel & Desire (Japanese High School Romance & Delinquent TRPG)  
 **Tujuan Dokumen:** Panduan terstruktur untuk Game Master (DM) agar tempo permainan aktif, memiliki objektif konkret, tidak membiarkan pemain pasif (*anti-gabut*), dan menyatukan elemen romcom sekolah dengan ketegangan perang geng.
 

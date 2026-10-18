@@ -212,7 +212,7 @@ export class QuickVitalsPopover {
           const maxKey = this.currentType === "physical_hp" ? "physicalHpMax" : "composureMax";
           draft.vitals[curKey] = Math.max(0, Math.min(draft.vitals[maxKey], draft.vitals[curKey] + delta));
         },
-        () => applyVitalChangeRpc(char.id, typeKey, delta, char.version)
+        () => applyVitalChangeRpc(char.id, typeKey, delta, characterStore.currentCharacter?.version ?? char.version)
       );
 
       const updated = characterStore.currentCharacter;

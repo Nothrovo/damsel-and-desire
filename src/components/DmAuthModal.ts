@@ -7,7 +7,7 @@ class DmAuthModal {
 
   render(): string {
     return `
-      <div id="dmAuthModal" class="modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:1rem;">
+      <div id="dmAuthModal" class="modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:1rem;">
         <div class="modal-card" style="background:var(--bg-card);border:1px solid var(--rose-primary);box-shadow:0 12px 36px rgba(225,29,72,0.3);border-radius:var(--radius-lg);max-width:440px;width:100%;padding:2rem;position:relative;">
           <button id="closeDmAuthModalBtn" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;">&times;</button>
           

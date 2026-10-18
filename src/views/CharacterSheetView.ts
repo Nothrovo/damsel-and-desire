@@ -193,7 +193,8 @@ export async function renderCharacterSheetView(params: Record<string, string>): 
     characterStore.subscribe(() => {
       const updated = characterStore.currentCharacter;
       if (updated && updated.id === char.id) {
-        updateDynamicElements(updated);
+        Object.assign(char, updated);
+        updateDynamicElements(char);
       }
     });
 
@@ -1732,9 +1733,14 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   document.getElementById("btnShortRest")?.addEventListener("click", async () => {
     try {
       showToast("Menjalankan Short Rest...", "info");
-      const res = await shortRestRpc(char.id, char.version);
+      const current = characterStore.currentCharacter || char;
+      const res = await shortRestRpc(current.id, characterStore.currentCharacter?.version ?? char.version);
       char.vitals = res.vitals;
       char.version = res.newVersion;
+      if (characterStore.currentCharacter) {
+        characterStore.currentCharacter.vitals = res.vitals;
+        characterStore.currentCharacter.version = res.newVersion;
+      }
       showToast(`☕ Short Rest: ${res.healTotal} HP & Composure dipulihkan! (${res.dieRolled}: ${res.rollResult} +${res.modPhysique})`, "success");
       updateDynamicElements(char);
     } catch (err: any) {
@@ -1745,10 +1751,16 @@ function attachSheetEvents(container: HTMLElement, char: Character) {
   document.getElementById("btnLongRest")?.addEventListener("click", async () => {
     try {
       showToast("Menjalankan Long Rest sepulang sekolah...", "info");
-      const res = await longRestRpc(char.id, char.version);
+      const current = characterStore.currentCharacter || char;
+      const res = await longRestRpc(current.id, characterStore.currentCharacter?.version ?? char.version);
       char.vitals = res.vitals;
       char.finances = res.finances;
       char.version = res.newVersion;
+      if (characterStore.currentCharacter) {
+        characterStore.currentCharacter.vitals = res.vitals;
+        characterStore.currentCharacter.finances = res.finances;
+        characterStore.currentCharacter.version = res.newVersion;
+      }
       const wageInfo = res.depositWage > 0 ? ` + baito ¥${res.depositWage.toLocaleString()}` : "";
       const netSign = res.netFinancialChange >= 0 ? "+" : "";
       showToast(
@@ -2271,8 +2283,12 @@ async function saveTargets(char: Character) {
   if (char.campaign_id) {
     await updateCharacterSecret(char.id, char.campaign_id, char.targets || []);
   }
-  const updated = await updateCharacterDirect(char.id, { targets: char.targets }, char.version);
+  const currentVersion = characterStore.currentCharacter?.version ?? char.version;
+  const updated = await updateCharacterDirect(char.id, { targets: char.targets }, currentVersion);
   char.version = updated.version;
+  if (characterStore.currentCharacter) {
+    characterStore.currentCharacter.version = updated.version;
+  }
 }
 
 async function alterVitalDirect(char: Character, type: 'phys' | 'composure', delta: number) {
@@ -2283,7 +2299,7 @@ async function alterVitalDirect(char: Character, type: 'phys' | 'composure', del
         const maxKey = type === "phys" ? "physicalHpMax" : "composureMax";
         draft.vitals[curKey] = Math.max(0, Math.min(draft.vitals[maxKey], draft.vitals[curKey] + delta));
       },
-      () => applyVitalChangeRpc(char.id, type, delta, char.version)
+      () => applyVitalChangeRpc(char.id, type, delta, characterStore.currentCharacter?.version ?? char.version)
     );
     updateDynamicElements(char);
   } catch (err: any) {

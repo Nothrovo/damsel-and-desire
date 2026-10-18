@@ -78,9 +78,6 @@ export async function renderMapView(params: Record<string, string>): Promise<voi
         <button class="map-hud-btn" id="mapZoomOutBtn" title="Perkecil (−)" aria-label="Perkecil">−</button>
         <button class="map-hud-btn" id="mapResetBtn" title="Reset Tampilan (⟲)" aria-label="Reset Tampilan">⟲</button>
       </div>
-
-      <!-- Slide-Over Drawer (Universal Component) -->
-      ${slideOverDrawer.render()}
     </div>
   `;
 

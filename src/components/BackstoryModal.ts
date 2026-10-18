@@ -41,6 +41,9 @@ export class BackstoryModal {
   }
 
   show() {
+    if (!this.modalEl) {
+      this.modalEl = document.getElementById("backstoryModal");
+    }
     const char = characterStore.currentCharacter;
     if (!char) return;
 
@@ -71,7 +74,7 @@ export class BackstoryModal {
             ...char.backstory_fields,
             backstory: text
           }
-        }, char.version)
+        }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();

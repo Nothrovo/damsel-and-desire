@@ -6,14 +6,32 @@ import { resetFeatUsage, calculateEffectiveStats } from "../rules/progression";
 export async function shortRestRpc(characterId: string, currentVersion: number) {
   let char = characterStore.currentCharacter;
   try {
-    const { data, error } = await supabase.rpc("short_rest", {
+    let { data, error } = await supabase.rpc("short_rest", {
       p_character_id: characterId,
       p_client_version: currentVersion
     });
+
+    if (error && (error.message.includes("ERR_CONCURRENCY_CONFLICT") || error.message.includes("Versi data karakter"))) {
+      const { data: latest } = await supabase.from("characters").select("version").eq("id", characterId).single();
+      if (latest && typeof latest.version === "number") {
+        const retry = await supabase.rpc("short_rest", {
+          p_character_id: characterId,
+          p_client_version: latest.version
+        });
+        if (!retry.error && retry.data) {
+          data = retry.data;
+          error = null;
+        }
+      }
+    }
+
     if (!error && data) {
       if (char) {
         char = resetFeatUsage(char, "short_rest");
         char.vitals = data.vitals || char.vitals;
+        if (data.newVersion) {
+          char.version = data.newVersion;
+        }
         characterStore.setCurrentCharacter(char);
       }
       return { ...data, featUsage: char?.featUsage };
@@ -60,10 +78,25 @@ export async function longRestRpc(
 ): Promise<LongRestRpcResult> {
   let char = characterStore.currentCharacter;
   try {
-    const { data, error } = await supabase.rpc("long_rest", {
+    let { data, error } = await supabase.rpc("long_rest", {
       p_character_id: characterId,
       p_client_version: currentVersion
     });
+
+    if (error && (error.message.includes("ERR_CONCURRENCY_CONFLICT") || error.message.includes("Versi data karakter"))) {
+      const { data: latest } = await supabase.from("characters").select("version").eq("id", characterId).single();
+      if (latest && typeof latest.version === "number") {
+        const retry = await supabase.rpc("long_rest", {
+          p_character_id: characterId,
+          p_client_version: latest.version
+        });
+        if (!retry.error && retry.data) {
+          data = retry.data;
+          error = null;
+        }
+      }
+    }
+
     if (error) {
       if (error.message && (error.message.includes("ERR_") || error.message.includes("Versi"))) {
         throw new Error(error.message);
@@ -90,6 +123,10 @@ export async function longRestRpc(
         if (data.livingCost === undefined) {
           const livingCost = 300;
           char.finances.savingsAmount = Math.max(0, (char.finances.savingsAmount || 0) - livingCost);
+        }
+
+        if (data.newVersion) {
+          char.version = data.newVersion;
         }
 
         characterStore.setCurrentCharacter(char);
@@ -174,7 +211,20 @@ export async function adjustSavingsRpc(
     if (deltaYen !== undefined) {
       params.p_delta_yen = deltaYen;
     }
-    const { data, error } = await supabase.rpc("adjust_savings", params);
+    let { data, error } = await supabase.rpc("adjust_savings", params);
+
+    if (error && (error.message.includes("ERR_CONCURRENCY_CONFLICT") || error.message.includes("Versi data karakter"))) {
+      const { data: latest } = await supabase.from("characters").select("version").eq("id", characterId).single();
+      if (latest && typeof latest.version === "number") {
+        params.p_client_version = latest.version;
+        const retry = await supabase.rpc("adjust_savings", params);
+        if (!retry.error && retry.data) {
+          data = retry.data;
+          error = null;
+        }
+      }
+    }
+
     if (error) {
       if (error.message && (error.message.includes("ERR_") || error.message.includes("saldo") || error.message.includes("Versi"))) {
         throw new Error(error.message);
@@ -187,6 +237,9 @@ export async function adjustSavingsRpc(
           char.finances = data.finances;
         } else if (data.newSavingsAmount !== undefined) {
           char.finances.savingsAmount = data.newSavingsAmount;
+        }
+        if (data.newVersion) {
+          char.version = data.newVersion;
         }
         characterStore.setCurrentCharacter(char);
       }

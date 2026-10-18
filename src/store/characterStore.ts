@@ -41,18 +41,29 @@ class CharacterStore {
       const updatedData = await remoteCall();
 
       // 3. Reconcile with remote server response
-      if (updatedData && updatedData.vitals) {
-        this.currentCharacter.vitals = updatedData.vitals;
-      }
-      if (updatedData && updatedData.finances) {
-        this.currentCharacter.finances = updatedData.finances;
-      } else if (updatedData && typeof updatedData.newSavingsAmount === "number" && this.currentCharacter.finances) {
-        this.currentCharacter.finances.savingsAmount = updatedData.newSavingsAmount;
-      }
-      if (updatedData && updatedData.newVersion) {
-        this.currentCharacter.version = updatedData.newVersion;
-      } else if (updatedData && updatedData.version) {
-        this.currentCharacter = updatedData;
+      if (updatedData) {
+        if (updatedData.vitals) {
+          this.currentCharacter.vitals = updatedData.vitals;
+        }
+        if (updatedData.newVitals) {
+          this.currentCharacter.vitals = updatedData.newVitals;
+        }
+        if (updatedData.finances) {
+          this.currentCharacter.finances = updatedData.finances;
+        } else if (typeof updatedData.newSavingsAmount === "number" && this.currentCharacter.finances) {
+          this.currentCharacter.finances.savingsAmount = updatedData.newSavingsAmount;
+        }
+        if (typeof updatedData.newVersion === "number") {
+          this.currentCharacter.version = updatedData.newVersion;
+        } else if (typeof updatedData.version === "number") {
+          this.currentCharacter.version = updatedData.version;
+        }
+        if (updatedData.inventory) {
+          this.currentCharacter.inventory = updatedData.inventory;
+        }
+        if (updatedData.backstory_fields) {
+          this.currentCharacter.backstory_fields = updatedData.backstory_fields;
+        }
       }
       this.hasConflict = false;
       this.notify();

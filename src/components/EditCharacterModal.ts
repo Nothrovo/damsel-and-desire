@@ -28,7 +28,7 @@ export class EditCharacterModal {
 
   render(): string {
     return `
-      <div id="editCharacterModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="editCharacterModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card" style="max-width:800px;width:95%;max-height:90vh;overflow-y:auto;">
           <div class="modal-header">
             <h3>✏️ Mode Sunting Karakter (Edit Mode)</h3>
@@ -443,7 +443,7 @@ export class EditCharacterModal {
           Object.assign(draft, updates);
           draft.version = (draft.version || 1) + 1;
         },
-        () => updateCharacterDirect(char.id, updates, char.version)
+        () => updateCharacterDirect(char.id, updates, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.isDirty = false;

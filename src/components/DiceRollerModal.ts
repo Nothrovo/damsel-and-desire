@@ -86,6 +86,9 @@ export class DiceRollerModal {
   }
 
   show(prefilledDie: string = "d20", prefilledMod: number = 0, label: string = "") {
+    if (!this.modalEl) {
+      this.modalEl = document.getElementById("diceModal");
+    }
     if (this.modalEl) {
       this.modalEl.style.display = "flex";
       this.selectedDie = prefilledDie;
@@ -95,6 +98,11 @@ export class DiceRollerModal {
       if (labelInput) labelInput.value = label;
       const dieLabel = document.getElementById("diceModalDieLabel");
       if (dieLabel) dieLabel.textContent = prefilledDie;
+
+      // Update active state di grid dadu
+      document.querySelectorAll(".dice-grid .btn-die").forEach(b => {
+        b.classList.toggle("active", (b as HTMLElement).dataset.die === prefilledDie);
+      });
     }
   }
 

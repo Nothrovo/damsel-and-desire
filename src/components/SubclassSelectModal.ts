@@ -11,7 +11,7 @@ export class SubclassSelectModal {
 
   render(): string {
     return `
-      <div id="subclassSelectModal" class="modal-overlay" style="display:none;z-index:9999;">
+      <div id="subclassSelectModal" class="modal-overlay" style="display:none;z-index:10000;">
         <div class="modal-card" style="max-width:850px;width:95%;">
           <div class="modal-header">
             <h3>⚔️ Pilih Peminatan Subclass (Kelas 11)</h3>
@@ -185,7 +185,7 @@ export class SubclassSelectModal {
         () => updateCharacterDirect(char.id, {
           subclass_id: this.selectedSubclassId,
           changelog: updatedChangelog
-        }, char.version)
+        }, characterStore.currentCharacter?.version ?? char.version)
       );
 
       this.hide();
