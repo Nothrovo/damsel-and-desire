@@ -15,9 +15,9 @@ import { renderLandingView } from "./views/LandingView";
 import { renderLoginView } from "./views/LoginView";
 import { renderCampaignsView } from "./views/CampaignsView";
 import { renderCampaignDetailView } from "./views/CampaignDetailView";
+import { renderDmDashboardView } from "./views/DmDashboardView";
 import { renderBuilderWizardView } from "./views/BuilderWizardView";
 import { renderCharacterSheetView } from "./views/CharacterSheetView";
-import { renderDmDashboardView } from "./views/DmDashboardView";
 import { renderCompendiumView } from "./views/CompendiumView";
 import { renderHandbookView } from "./views/HandbookView";
 import { renderSettingsView } from "./views/SettingsView";
@@ -101,10 +101,11 @@ function initApp() {
     .register("/handbook", renderHandbookView)
     .register("/map", renderMapView)
     .register("/calendar", renderCalendarView)
-    .register("/login", renderLandingView)
-    .register("/campaigns", renderLandingView)
-    .register("/campaigns/:id", renderLandingView)
-    .register("/settings", renderLandingView)
+    .register("/login", renderLoginView)
+    .register("/campaigns", renderCampaignsView, { requiresAuth: true })
+    .register("/campaigns/:id", renderCampaignDetailView, { requiresAuth: true })
+    .register("/dm/:campaignId", renderDmDashboardView, { requiresAuth: true, requiresDm: true })
+    .register("/settings", renderSettingsView, { requiresAuth: true })
     .setNotFound(renderNotFoundView);
 
   // Update navbar active state on route changes

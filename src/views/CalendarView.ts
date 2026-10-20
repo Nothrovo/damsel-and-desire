@@ -15,8 +15,10 @@ import {
   applySaveMonthNote,
   applySetCurrentMonth,
   applyToggleEventDone,
+  fetchSchoolCalendarStateResult,
   fetchSchoolCalendarState,
   getDefaultCalendarState,
+  loadLocalCalendarState,
   normalizeCalendarState,
   saveSchoolCalendarState
 } from "../api/calendar";
@@ -33,6 +35,7 @@ import type {
   SchoolEventCategoryTag
 } from "../types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { setCalendarSyncState } from "./calendarSyncState";
 
 type CalendarTabMode = "monthly" | "overview" | "worldbuilding";
 
@@ -123,7 +126,7 @@ export async function renderCalendarView(): Promise<void> {
   const appContainer = document.getElementById("appMain");
   if (!appContainer) return;
 
-  calendarState = await fetchSchoolCalendarState();
+  calendarState = loadLocalCalendarState();
   if (!hasInitializedSelection) {
     selectedMonthId = calendarState.currentMonthId;
     hasInitializedSelection = true;
@@ -131,6 +134,22 @@ export async function renderCalendarView(): Promise<void> {
 
   subscribeCalendarRealtime();
   renderCalendarDOM();
+
+  try {
+    const remoteResult = await fetchSchoolCalendarStateResult();
+    const activeView = document.querySelector(".school-calendar-view");
+    if (!activeView) return;
+    calendarState = remoteResult.state;
+    if (!hasInitializedSelection) selectedMonthId = remoteResult.state.currentMonthId;
+    renderCalendarDOM();
+    setCalendarSyncState(
+      document.querySelector(".calendar-sync-status"),
+      remoteResult.synced ? "synced" : "offline"
+    );
+  } catch (error) {
+    console.warn("Calendar remote sync unavailable; keeping local state:", error);
+    setCalendarSyncState(document.querySelector(".calendar-sync-status"), "offline");
+  }
 }
 
 function subscribeCalendarRealtime() {
@@ -180,6 +199,7 @@ function renderCalendarDOM() {
       
       <!-- HERO & GLOBAL ACADEMIC PROGRESS HEADER -->
       <div class="calendar-hero-card" style="background:linear-gradient(135deg, rgba(31,41,61,0.96), rgba(17,24,39,0.98));border:1px solid var(--border-card);border-radius:var(--radius-lg);padding:1.25rem 1.5rem;margin-bottom:1.25rem;box-shadow:var(--shadow-lg);position:relative;overflow:hidden;">
+        <p class="calendar-sync-status" role="status" aria-live="polite">Kalender siap · progress tersimpan di perangkat ini</p>
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
           <div>
             <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(225,29,72,0.12);border:1px solid var(--rose-primary);padding:3px 12px;border-radius:var(--radius-full);color:var(--rose-light);font-size:0.75rem;font-weight:700;margin-bottom:0.4rem;font-family:var(--font-heading);letter-spacing:0.04em;">

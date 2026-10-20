@@ -52,9 +52,12 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
   --shadow-glow: 0 0 15px var(--rose-glow);
 
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Transitions — Emil-spec easing curves */
+  --transition-fast: 150ms cubic-bezier(0.23, 1, 0.32, 1);
+  --transition-base: 250ms cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Base Reset & Smoothness */
@@ -105,6 +108,16 @@ h1, h2, h3, h4, h5 {
   text-wrap: balance;
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+/* Housen player-space visual roles. Character sheet and builder retain their D&D Beyond skin. */
+:root {
+  --housen-ground: #0b0f19;
+  --housen-paper: #182234;
+  --housen-ink: #f9fafb;
+  --housen-crimson: #e11d48;
+  --housen-chalk: #fda4af;
+  --housen-rule: rgba(253, 164, 175, 0.22);
 }
 
 /* ==========================================================================
@@ -198,7 +211,7 @@ h1, h2, h3, h4, h5 {
   gap: 0.45rem;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
   user-select: none;
 }
 
@@ -229,7 +242,7 @@ h1, h2, h3, h4, h5 {
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
   border: 1px solid transparent;
   user-select: none;
 }
@@ -239,16 +252,16 @@ h1, h2, h3, h4, h5 {
 }
 
 .nav-btn-dice {
-  background: linear-gradient(135deg, #3b0764 0%, #2e1065 100%);
+  background: #3b0764;
   color: #e9d5ff;
   border-color: #6b21a8;
 }
 
 .nav-btn-dice:hover {
-  background: linear-gradient(135deg, #581c87 0%, #3b0764 100%);
+  background: #581c87;
   color: #fff;
   border-color: #a855f7;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
 }
 
 .dice-badge {
@@ -332,12 +345,12 @@ h1, h2, h3, h4, h5 {
   border-radius: var(--radius-sm);
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
   user-select: none;
 }
 
 .btn:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .btn-primary {
@@ -482,7 +495,7 @@ h1, h2, h3, h4, h5 {
 
 .view-section {
   display: none;
-  animation: fadeIn 200ms ease;
+  animation: fadeIn 200ms var(--ease-out-strong, cubic-bezier(0.23, 1, 0.32, 1));
 }
 
 .view-section.active {
@@ -490,8 +503,495 @@ h1, h2, h3, h4, h5 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Roster card stagger — applied via CSS nth-child so no JS needed */
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.roster-workspace .roster-character-card {
+  animation: cardSlideIn 240ms var(--ease-out-strong, cubic-bezier(0.23, 1, 0.32, 1)) both;
+}
+.roster-workspace .roster-character-card:nth-child(1)  { animation-delay: 0ms; }
+.roster-workspace .roster-character-card:nth-child(2)  { animation-delay: 40ms; }
+.roster-workspace .roster-character-card:nth-child(3)  { animation-delay: 80ms; }
+.roster-workspace .roster-character-card:nth-child(4)  { animation-delay: 120ms; }
+.roster-workspace .roster-character-card:nth-child(n+5) { animation-delay: 160ms; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.roster-workspace {
+  --roster-shell-width: 1360px;
+  max-width: var(--roster-shell-width);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2.75rem) clamp(0px, 1vw, 0.75rem) 4rem;
+}
+
+.roster-masthead {
+  position: relative;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  padding: clamp(1rem, 3vw, 2.2rem) 0 clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.6rem);
+  border-bottom: 1px solid var(--housen-rule);
+}
+
+.roster-masthead::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: min(19vw, 176px);
+  height: 3px;
+  background: var(--housen-crimson);
+}
+
+.roster-school-mark {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  aspect-ratio: 1;
+  color: var(--housen-chalk);
+  border: 1px solid rgba(253, 164, 175, 0.52);
+  border-radius: 50%;
+  font-family: var(--font-accent);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.roster-school-name {
+  margin: 0 0 0.3rem;
+  color: var(--housen-chalk);
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 0.035em;
+}
+
+.roster-masthead h1 {
+  margin: 0;
+  color: var(--housen-ink);
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4.5vw, 3.55rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.roster-masthead-note {
+  margin: 0.55rem 0 0;
+  color: #d1d5db;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.roster-create-action {
+  min-height: 46px;
+  padding-inline: 1.25rem;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.roster-workspace .roster-section {
+  margin: 0 0 2.5rem;
+}
+
+.roster-workspace .roster-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1.25rem;
+  margin: 0 0 1.25rem;
+  padding: 0 0 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.roster-workspace .roster-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.roster-workspace .roster-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  background: transparent;
+  border: 1px solid rgba(253, 164, 175, 0.3);
+  border-radius: 50%;
+  color: var(--housen-chalk);
+  font-family: var(--font-accent);
+  font-size: 1.25rem;
+}
+
+.roster-workspace .roster-heading {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1.2;
+}
+
+.roster-workspace .roster-subheading {
+  margin-top: 0.25rem;
+  color: #c7ced9;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.roster-workspace .roster-count-badge {
+  align-self: start;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--housen-chalk);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.roster-workspace .roster-search-wrapper {
+  width: min(100%, 360px);
+  min-width: min(250px, 40%);
+}
+
+.roster-workspace .input-search-roster {
+  min-height: 46px;
+  padding-block: 0.65rem;
+  background: #101827;
+  border: 1px solid #465064;
+  border-radius: 5px;
+  color: var(--housen-ink);
+  font-size: 0.95rem;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.roster-workspace .input-search-roster::placeholder { color: #b1bac9; }
+.roster-workspace .input-search-roster:focus-visible {
+  border-color: var(--housen-chalk);
+  box-shadow: 0 0 0 3px rgba(253, 164, 175, 0.22);
+}
+
+.roster-workspace .search-icon { left: 14px; }
+
+.roster-workspace .roster-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.roster-workspace .roster-character-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(210px, 1.15fr) minmax(170px, 0.9fr) minmax(250px, 1.25fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: #182234;
+  border: 1px solid #344156;
+  border-left: 3px solid rgba(225, 29, 72, 0.72);
+  border-radius: 5px;
+  box-shadow: none;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.roster-workspace .card-profile-header { min-width: 0; margin: 0; }
+.roster-workspace .card-badges-row { min-width: 0; margin: 0; }
+.roster-workspace .card-vitals-container { min-width: 0; margin: 0; }
+.roster-workspace .card-actions-footer { min-width: 0; margin: 0; padding: 0; border: 0; }
+
+.roster-workspace .card-char-name {
+  color: #fff;
+  font-size: 1.05rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.roster-workspace .card-char-level,
+.roster-workspace .vital-track-val { color: #d5dbe5; }
+.roster-workspace .card-badges-row { gap: 0.45rem; flex-wrap: wrap; }
+.roster-workspace .roster-badge { max-width: 100%; font-size: 0.78rem; }
+.roster-workspace .roster-badge > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.roster-workspace .vital-track-lbl { color: #d1d5db; font-size: 0.72rem; }
+.roster-workspace .card-actions-footer { gap: 0.55rem; }
+.roster-workspace .btn-card-open { min-height: 42px; }
+.roster-workspace .btn-card-icon {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+}
+
+.roster-workspace .roster-character-card .card-avatar-img {
+  border: 2px solid rgba(253, 164, 175, 0.7);
+  box-shadow: none;
+}
+
+.roster-workspace .roster-character-card .avatar-grade-pip {
+  background: #172234;
+  border: 1px solid var(--housen-chalk);
+  color: var(--housen-chalk);
+}
+
+.roster-workspace .roster-error-state,
+.roster-workspace .roster-no-results {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: start;
+  gap: 0.9rem;
+  padding: 1.5rem;
+  background: var(--housen-paper);
+  border-left: 3px solid var(--housen-crimson);
+  border-radius: 4px;
+  color: #e3e7ee;
+}
+
+.roster-workspace .roster-quick-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.25rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #c7ced9;
+  font-size: 0.9rem;
+}
+
+.roster-quick-links-title {
+  margin-right: 0.25rem;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+}
+
+.roster-workspace .roster-quick-links a,
+.roster-import-action {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  color: #e4e8ef;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  font: inherit;
+  text-underline-offset: 0.2em;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.roster-workspace .roster-quick-links a:hover,
+.roster-import-action:hover { color: var(--housen-chalk); border-color: var(--housen-chalk); }
+
+@media (hover: hover) and (pointer: fine) {
+  .roster-workspace .roster-character-card:hover {
+    border-color: rgba(253, 164, 175, 0.65);
+    border-top-color: var(--housen-crimson);
+    box-shadow: none;
+    transform: translateY(-2px);
+  }
+}
+
+/* Responsive shell changes only the shared chrome and roster workspace.
+   Character sheet and maker layouts keep their dedicated D&D Beyond rules. */
+.mobile-nav-toggle { display: none; }
+
+@media (max-width: 1100px) {
+  .nav-container { gap: 0.75rem; }
+  .nav-links { gap: 0.1rem; }
+  .nav-link { padding-inline: 0.55rem; font-size: 0.82rem; }
+  .nav-link .nav-icon { width: 14px; height: 14px; }
+  .nav-action-btn { padding-inline: 0.7rem; }
+}
+
+@media (max-width: 900px) {
+  .global-navbar {
+    padding: 0.65rem 1rem;
+    background: #111827;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .nav-container {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .nav-brand { min-width: 0; gap: 0.65rem; }
+  .brand-name { font-size: 1rem; }
+  .brand-sub { font-size: 0.62rem; }
+  .brand-crest { width: 38px; height: 38px; flex: none; }
+
+  .mobile-nav-toggle {
+    display: grid;
+    place-content: center;
+    gap: 4px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: #182234;
+    border: 1px solid #465064;
+    border-radius: 5px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .mobile-nav-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: #f9fafb;
+    transition: transform 160ms ease, opacity 160ms ease;
+  }
+
+  .mobile-nav-toggle[aria-expanded="true"] span:first-child { transform: translateY(6px) rotate(45deg); }
+  .mobile-nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .mobile-nav-toggle[aria-expanded="true"] span:last-child { transform: translateY(-6px) rotate(-45deg); }
+
+  .global-navbar .nav-links {
+    position: absolute;
+    top: calc(100% + 0.65rem);
+    right: 0;
+    left: 0;
+    z-index: 120;
+    display: none;
+    max-height: min(72dvh, 560px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.65rem;
+    background: #111827;
+    border: 1px solid #39465b;
+    border-radius: 7px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.38);
+  }
+
+  .global-navbar .nav-links.is-open { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .global-navbar .nav-link { min-height: 46px; gap: 0.65rem; padding: 0.7rem; font-size: 0.9rem; }
+  .global-navbar .nav-link.active { color: var(--housen-chalk); background: rgba(225, 29, 72, 0.12); border-color: rgba(225, 29, 72, 0.4); box-shadow: none; }
+  .global-navbar .nav-actions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .global-navbar .nav-action-btn { min-width: 0; min-height: 44px; justify-content: center; padding: 0.65rem; font-size: 0.84rem; }
+  .global-navbar .nav-btn-create { white-space: normal; text-align: center; }
+
+  .app-main { max-width: none; padding: 1rem 1rem 2rem; }
+  .roster-workspace { width: 100%; padding: 0.75rem 0 2.5rem; }
+  .roster-workspace .roster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .roster-workspace .roster-character-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 0.75rem;
+  }
+  .roster-workspace .card-profile-header { grid-column: 1; }
+  .roster-workspace .card-badges-row { grid-column: 2; justify-content: flex-end; }
+  .roster-workspace .card-vitals-container,
+  .roster-workspace .card-actions-footer { grid-column: 1 / -1; }
+  .roster-workspace .card-actions-footer { justify-content: flex-end; }
+  .roster-workspace .btn-card-open { flex: 1; }
+  .roster-workspace .roster-badge { white-space: normal; text-align: right; }
+  .roster-workspace .roster-search-wrapper { min-width: min(220px, 36%); }
+}
+
+@media (max-width: 600px) {
+  .global-navbar { padding: 0.55rem 0.8rem; }
+  .brand-name { font-size: 0.92rem; letter-spacing: 0.045em; }
+  .brand-sub { max-width: 220px; overflow: hidden; font-size: 0.56rem; letter-spacing: 0.025em; text-overflow: ellipsis; white-space: nowrap; }
+  .app-main { padding: 0.75rem 0.8rem 1.5rem; }
+
+  .roster-workspace { padding-top: 0.35rem; }
+  .roster-masthead {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 0.8rem;
+    padding: 0.65rem 0 1.15rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .roster-school-mark { width: 46px; font-size: 0.95rem; }
+  .roster-school-name { margin-bottom: 0.2rem; font-size: 0.74rem; }
+  .roster-masthead h1 { font-size: clamp(1.8rem, 8vw, 2.4rem); }
+  .roster-masthead-note { margin-top: 0.35rem; font-size: 0.88rem; }
+  .roster-create-action { grid-column: 2; justify-self: start; min-height: 44px; }
+
+  .roster-workspace .roster-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.85rem;
+  }
+
+  .roster-workspace .roster-title-group { gap: 0.65rem; }
+  .roster-workspace .roster-icon-wrapper { width: 38px; height: 38px; font-size: 1.05rem; }
+  .roster-workspace .roster-heading { font-size: 1.2rem; }
+  .roster-workspace .roster-subheading { font-size: 0.84rem; }
+  .roster-workspace .roster-search-wrapper { width: 100%; min-width: 0; }
+  .roster-workspace .input-search-roster { min-height: 48px; font-size: 1rem; }
+  .roster-workspace .roster-grid { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
+  .roster-workspace .roster-character-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+  .roster-workspace .card-profile-header,
+  .roster-workspace .card-badges-row,
+  .roster-workspace .card-vitals-container,
+  .roster-workspace .card-actions-footer { grid-column: 1; }
+  .roster-workspace .card-badges-row { justify-content: flex-start; }
+  .roster-workspace .roster-badge { text-align: left; }
+  .roster-workspace .card-identity { min-width: 0; }
+  .roster-workspace .card-char-name { overflow-wrap: anywhere; text-overflow: clip; }
+  .roster-workspace .card-actions-footer { display: grid; grid-template-columns: minmax(0, 1fr) 42px 42px; }
+  .roster-workspace .btn-card-open { width: 100%; }
+  .roster-workspace .card-profile-header { gap: 0.75rem; }
+  .roster-workspace .roster-quick-links { gap: 0.3rem 0.85rem; font-size: 0.9rem; }
+  .roster-workspace .roster-quick-links-title { flex: 0 0 100%; }
+  .roster-workspace .roster-quick-links a,
+  .roster-workspace .roster-import-action { min-height: 44px; }
+
+  /* Keep real application forms comfortable on phones; sheet controls retain their own skin. */
+  .view-section:not(.character-sheet-view):not(.builder-wizard-view) [style*="grid-template-columns:1fr 380px"],
+  .view-section:not(.character-sheet-view):not(.builder-wizard-view) [style*="grid-template-columns: 1fr 380px"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .school-calendar-view { padding-inline: 0.25rem !important; }
+  .school-calendar-view h1 { font-size: 1.45rem !important; }
+  .school-calendar-view [style*="grid-template-columns:repeat(auto-fit, minmax(200px"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .school-calendar-view .cal-month-pill { min-height: 44px; }
+  .codex-catalog-view h1 { font-size: clamp(1.8rem, 7vw, 2.45rem) !important; }
+  .campaign-card { min-width: 0; overflow-wrap: anywhere; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-toggle span,
+  .roster-workspace .roster-character-card,
+  .roster-workspace .input-search-roster,
+  .roster-workspace .roster-quick-links a,
+  .roster-import-action { transition: none; }
+
+  .roster-workspace .roster-character-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .view-section { animation: none; }
 }
 
 /* ==========================================================================
@@ -1069,7 +1569,11 @@ h1, h2, h3, h4, h5 {
   justify-content: center;
   gap: 6px;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn-card-open:active {
+  transform: scale(0.97);
 }
 
 .btn-card-open:hover {
@@ -1099,7 +1603,11 @@ h1, h2, h3, h4, h5 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.btn-card-icon:active {
+  transform: scale(0.95);
 }
 
 .btn-card-icon:hover {
@@ -1906,6 +2414,7 @@ h1, h2, h3, h4, h5 {
   display: grid;
   grid-template-columns: 250px 290px 1fr;
   gap: 1.15rem;
+  min-width: 0;
 }
 
 /* Column 1 */
@@ -3100,11 +3609,11 @@ h1, h2, h3, h4, h5 {
   bottom: 0;
   width: 460px;
   max-width: 95vw;
-  background: linear-gradient(180deg, #182234 0%, #0f1624 100%);
+  background: var(--bg-surface);
   border-left: 1px solid var(--border-card);
   box-shadow: -14px 0 45px rgba(0, 0, 0, 0.75);
   transform: translateX(100%);
-  transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 300ms var(--ease-drawer, cubic-bezier(0.32, 0.72, 0, 1));
   display: flex;
   flex-direction: column;
   z-index: 2001;
@@ -3319,14 +3828,14 @@ h1, h2, h3, h4, h5 {
 }
 
 .btn-purple {
-  background: linear-gradient(135deg, #7c3aed, #9333ea);
+  background: var(--purple-magic);
   color: #fff;
-  border-color: #a855f7;
+  border-color: rgba(139, 92, 246, 0.5);
 }
 
 .btn-purple:hover {
-  background: linear-gradient(135deg, #9333ea, #a855f7);
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+  background: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
 }
 
 /* ==========================================================================
@@ -3823,13 +4332,16 @@ h1, h2, h3, h4, h5 {
   font-weight: 600;
   box-shadow: var(--shadow-lg);
   pointer-events: auto;
-  animation: toastIn 200ms ease;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms var(--ease-out-strong, cubic-bezier(0.23, 1, 0.32, 1)),
+              transform 300ms var(--ease-out-strong, cubic-bezier(0.23, 1, 0.32, 1));
   border-left: 4px solid var(--rose-primary);
-}
 
-@keyframes toastIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  @starting-style {
+    opacity: 0;
+    transform: translateX(calc(100% + 1rem));
+  }
 }
 
 /* ==========================================================================
@@ -3868,6 +4380,39 @@ h1, h2, h3, h4, h5 {
   .form-row-3 {
     grid-template-columns: 1fr;
   }
+}
+
+/* Sheet: prevent overflow on narrow phones */
+@media (max-width: 480px) {
+  .sheet-container {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  .sheet-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .banner-char-identity {
+    gap: 0.85rem;
+  }
+  .banner-avatar-frame {
+    width: 56px;
+    height: 56px;
+  }
+  .sheet-toolbar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .toolbar-left, .toolbar-right {
+    gap: 0.4rem;
+  }
+  .ability-cards-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  /* Prevent fixed-width children from blowing out */
+  .sheet-main-grid > * { min-width: 0; overflow-wrap: break-word; }
 }
 
 /* ==========================================================================

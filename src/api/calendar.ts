@@ -92,7 +92,12 @@ export function saveLocalCalendarState(state: SchoolCalendarState): void {
   }
 }
 
-export async function fetchSchoolCalendarState(): Promise<SchoolCalendarState> {
+export interface CalendarStateLoadResult {
+  state: SchoolCalendarState;
+  synced: boolean;
+}
+
+export async function fetchSchoolCalendarStateResult(): Promise<CalendarStateLoadResult> {
   const localState = loadLocalCalendarState();
   try {
     const { data, error } = await supabase
@@ -101,9 +106,10 @@ export async function fetchSchoolCalendarState(): Promise<SchoolCalendarState> {
       .eq("id", DEFAULT_ROW_ID)
       .maybeSingle();
 
-    if (!error && data) {
+    if (error) return { state: localState, synced: false };
+    if (data) {
       const remoteState = normalizeCalendarState(data);
-      // Gunakan state yang paling baru diupdate antara remote & local (jika local pernah diubah saat tabel belum ada)
+      // Prefer newer local progress when an untouched/default remote row exists.
       const localTime = new Date(localState.updatedAt || 0).getTime();
       const remoteTime = new Date(remoteState.updatedAt || 0).getTime();
       if (
@@ -115,15 +121,20 @@ export async function fetchSchoolCalendarState(): Promise<SchoolCalendarState> {
           localState.currentMonthId !== "april") &&
         localTime >= remoteTime
       ) {
-        return localState;
+        return { state: localState, synced: true };
       }
       saveLocalCalendarState(remoteState);
-      return remoteState;
+      return { state: remoteState, synced: true };
     }
+    return { state: localState, synced: true };
   } catch {
-    // Fallback ke local state bila tabel belum dimigrasikan atau sedang offline
+    return { state: localState, synced: false };
   }
-  return localState;
+}
+
+export async function fetchSchoolCalendarState(): Promise<SchoolCalendarState> {
+  const result = await fetchSchoolCalendarStateResult();
+  return result.state;
 }
 
 export async function saveSchoolCalendarState(state: SchoolCalendarState): Promise<SchoolCalendarState> {

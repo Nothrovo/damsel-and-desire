@@ -69,7 +69,7 @@ export function renderLoginView(): void {
     const submitBtn = document.getElementById("btnSubmitMagicLink") as HTMLButtonElement;
     if (submitBtn) {
       submitBtn.disabled = true;
-      submitBtn.textContent = "Mengirim tautan...";
+      submitBtn.textContent = "Mengirim tautan…";
     }
 
     try {

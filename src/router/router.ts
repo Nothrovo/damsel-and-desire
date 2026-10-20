@@ -1,6 +1,7 @@
 import { authStore } from "../store/authStore";
 import { getUserRoleInCampaign } from "../api/campaigns";
 import { showToast } from "../components/Toast";
+import { getProtectedRouteRedirect, resolveInternalRedirect } from "./routeAccess";
 
 export type RouteHandler = (params: Record<string, string>) => void | Promise<void>;
 
@@ -149,11 +150,41 @@ class Router {
       }
 
       if (match) {
-        // In communal open access mode, routes are directly accessible
-        if (normalizedPath === "/login" || normalizedPath.startsWith("/campaigns") || normalizedPath === "/settings") {
-          this.navigate("/", true);
+        const authRedirect = getProtectedRouteRedirect(
+          `${normalizedPath}${searchPart ? `?${searchPart}` : ""}`,
+          authStore.isAuthenticated()
+        );
+        if (authRedirect) {
+          this.navigate(authRedirect, true);
           return;
         }
+        if (normalizedPath === "/login" && authStore.isAuthenticated()) {
+          const redirect = resolveInternalRedirect(queryParams.redirect || "/", this.getBasePath());
+          this.navigate(redirect, true);
+          return;
+        }
+        if (route.requiresAuth && !authStore.isAuthenticated()) {
+          this.navigate(`/login?redirect=${encodeURIComponent(normalizedPath)}`, true);
+          return;
+        }
+        if (route.requiresDm && !authStore.isAuthenticated()) {
+          this.navigate(`/login?redirect=${encodeURIComponent(normalizedPath)}`, true);
+          return;
+        }
+        if (route.requiresDm && authStore.isAuthenticated()) {
+          const campaignId = params.campaignId || params.id;
+          const role = campaignId ? await getUserRoleInCampaign(campaignId) : null;
+          if (role !== "dm") {
+            showToast("Halaman ini hanya tersedia untuk Game Master campaign.", "warning");
+            this.navigate(campaignId ? `/campaigns/${campaignId}` : "/campaigns", true);
+            return;
+          }
+        }
+
+        // Campaign data remains protected by Supabase auth and RLS policies.
+        if (route.requiresAuth && !authStore.isAuthenticated()) return;
+        if (route.requiresDm && !authStore.isAuthenticated()) return;
+
 
         try {
           this.onRouteChangeCallbacks.forEach((cb) => {

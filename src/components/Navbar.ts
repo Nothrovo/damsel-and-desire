@@ -1,9 +1,11 @@
 import { authStore } from "../store/authStore";
 import { signOut } from "../api/auth";
 import { router } from "../router/router";
+import { setMobileNavigationOpen } from "./mobileNavigation";
 
 function getActivePath(): string {
   const path = window.location.pathname;
+  if (path.includes("/campaigns")) return "/campaigns";
   if (path.includes("/codex")) return "/codex";
   if (path.includes("/compendium")) return "/compendium";
   if (path.includes("/handbook")) return "/handbook";
@@ -36,7 +38,14 @@ export function renderNavbar(): string {
           </div>
         </a>
 
+        <button class="mobile-nav-toggle" id="mobileNavToggle" type="button" aria-label="Buka navigasi" aria-controls="mainNavLinks" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
         <nav class="nav-links" id="mainNavLinks">
+          <a href="/campaigns" class="nav-link ${activePath === '/campaigns' ? 'active' : ''}" data-nav-path="/campaigns">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="nav-icon" aria-hidden="true"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5z"/><path d="M8 4v13m8-10v13"/></svg>
+            <span>Campaign</span>
+          </a>
           <a href="/" class="nav-link ${activePath === '/' ? 'active' : ''}" data-nav-path="/">
             <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
             <span>Roster</span>
@@ -98,7 +107,35 @@ export function updateNavbarActive(currentPath: string) {
   });
 }
 
+let mobileNavigationLifecycleAttached = false;
+
 export function attachNavbarEvents() {
+  const mobileToggle = document.getElementById("mobileNavToggle") as HTMLButtonElement | null;
+  const navigation = document.getElementById("mainNavLinks");
+  const closeMobileNavigation = () => {
+    const currentToggle = document.getElementById("mobileNavToggle") as HTMLButtonElement | null;
+    const currentNavigation = document.getElementById("mainNavLinks");
+    if (currentToggle && currentNavigation) setMobileNavigationOpen(currentNavigation, currentToggle, false);
+  };
+
+  mobileToggle?.addEventListener("click", () => {
+    if (navigation) setMobileNavigationOpen(navigation, mobileToggle, mobileToggle.getAttribute("aria-expanded") !== "true");
+  });
+  navigation?.querySelectorAll("a").forEach((link) => link.addEventListener("click", closeMobileNavigation));
+  if (!mobileNavigationLifecycleAttached) {
+    mobileNavigationLifecycleAttached = true;
+    document.addEventListener("keydown", (event) => {
+      const currentToggle = document.getElementById("mobileNavToggle") as HTMLButtonElement | null;
+      if (event.key === "Escape" && currentToggle?.getAttribute("aria-expanded") === "true") {
+        closeMobileNavigation();
+        currentToggle.focus();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 900) closeMobileNavigation();
+    });
+  }
+
   document.getElementById("navBrandBtn")?.addEventListener("click", (e) => {
     e.preventDefault();
     router.navigate("/");

@@ -1,11 +1,16 @@
 import { supabase } from "./supabase";
 import type { Profile } from "../types";
+import { buildAuthCallbackUrl } from "../router/routeAccess";
 
 export async function signInWithOtp(email: string) {
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: window.location.origin
+      emailRedirectTo: buildAuthCallbackUrl(
+        new URLSearchParams(window.location.search).get("redirect") || "/",
+        window.location.origin,
+        window.location.pathname.startsWith("/damsel-and-desire") ? "/damsel-and-desire" : ""
+      )
     }
   });
   if (error) throw error;
@@ -16,7 +21,11 @@ export async function signInWithOAuth(provider: 'google') {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: window.location.origin
+      redirectTo: buildAuthCallbackUrl(
+        new URLSearchParams(window.location.search).get("redirect") || "/",
+        window.location.origin,
+        window.location.pathname.startsWith("/damsel-and-desire") ? "/damsel-and-desire" : ""
+      )
     }
   });
   if (error) throw error;
