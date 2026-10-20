@@ -1,15 +1,13 @@
-import { authStore } from "../store/authStore";
 import { getUserRoleInCampaign } from "../api/campaigns";
 import { showToast } from "../components/Toast";
-import { getProtectedRouteRedirect, resolveInternalRedirect } from "./routeAccess";
+import { dmAuthStore } from "../store/dmAuthStore";
 
 export type RouteHandler = (params: Record<string, string>) => void | Promise<void>;
 
 interface RouteConfig {
   path: string; // e.g. "/campaigns/:id"
   handler: RouteHandler;
-  requiresAuth?: boolean;
-  requiresDm?: boolean;
+  requiresDm?: boolean; // hanya untuk route DM dashboard
 }
 
 class Router {
@@ -53,11 +51,10 @@ class Router {
     return searchPart !== undefined ? `${full}?${searchPart}` : full;
   }
 
-  register(path: string, handler: RouteHandler, options: { requiresAuth?: boolean; requiresDm?: boolean } = {}) {
+  register(path: string, handler: RouteHandler, options: { requiresDm?: boolean } = {}) {
     this.routes.push({
       path,
       handler,
-      requiresAuth: options.requiresAuth,
       requiresDm: options.requiresDm
     });
     return this;
@@ -106,18 +103,6 @@ class Router {
   }
 
   async resolve(currentPath: string) {
-    // Wait for auth to finish loading if it's still initializing
-    if (authStore.loading) {
-      await new Promise<void>((resolve) => {
-        const unsubscribe = authStore.subscribe(() => {
-          if (!authStore.loading) {
-            unsubscribe();
-            resolve();
-          }
-        });
-      });
-    }
-
     const [pathPart, searchPart] = currentPath.split("?");
     const normalizedPath = this.normalizePath(pathPart);
     const pathSegments = normalizedPath.split("/").filter(Boolean);
@@ -150,28 +135,15 @@ class Router {
       }
 
       if (match) {
-        const authRedirect = getProtectedRouteRedirect(
-          `${normalizedPath}${searchPart ? `?${searchPart}` : ""}`,
-          authStore.isAuthenticated()
-        );
-        if (authRedirect) {
-          this.navigate(authRedirect, true);
-          return;
-        }
-        if (normalizedPath === "/login" && authStore.isAuthenticated()) {
-          const redirect = resolveInternalRedirect(queryParams.redirect || "/", this.getBasePath());
-          this.navigate(redirect, true);
-          return;
-        }
-        if (route.requiresAuth && !authStore.isAuthenticated()) {
-          this.navigate(`/login?redirect=${encodeURIComponent(normalizedPath)}`, true);
-          return;
-        }
-        if (route.requiresDm && !authStore.isAuthenticated()) {
-          this.navigate(`/login?redirect=${encodeURIComponent(normalizedPath)}`, true);
-          return;
-        }
-        if (route.requiresDm && authStore.isAuthenticated()) {
+        // DM Dashboard: hanya bisa diakses kalau dmAuthStore aktif
+        if (route.requiresDm) {
+          if (!dmAuthStore.isDmActive()) {
+            showToast("Halaman ini hanya tersedia untuk Game Master aktif.", "warning");
+            const campaignId = params.campaignId || params.id;
+            this.navigate(campaignId ? `/campaigns/${campaignId}` : "/campaigns", true);
+            return;
+          }
+          // Verifikasi role DM di campaign
           const campaignId = params.campaignId || params.id;
           const role = campaignId ? await getUserRoleInCampaign(campaignId) : null;
           if (role !== "dm") {
@@ -180,11 +152,6 @@ class Router {
             return;
           }
         }
-
-        // Campaign data remains protected by Supabase auth and RLS policies.
-        if (route.requiresAuth && !authStore.isAuthenticated()) return;
-        if (route.requiresDm && !authStore.isAuthenticated()) return;
-
 
         try {
           this.onRouteChangeCallbacks.forEach((cb) => {

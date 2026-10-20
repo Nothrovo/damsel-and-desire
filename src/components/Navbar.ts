@@ -1,5 +1,4 @@
-import { authStore } from "../store/authStore";
-import { signOut } from "../api/auth";
+import { dmAuthStore } from "../store/dmAuthStore";
 import { router } from "../router/router";
 import { setMobileNavigationOpen } from "./mobileNavigation";
 
@@ -17,10 +16,7 @@ function getActivePath(): string {
 }
 
 export function renderNavbar(): string {
-  const isAuth = authStore.isAuthenticated();
-  const profile = authStore.profile;
-  const displayName = profile?.display_name || authStore.user?.email || "Akun Saya";
-  const avatarUrl = profile?.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${displayName}`;
+  const isDmActive = dmAuthStore.isDmActive();
   const activePath = getActivePath();
 
   return `
@@ -55,7 +51,7 @@ export function renderNavbar(): string {
             <span>Kamus</span>
           </a>
           <a href="/compendium" class="nav-link ${activePath === '/compendium' ? 'active' : ''}" data-nav-path="/compendium">
-            <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29-3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>
             <span>Compendium</span>
           </a>
           <a href="/handbook" class="nav-link ${activePath === '/handbook' ? 'active' : ''}" data-nav-path="/handbook">
@@ -81,6 +77,23 @@ export function renderNavbar(): string {
             <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
             <span>+ Buat Karakter</span>
           </a>
+
+          ${isDmActive ? `
+            <div class="nav-dm-group">
+              <span class="nav-dm-badge" title="Mode Game Master aktif" aria-label="Mode DM aktif">
+                <svg viewBox="0 0 20 20" fill="currentColor" style="width:12px;height:12px;flex-shrink:0;" aria-hidden="true"><path fill-rule="evenodd" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" clip-rule="evenodd"/></svg>
+                DM Aktif
+              </span>
+              <button class="nav-action-btn nav-btn-dm-exit" id="navDmExitBtn" type="button" title="Keluar dari Mode DM">
+                Keluar DM
+              </button>
+            </div>
+          ` : `
+            <button class="nav-action-btn nav-btn-dm" id="navDmLoginBtn" type="button" title="Masuk sebagai Game Master">
+              <svg viewBox="0 0 20 20" fill="currentColor" style="width:14px;height:14px;" aria-hidden="true"><path fill-rule="evenodd" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" clip-rule="evenodd"/></svg>
+              <span>Mode DM</span>
+            </button>
+          `}
         </div>
       </div>
     </header>
@@ -94,6 +107,7 @@ export function updateNavbarActive(currentPath: string) {
   else if (currentPath.includes("/handbook")) target = "/handbook";
   else if (currentPath.includes("/map")) target = "/map";
   else if (currentPath.includes("/calendar")) target = "/calendar";
+  else if (currentPath.includes("/campaigns")) target = "/campaigns";
   else if (currentPath === "/" || currentPath.startsWith("/characters/")) target = "/";
 
   const links = document.querySelectorAll("#mainNavLinks .nav-link");
@@ -140,8 +154,16 @@ export function attachNavbarEvents() {
     e.preventDefault();
     router.navigate("/");
   });
-  document.getElementById("navLogoutBtn")?.addEventListener("click", async () => {
-    await signOut();
-    router.navigate("/");
+
+  // Tombol masuk mode DM — buka modal password DM
+  document.getElementById("navDmLoginBtn")?.addEventListener("click", () => {
+    import("./DmAuthModal").then(({ dmAuthModal }) => {
+      dmAuthModal.open();
+    });
+  });
+
+  // Tombol keluar mode DM
+  document.getElementById("navDmExitBtn")?.addEventListener("click", async () => {
+    await dmAuthStore.logout();
   });
 }

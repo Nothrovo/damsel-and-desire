@@ -289,7 +289,9 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     const matchesCategory = !categoryId || catId === categoryId;
     if (!matchesCategory) continue;
 
-    const revealed = localRevealsMap[npc.slug] ?? [];
+    // Default: Tier 1 (identity + appearance) langsung terbuka untuk semua player
+    // Tier 2 (personality, background, relationships) dan Tier 3 (mind, secrets) dibuka DM
+    const revealed = localRevealsMap[npc.slug] ?? ["identity", "appearance"];
     const card = buildCanonCard(npc, revealed);
     if (card) {
       card.category_id = catId;
@@ -671,7 +673,7 @@ export async function dmListAll(sessionToken: string): Promise<DmCodexCharacter[
         role: identitySec?.role || "",
         club: identitySec?.club || "",
         home_room_id: npc.homeRoomId,
-        revealed_sections: localRevealsMap[npc.slug] ?? [],
+        revealed_sections: localRevealsMap[npc.slug] ?? ["identity", "appearance"],
         dm_notes: dmNotesSec?.notes || ""
       });
       finalSlugs.add(npc.slug);

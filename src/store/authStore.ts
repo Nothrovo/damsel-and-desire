@@ -1,41 +1,12 @@
-import { getCurrentUser, getProfile, onAuthStateChange } from "../api/auth";
+// Auth store disederhanakan: semua visitor adalah "player" — tidak perlu akun Supabase.
+// DM auth ditangani secara terpisah oleh dmAuthStore.ts (password DM).
 import type { Profile } from "../types";
 
 class AuthStore {
   user: any = null;
   profile: Profile | null = null;
-  loading: boolean = true;
+  loading: boolean = false;
   private listeners: Array<() => void> = [];
-
-  constructor() {
-    this.init();
-  }
-
-  async init() {
-    this.loading = true;
-    try {
-      this.user = await getCurrentUser();
-      if (this.user) {
-        this.profile = await getProfile(this.user.id);
-      }
-    } catch (err) {
-      console.warn("Auth initialization warning:", err);
-    } finally {
-      this.loading = false;
-      this.notify();
-    }
-
-    onAuthStateChange(async (_event, session) => {
-      this.user = session?.user || null;
-      if (this.user) {
-        this.profile = await getProfile(this.user.id);
-      } else {
-        this.profile = null;
-      }
-      this.loading = false;
-      this.notify();
-    });
-  }
 
   subscribe(listener: () => void) {
     this.listeners.push(listener);
@@ -44,12 +15,9 @@ class AuthStore {
     };
   }
 
-  private notify() {
-    this.listeners.forEach(fn => fn());
-  }
-
+  // Selalu true — semua visitor adalah player yang valid, tanpa perlu login
   isAuthenticated(): boolean {
-    return !!this.user;
+    return true;
   }
 }
 

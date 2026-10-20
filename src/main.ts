@@ -1,5 +1,4 @@
 import { router } from "./router/router";
-import { authStore } from "./store/authStore";
 import { renderNavbar, attachNavbarEvents, updateNavbarActive } from "./components/Navbar";
 import { diceRollerModal } from "./components/DiceRollerModal";
 import { savingsModal } from "./components/SavingsModal";
@@ -12,7 +11,6 @@ import { quickVitalsPopover } from "./components/QuickVitalsPopover";
 
 // Views
 import { renderLandingView } from "./views/LandingView";
-import { renderLoginView } from "./views/LoginView";
 import { renderCampaignsView } from "./views/CampaignsView";
 import { renderCampaignDetailView } from "./views/CampaignDetailView";
 import { renderDmDashboardView } from "./views/DmDashboardView";
@@ -79,15 +77,12 @@ function mountGlobalShell() {
 function initApp() {
   mountGlobalShell();
 
-  // Re-render navbar whenever auth state changes
-  authStore.subscribe(() => {
-    mountGlobalShell();
-  });
+  // Re-render navbar saat DM mode berubah
   dmAuthStore.subscribe(() => {
     mountGlobalShell();
   });
 
-  // Register All Routes
+  // Register All Routes — semua terbuka untuk player tanpa login
   router
     .register("/", renderLandingView)
     .register("/roster", renderLandingView)
@@ -101,11 +96,10 @@ function initApp() {
     .register("/handbook", renderHandbookView)
     .register("/map", renderMapView)
     .register("/calendar", renderCalendarView)
-    .register("/login", renderLoginView)
-    .register("/campaigns", renderCampaignsView, { requiresAuth: true })
-    .register("/campaigns/:id", renderCampaignDetailView, { requiresAuth: true })
-    .register("/dm/:campaignId", renderDmDashboardView, { requiresAuth: true, requiresDm: true })
-    .register("/settings", renderSettingsView, { requiresAuth: true })
+    .register("/campaigns", renderCampaignsView)
+    .register("/campaigns/:id", renderCampaignDetailView)
+    .register("/dm/:campaignId", renderDmDashboardView, { requiresDm: true })
+    .register("/settings", renderSettingsView)
     .setNotFound(renderNotFoundView);
 
   // Update navbar active state on route changes

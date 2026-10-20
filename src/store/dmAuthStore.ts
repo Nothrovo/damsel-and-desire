@@ -3,6 +3,14 @@ import { dmLogin, dmLogout, dmVerifySession } from "../api/codex";
 const SESSION_STORAGE_KEY = "codex_dm_session_token";
 const SESSION_EXPIRES_KEY = "codex_dm_session_expires";
 
+// Gunakan localStorage agar session DM persist lintas tab & tidak hilang saat tab ditutup
+// Expiry tetap dicek secara manual (12 jam default)
+const storage = {
+  get: (key: string) => { try { return localStorage.getItem(key); } catch { return null; } },
+  set: (key: string, val: string) => { try { localStorage.setItem(key, val); } catch { /* ignore */ } },
+  remove: (key: string) => { try { localStorage.removeItem(key); } catch { /* ignore */ } }
+};
+
 type Listener = () => void;
 
 class DmAuthStore {
@@ -17,8 +25,8 @@ class DmAuthStore {
 
   private loadFromStorage() {
     try {
-      const storedToken = sessionStorage.getItem(SESSION_STORAGE_KEY);
-      const storedExpires = sessionStorage.getItem(SESSION_EXPIRES_KEY);
+      const storedToken = storage.get(SESSION_STORAGE_KEY);
+      const storedExpires = storage.get(SESSION_EXPIRES_KEY);
       if (storedToken) {
         // Cek apakah sudah expired
         if (storedExpires && new Date(storedExpires).getTime() <= Date.now()) {
@@ -34,23 +42,15 @@ class DmAuthStore {
   }
 
   private saveToStorage(token: string, expiresAt: string) {
-    try {
-      sessionStorage.setItem(SESSION_STORAGE_KEY, token);
-      sessionStorage.setItem(SESSION_EXPIRES_KEY, expiresAt);
-      this.token = token;
-      this.expiresAt = expiresAt;
-    } catch (e) {
-      console.warn("Gagal menyimpan token ke sessionStorage:", e);
-    }
+    storage.set(SESSION_STORAGE_KEY, token);
+    storage.set(SESSION_EXPIRES_KEY, expiresAt);
+    this.token = token;
+    this.expiresAt = expiresAt;
   }
 
   private clearStorage() {
-    try {
-      sessionStorage.removeItem(SESSION_STORAGE_KEY);
-      sessionStorage.removeItem(SESSION_EXPIRES_KEY);
-    } catch (e) {
-      // ignore
-    }
+    storage.remove(SESSION_STORAGE_KEY);
+    storage.remove(SESSION_EXPIRES_KEY);
     this.token = null;
     this.expiresAt = null;
     this.isPlayerPreview = false;

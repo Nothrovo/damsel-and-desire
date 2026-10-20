@@ -407,33 +407,7 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
     const isLocked = Boolean(c.locked);
     const isSelected = selectedCharIds.has(c.id);
 
-    // KARTU TERKUNCI (SILUET MISTERIUS)
-    if (isLocked && !isDmActive) {
-      return `
-        <div class="codex-character-card locked" data-char-id="${c.id}" style="background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm);cursor:pointer;display:flex;flex-direction:column;transition:all 0.25s ease;">
-          <div style="padding:1.5rem 1rem 1rem 1rem;background:radial-gradient(circle at center, #1f1b29 0%, #0d111a 100%);text-align:center;position:relative;">
-            <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.6);border:1px solid var(--border-card);color:var(--amber-gold);font-size:0.75rem;padding:3px 8px;border-radius:var(--radius-full);display:flex;align-items:center;gap:4px;">
-              <span>🔒 Terkunci</span>
-            </div>
-            ${renderCodexSilhouetteSvg(160, 200)}
-          </div>
-
-          <div style="padding:1.25rem;display:flex;flex-direction:column;gap:8px;margin-top:auto;border-top:1px solid var(--border-subtle);text-align:center;">
-            <span style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase;">
-              ${c.is_love_interest ? "Target Asmara" : "Murid"} #${idx + 1}
-            </span>
-            <h3 style="font-family:var(--font-heading);color:var(--text-muted);margin:0;font-size:1.2rem;">
-              ???
-            </h3>
-            <p style="color:var(--text-muted);font-size:0.8rem;margin:0;">
-              Belum diperkenalkan oleh Game Master
-            </p>
-          </div>
-        </div>
-      `;
-    }
-
-    // KARTU TERBUKA (ATAU DALAM MODE DM)
+    // KARTU KARAKTER — semua visible untuk player, T1 selalu terbuka
     const avatar = resolvePortraitUrl(c.avatar_url, c.slug) || `https://api.dicebear.com/7.x/adventurer/svg?seed=${c.slug || c.id}`;
     const revealedCount = (c.revealed_sections || []).length;
     const isActuallyLocked = isLocked || revealedCount === 0;

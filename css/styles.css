@@ -287,6 +287,55 @@ h1, h2, h3, h4, h5 {
   transform: translateY(-1px);
 }
 
+/* Mode DM button + group */
+.nav-btn-dm {
+  background: var(--bg-surface);
+  color: var(--amber-gold);
+  border-color: rgba(245, 158, 11, 0.4);
+  gap: 6px;
+}
+
+.nav-btn-dm:hover {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: var(--amber-gold);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.nav-dm-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-dm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.3rem 0.7rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: var(--radius-sm);
+  color: var(--amber-gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.nav-btn-dm-exit {
+  background: transparent;
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+  font-size: 0.78rem;
+  padding: 0.3rem 0.7rem;
+}
+
+.nav-btn-dm-exit:hover {
+  color: var(--rose-light);
+  border-color: rgba(225, 29, 72, 0.5);
+  background: rgba(225, 29, 72, 0.06);
+}
+
 /* Backward compatibility for any remaining .nav-btn */
 .nav-btn {
   background-color: var(--bg-surface);

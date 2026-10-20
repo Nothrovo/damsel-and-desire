@@ -119,29 +119,8 @@ async function loadCharacterDetail(idOrSlug: string, params: Record<string, stri
     return;
   }
 
-  // JIKA KARAKTER DALAM MODE TERKUNCI MURNI (PLACEHOLDER UNTUK PEMAIN)
-  if (charData.locked && !isDmActive) {
-    container.innerHTML = `
-      <div style="max-width:600px;margin:2rem auto;text-align:center;background:var(--bg-card);border:1px solid var(--border-card);border-radius:var(--radius-xl);padding:3rem 2rem;box-shadow:var(--shadow-lg);">
-        <div style="margin-bottom:1.5rem;">
-          ${renderCodexSilhouetteSvg(180, 220)}
-        </div>
-        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.1);border:1px solid var(--amber-gold);color:var(--amber-gold);padding:4px 12px;border-radius:var(--radius-full);font-size:0.8rem;margin-bottom:1rem;">
-          <span>🔒 KARAKTER TERKUNCI</span>
-        </div>
-        <h2 style="font-family:var(--font-heading);color:var(--text-main);margin:0 0 0.75rem 0;font-size:1.8rem;">
-          ???
-        </h2>
-        <p style="color:var(--text-muted);font-size:0.95rem;line-height:1.6;margin-bottom:2rem;">
-          Karakter ini belum diperkenalkan dalam cerita oleh Game Master. Interaksilah dengan lingkungan sekolah dan ikuti sesi permainan untuk membuka identitasnya!
-        </p>
-        <a href="/codex" class="btn btn-primary" style="text-decoration:none;padding:0.75rem 1.5rem;">
-          ← Kembali ke Kamus Karakter
-        </a>
-      </div>
-    `;
-    return;
-  }
+  // Semua karakter langsung dirender — T1 selalu terbuka untuk player
+  // Section T2/T3 mengikuti revealed_sections dari DM
 
   // KARAKTER TERBUKA (ATAU SEDANG DILIHAT DI MODE DM)
   renderRevealedCharacter(container, charData, isDmActive, params);
