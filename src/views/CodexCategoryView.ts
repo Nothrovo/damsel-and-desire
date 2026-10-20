@@ -7,7 +7,11 @@ import {
   dmBatchIntroduce,
   dmBatchSetTier,
   dmBatchLockAll,
-  resolvePortraitUrl
+  resolvePortraitUrl,
+  CODEX_HIERARCHY,
+  getAllSubcategories,
+  isCharacterInSubcategory,
+  resolveCharacterAffiliations
 } from "../api/codex";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { dmAuthModal } from "../components/DmAuthModal";
@@ -153,16 +157,43 @@ async function loadCategoryData(categoryId: string, _silent: boolean = false) {
     default_visibility_mode: "placeholder"
   };
 
+  const allSubs = getAllSubcategories();
+  const subMeta = allSubs.find(s => s.id === categoryId);
+  const parentGroup = CODEX_HIERARCHY.find(g => g.id === subMeta?.parentGroupId);
+
+  const displayName = subMeta?.name || currentCategory.name;
+  const displayDesc = subMeta?.description || currentCategory.description;
+  const parentName = parentGroup ? `${parentGroup.icon} ${parentGroup.name}` : "Direktori";
+
+  // Build sibling quick navigation pills
+  const siblings = parentGroup ? parentGroup.subcategories : [];
+  const siblingPillsHtml = siblings.length > 0 ? `
+    <div class="codex-sibling-pills" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-top:1rem;align-items:center;">
+      <span style="font-size:0.75rem;color:var(--text-dim);font-weight:700;white-space:nowrap;margin-right:4px;">Lompat Folder:</span>
+      ${siblings.map(sib => `
+        <a href="/codex/${sib.id}" class="btn btn-xs ${sib.id === categoryId ? 'btn-primary' : 'btn-secondary'}" style="text-decoration:none;border-radius:var(--radius-full);white-space:nowrap;padding:3px 10px;font-size:0.78rem;">
+          ${sib.icon} ${sib.shortLabel || sib.name}
+        </a>
+      `).join("")}
+    </div>
+  ` : "";
+
   if (headerContainer) {
     headerContainer.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--amber-gold);font-weight:700;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.04em;">
+        <span>${parentName}</span>
+        <span>›</span>
+        <span>${displayName}</span>
+      </div>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.5rem;">
-        <h1 style="font-family:var(--font-heading);font-size:2rem;color:var(--amber-gold);margin:0;">
-          ${currentCategory.name}
+        <h1 style="font-family:var(--font-heading);font-size:2rem;color:var(--text-main);margin:0;">
+          ${subMeta?.icon ? subMeta.icon + ' ' : ''}${displayName}
         </h1>
       </div>
-      <p style="color:var(--text-muted);font-size:0.9rem;margin:0;">
-        ${currentCategory.description || "Daftar murid dan tokoh di kategori ini."}
+      <p style="color:var(--text-muted);font-size:0.9rem;margin:0;max-width:750px;line-height:1.5;">
+        ${displayDesc || "Daftar murid dan tokoh di kategori ini."}
       </p>
+      ${siblingPillsHtml}
     `;
   }
 
@@ -173,7 +204,7 @@ async function loadCategoryData(categoryId: string, _silent: boolean = false) {
   try {
     if (isDmActive && dmToken) {
       const allDmChars = await dmListAll(dmToken);
-      allLoadedCards = allDmChars.filter(c => c.category_id === categoryId);
+      allLoadedCards = allDmChars.filter(c => isCharacterInSubcategory(c, categoryId));
     } else {
       allLoadedCards = await fetchCodexList(categoryId);
     }
@@ -468,6 +499,13 @@ function renderCards(cards: any[], isDmActive: boolean, currentCategoryId: strin
           <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:var(--text-muted);">
             <span>${c.role || "Murid"}</span>
             <span style="color:var(--amber-gold);">${c.club ? `Ekskul: ${c.club}` : ""}</span>
+          </div>
+
+          <!-- Multi-Affiliation Tags -->
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center;margin-top:2px;">
+            ${c.class_room ? `<span style="font-size:0.68rem;background:rgba(255,255,255,0.06);color:var(--text-main);padding:2px 6px;border-radius:3px;border:1px solid var(--border-subtle);">${c.class_room}</span>` : ''}
+            ${c.club && c.club !== "none" ? `<span style="font-size:0.68rem;background:rgba(244,114,182,0.1);color:#f472b6;padding:2px 6px;border-radius:3px;border:1px solid rgba(244,114,182,0.3);">🏆 ${c.club}</span>` : ''}
+            ${c.role && !c.role.includes("Siswa") ? `<span style="font-size:0.68rem;background:rgba(245,158,11,0.1);color:var(--amber-gold);padding:2px 6px;border-radius:3px;border:1px solid rgba(245,158,11,0.3);">${c.role}</span>` : ''}
           </div>
 
           ${c.tagline ? `

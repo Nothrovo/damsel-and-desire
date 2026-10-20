@@ -2741,22 +2741,28 @@ export const FALLBACK_DD_DATA = {
   },
   "basicActions": [
     {
-      "name": "Pukulan Fisik (Unarmed Strike)",
+      "name": "Pukulan Cepat & Jab (Quick Jab)",
       "category": "basic_combat",
       "type": "Action (Physical)",
       "range": "Melee (5 ft)",
-      "check": "Physique / Power",
-      "damage": "1 + Mod Physique (Physical Bludgeoning)",
-      "desc": "Tinju mentah atau tamparan spontan saat adu fisik jarak dekat."
+      "check": "Physique / Power (+1 to-hit)",
+      "damage": "1d4 + Mod Physique (Physical Bludgeoning)",
+      "pros": "Akurat & Cepat: Mendapat bonus +1 pada Attack Check.",
+      "cons": "Plafon damage lebih rendah dibanding tendangan berat (1d4 vs 1d6).",
+      "effect": "Disorientasi: Jika serangan kena, target menderita penalti -1 pada d20 aksi pertamanya di giliran berikutnya.",
+      "desc": "Tinju mentah atau tamparan presisi yang mengincar celah pertahanan lawan untuk merusak ritmenya."
     },
     {
-      "name": "Tendangan Cepat (Snap Kick)",
+      "name": "Tendangan Berbobot (Heavy Kick)",
       "category": "basic_combat",
       "type": "Action (Physical)",
       "range": "Melee (5 ft)",
       "check": "Physique / Agility",
-      "damage": "1d4 + Mod Physique (Physical Bludgeoning)",
-      "desc": "Tendangan mendadak mengarah ke betis atau paha lawan."
+      "damage": "1d6 + Mod Physique (Physical Bludgeoning)",
+      "pros": "Daya Hancur Tinggi: Dadu 1d6 dan berpotensi memicu Knockback.",
+      "cons": "Overcommit: Jika lemparan meleset selisih 4+ dari Guard target, kena penalti -1 AC hingga giliran berikutnya.",
+      "effect": "Knockback: Jika damage minimal 3, target terdorong 5 ft dan DC 11 save atau kehilangan Reaction.",
+      "desc": "Tendangan tumit atau tendangan memutar bertenaga penuh mengincar pinggang atau pelipis lawan."
     },
     {
       "name": "Dorongan Kuat (Shove)",

@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "src/api/codex.ts": {
-    "mtime": 1792480098.8393812,
-    "seen": 1792480165.3525157,
-    "ast_hash": "96991db08c0265acd3e40d445715e61f",
+    "mtime": 1792487229.1383533,
+    "seen": 1792488777.9476786,
+    "ast_hash": "a860a7f6e30b0e9e024bbdbad81f138f",
     "semantic_hash": ""
   },
   "src/api/compendium.ts": {
@@ -96,10 +96,10 @@
     "semantic_hash": ""
   },
   "src/api/loveInterests.ts": {
-    "mtime": 1791612963.8055615,
-    "seen": 1791967754.32111,
-    "ast_hash": "44a2a336975185b7cc0b20213a662c22",
-    "semantic_hash": "44a2a336975185b7cc0b20213a662c22"
+    "mtime": 1792488253.6723523,
+    "seen": 1792488777.947686,
+    "ast_hash": "d74659bc54738a141d2fdccbfe3de9e2",
+    "semantic_hash": ""
   },
   "src/api/storage.ts": {
     "mtime": 1791609222.8837824,
@@ -144,10 +144,10 @@
     "semantic_hash": ""
   },
   "src/components/CodexCharacterEditorModal.ts": {
-    "mtime": 1791612952.278509,
-    "seen": 1791967754.32115,
-    "ast_hash": "e4cacf72efae7402d66cf22766b95a62",
-    "semantic_hash": "e4cacf72efae7402d66cf22766b95a62"
+    "mtime": 1792488717.3892744,
+    "seen": 1792488777.9477046,
+    "ast_hash": "eb63ac2750b9bd88259073166b60ded7",
+    "semantic_hash": ""
   },
   "src/components/CodexSilhouette.ts": {
     "mtime": 1791474412.1498828,
@@ -204,9 +204,9 @@
     "semantic_hash": ""
   },
   "src/components/LoveInterestDetailModal.ts": {
-    "mtime": 1792299811.3140006,
-    "seen": 1792299925.9029238,
-    "ast_hash": "7f9cde554567f94a1dbec5b89dfc1b63",
+    "mtime": 1792488211.2103925,
+    "seen": 1792488777.9477272,
+    "ast_hash": "9a538d0d1a4c4aee640969927a3987ac",
     "semantic_hash": ""
   },
   "src/components/Navbar.ts": {
@@ -264,10 +264,10 @@
     "semantic_hash": ""
   },
   "src/data/fallbackCompendium.ts": {
-    "mtime": 1791472722.5411084,
-    "seen": 1791967754.3212507,
-    "ast_hash": "60a95e802e90a37b5a7b34355fba567e",
-    "semantic_hash": "60a95e802e90a37b5a7b34355fba567e"
+    "mtime": 1792487430.1091256,
+    "seen": 1792488777.9477553,
+    "ast_hash": "1b00ef1003cb09fddb19fa21330bd614",
+    "semantic_hash": ""
   },
   "src/data/featCompendium.ts": {
     "mtime": 1791432230.6870704,
@@ -438,10 +438,10 @@
     "semantic_hash": ""
   },
   "src/rules/combatActions.ts": {
-    "mtime": 1791884058.2482574,
-    "seen": 1791967754.3213985,
-    "ast_hash": "f5d25b999e51d405dedae5c0e8b31c21",
-    "semantic_hash": "f5d25b999e51d405dedae5c0e8b31c21"
+    "mtime": 1792487386.5703022,
+    "seen": 1792488777.9478254,
+    "ast_hash": "f568d2daf57e91ee877a389c10651e37",
+    "semantic_hash": ""
   },
   "src/rules/migration.ts": {
     "mtime": 1791535940.2163393,
@@ -486,16 +486,16 @@
     "semantic_hash": ""
   },
   "src/types/codex.ts": {
-    "mtime": 1792227183.4056149,
-    "seen": 1792227373.5890749,
-    "ast_hash": "89b0c538e4fc5bee74a40b26ab71a656",
+    "mtime": 1792487062.5574784,
+    "seen": 1792488777.9478438,
+    "ast_hash": "e39e768c73fbe2d38d4d761383e1d8ed",
     "semantic_hash": ""
   },
   "src/types/index.ts": {
-    "mtime": 1791883986.166642,
-    "seen": 1791967754.3214493,
-    "ast_hash": "db50881289eb185b9c8be2fd96947be1",
-    "semantic_hash": "db50881289eb185b9c8be2fd96947be1"
+    "mtime": 1792487304.2095363,
+    "seen": 1792488777.947846,
+    "ast_hash": "b9c887befaead2b69d965c197e41cfb1",
+    "semantic_hash": ""
   },
   "src/views/BuilderWizardView.ts": {
     "mtime": 1792225118.4010668,
@@ -510,27 +510,27 @@
     "semantic_hash": ""
   },
   "src/views/CharacterSheetView.ts": {
-    "mtime": 1792299214.445099,
-    "seen": 1792299925.9030507,
-    "ast_hash": "231138e6ca0e44b1d8b739305eb36e76",
+    "mtime": 1792487728.8405278,
+    "seen": 1792488777.9478545,
+    "ast_hash": "b1138000883d2a877830ed5eaeb54dd4",
     "semantic_hash": ""
   },
   "src/views/CodexCatalogView.ts": {
-    "mtime": 1792132271.418128,
-    "seen": 1792132472.2371857,
-    "ast_hash": "8144388739b54ae55ca6a5133464a67c",
+    "mtime": 1792487832.5568182,
+    "seen": 1792488777.9478564,
+    "ast_hash": "dfc79a6a3be98fe6c07e4b71b5e83a48",
     "semantic_hash": ""
   },
   "src/views/CodexCategoryView.ts": {
-    "mtime": 1792478655.3766985,
-    "seen": 1792480165.3528612,
-    "ast_hash": "4890565d9e9dea15046a8963f2b219be",
+    "mtime": 1792487916.089646,
+    "seen": 1792488777.947858,
+    "ast_hash": "f00973640f05270045c18d7764b160f5",
     "semantic_hash": ""
   },
   "src/views/CodexDetailView.ts": {
-    "mtime": 1792478669.9564593,
-    "seen": 1792480165.3528638,
-    "ast_hash": "b792c58ba27d9fad59e0a41d73979873",
+    "mtime": 1792487990.1667905,
+    "seen": 1792488777.94786,
+    "ast_hash": "fa161e9ec66a5f52e6625df74ef372b7",
     "semantic_hash": ""
   },
   "src/views/CompendiumView.ts": {
@@ -876,8 +876,8 @@
     "semantic_hash": ""
   },
   "PLAYERS_HANDBOOK.html": {
-    "mtime": 1792480133.0448775,
-    "seen": 1792480165.3530495,
+    "mtime": 1792488764.418085,
+    "seen": 1792488777.9480083,
     "ast_hash": "86ec8b2f4b78da06b57a4591b5c617ac",
     "semantic_hash": ""
   },
@@ -1317,6 +1317,24 @@
     "mtime": 1792480063.8831599,
     "seen": 1792480165.3530147,
     "ast_hash": "1a5ace21b99e845a0267775afad10172",
+    "semantic_hash": ""
+  },
+  "tests/codexHierarchy.test.ts": {
+    "mtime": 1792487032.0229592,
+    "seen": 1792488777.9479356,
+    "ast_hash": "868c1c065b5f85fad0993812cd26a044",
+    "semantic_hash": ""
+  },
+  "tests/moveBalanceAndRoll.test.ts": {
+    "mtime": 1792487283.13767,
+    "seen": 1792488777.9479673,
+    "ast_hash": "2745effc28d0fe562612eb5ea399b798",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md": {
+    "mtime": 1792486640.2766619,
+    "seen": 1792488777.9480193,
+    "ast_hash": "11de5d88d3a3977289a0987e51669a89",
     "semantic_hash": ""
   }
 }

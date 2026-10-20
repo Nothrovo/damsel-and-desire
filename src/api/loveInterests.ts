@@ -16,6 +16,10 @@ import type { TargetSecret } from "../types";
 
 let cachedDynamicLoveInterests: LoveInterestDefinition[] | null = null;
 
+export function invalidateLoveInterestsCache(): void {
+  cachedDynamicLoveInterests = null;
+}
+
 /**
  * Normalisasi data karakter dari Supabase menjadi struktur LoveInterestDefinition.
  * Ini memastikan jika DM menambahkan heroine baru di database (via Codex / DM Tools),

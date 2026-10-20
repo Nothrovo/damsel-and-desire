@@ -9,6 +9,8 @@ import {
 import type { Character, TargetSecret } from "../types";
 import { router } from "../router/router";
 import { showToast } from "./Toast";
+import { dmAuthStore } from "../store/dmAuthStore";
+import { codexCharacterEditorModal } from "./CodexCharacterEditorModal";
 
 function escapeHtml(str: string): string {
   if (!str) return "";
@@ -244,9 +246,12 @@ export class LoveInterestDetailModal {
 
           <!-- Footer Actions -->
           <div class="modal-footer" style="padding:1rem 1.75rem;border-top:1px solid var(--border-card);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button type="button" id="btnOpenFullCodexPage" class="btn btn-secondary btn-sm" style="display:flex;align-items:center;gap:6px;">
                 <span>📖 Buka di Codex Karakter</span>
+              </button>
+              <button type="button" id="btnEditLiFromDetailModal" class="btn btn-primary btn-sm" style="display:none;background:var(--amber-gold);border-color:var(--amber-gold);color:#0d111a;font-weight:700;align-items:center;gap:6px;">
+                <span>✏️ Edit Profil &amp; Foto (DM)</span>
               </button>
               <button type="button" id="btnDeleteTargetFromSheet" class="btn btn-danger btn-sm" style="background:rgba(244,63,94,0.15);border:1px solid #f43f5e;color:#f43f5e;">
                 🗑️ Hapus Target
@@ -433,6 +438,12 @@ export class LoveInterestDetailModal {
         codexBtn.style.display = "none";
       }
     }
+
+    // DM Edit Button
+    const editBtn = document.getElementById("btnEditLiFromDetailModal");
+    if (editBtn) {
+      editBtn.style.display = dmAuthStore.isDmActive() ? "inline-flex" : "none";
+    }
   }
 
   private renderHeartsAndMilestone(hearts: number): void {
@@ -563,6 +574,18 @@ export class LoveInterestDetailModal {
         this.close();
         router.navigate(`/codex/c/${slug}`);
       }
+    });
+
+    // Edit Character Button (DM Only)
+    document.getElementById("btnEditLiFromDetailModal")?.addEventListener("click", () => {
+      const targetChar = this.resolvedLi || this.currentTarget;
+      if (!targetChar) return;
+      this.close();
+      codexCharacterEditorModal.openForEdit(targetChar, async () => {
+        if (this.currentCharacter && this.targetIdx !== -1) {
+          await this.open(this.currentCharacter, this.targetIdx, this.onUpdateCallback!, this.onDeleteCallback!);
+        }
+      });
     });
 
     // Delete Target

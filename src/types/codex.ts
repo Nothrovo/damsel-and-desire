@@ -20,10 +20,35 @@ export interface CodexCategory {
   created_at?: string;
 }
 
+export type CodexRootGroupId = "housen" | "touki" | "outside_other";
+
+export interface CodexSubCategory {
+  id: string;
+  parentGroupId: CodexRootGroupId;
+  name: string;
+  shortLabel?: string;
+  description: string;
+  icon: string;
+  sort_order: number;
+  folderCategory?: "class" | "club_org" | "faculty" | "alumni" | "outside" | "other";
+}
+
+export interface CodexRootGroup {
+  id: CodexRootGroupId;
+  name: string;
+  subtitle: string;
+  description: string;
+  icon: string;
+  accentBorder: string;
+  subcategories: CodexSubCategory[];
+}
+
 export interface CodexCharacterCard {
   id: string;
   slug?: string;
   category_id: string;
+  categories?: string[];
+  affiliations?: string[];
   sort_order: number;
   locked: boolean;
   is_love_interest: boolean;
@@ -34,6 +59,8 @@ export interface CodexCharacterCard {
   class_room?: string;
   role?: string;
   club?: string;
+  club_role?: string;
+  school?: string;
   home_room_id?: string | null;
   gender?: string;
   revealed_sections?: string[];
@@ -51,6 +78,8 @@ export interface CodexCharacterDetail {
   id: string;
   slug?: string;
   category_id: string;
+  categories?: string[];
+  affiliations?: string[];
   sort_order: number;
   locked: boolean;
   is_love_interest: boolean;
@@ -66,6 +95,7 @@ export interface DmCodexCharacter {
   id: string;
   slug: string;
   category_id: string;
+  categories?: string[];
   sort_order: number;
   visibility_mode: CodexVisibilityMode;
   is_love_interest: boolean;
@@ -76,6 +106,8 @@ export interface DmCodexCharacter {
   class_room: string;
   role: string;
   club: string;
+  club_role?: string;
+  school?: string;
   home_room_id?: string | null;
   revealed_sections: string[];
   dm_notes: string;

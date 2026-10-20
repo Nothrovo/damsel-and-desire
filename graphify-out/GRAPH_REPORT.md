@@ -1,25 +1,25 @@
 # Graph Report - Damsel and Desire  (2026-10-20)
 
 ## Corpus Check
-- 158 files · ~4,029,520 words
+- 161 files · ~4,036,465 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 3, .example 1, .css 1)
 
 ## Summary
-- 1429 nodes · 3482 edges · 115 communities (53 shown, 62 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)
+- 1460 nodes · 3584 edges · 103 communities (49 shown, 54 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 25 edges (avg confidence: 0.9)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a346c1f7`
+- Built from commit: `be65cda9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - DamselDesireApp
 - map3DUtils.ts
-- syncCanonNpcs.js
-- LandingView.ts
+- combatActions.ts
+- Task Decomposition
 - gameRpc.ts
 - all_migrations_combined.sql
 - CalendarView.ts
@@ -27,29 +27,26 @@
 - 1. TOP 10 ANIME ROMCOM SMA & PLOT POINTS
 - BuilderWizardView.ts
 - CharacterSheetView.ts
-- showToast
-- DmRevealHistoryModal.ts
+- characterStore
+- dmRevealHistoryModal
 - loveInterests.ts
 - 20261008000003_codex_system.sql
 - achievementAwardModal
 - codexSecurity.test.ts
 - progression.ts
-- CodexDetailView.ts
+- api/codex.ts
 - package.json
 - PLAN_CAMPAIGN_HARI_3_4_DAN_FAKSI.md
 - 20261007000001_initial_schema.sql
-- importCodex.js
 - EditCharacterModal.ts
 - compilerOptions
 - dmAuthStore
 - 20261007000002_compendium_tables.sql
 - characters.ts
 - build_charsheet.py
-- api/codex.ts
+- types/codex.ts
 - 20261007000006_game_logic_rpc.sql
-- ref_path
 - CodexCharacterEditorModal.ts
-- buildLoveInterests.js
 - compendium.ts
 - subclassSelectModal
 - 🌸 PANDUAN CAMPAIGN SESI 1 — PEKAN PERTAMA BULAN APRIL: *THE FIRST ENCOUNTER*
@@ -58,8 +55,8 @@
 - addItemModal
 - 🌟 Fitur Utama (Major Features)
 - 🌸 [Nama Lengkap Romaji] ([Kanji])
-- main.ts
-- auth.ts
+- showToast
+- LandingView.ts
 - dmAuthModal
 - 20261008000002_feat_and_achievement_system.sql
 - public.get_love_interest_detail
@@ -72,7 +69,7 @@
 - vercel.json
 - Luna Hernandez (Front-End Specialist)
 - Marcus Vance (Back-End & Database Architect)
-- AchievementAwardModal.ts
+- vitest
 - FeatPickerModal.ts
 - Draft Sementara
 - levelUpWizardModal
@@ -82,47 +79,39 @@
 - ATURAN PEMBUATAN KARAKTER, KONSISTENSI DATABASE & DEMOGRAFI KELAS
 - CodexCategoryView.ts
 - types/index.ts
-- savingsModal
-- router
 - backstoryModal
 - migration.ts
-- SettingsView.ts
-- CodexRealtimeManager
-- Character
-- ruleEngine.ts
-- loveInterestDetailModal
-- vitest
+- calculateEffectiveStats
 - diceRollerModal
-- itemDetailModal
 
 ## God Nodes (most connected - your core abstractions)
 1. `DamselDesireApp` - 92 edges
-2. `showToast()` - 72 edges
+2. `showToast()` - 74 edges
 3. `updateCharacterDirect()` - 30 edges
 4. `Character` - 30 edges
-5. `calculateEffectiveStats()` - 26 edges
-6. `dmAuthStore` - 26 edges
+5. `calculateEffectiveStats()` - 29 edges
+6. `dmAuthStore` - 27 edges
 7. `attachSheetEvents()` - 26 edges
 8. `Map2DRenderer` - 23 edges
 9. `router` - 23 edges
-10. `Map3DRenderer` - 22 edges
+10. `vitest` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `createMockCharacter()` --calls--> `ensureGradeFeatGrants()`  [EXTRACTED]
-  tests/featProgression.test.ts → src/rules/migration.ts
-- `initApp()` --indirect_call--> `renderBuilderWizardView()`  [INFERRED]
-  src/main.ts → src/views/BuilderWizardView.ts
-- `initApp()` --indirect_call--> `renderCalendarView()`  [INFERRED]
-  src/main.ts → src/views/CalendarView.ts
-- `initApp()` --indirect_call--> `renderCharacterSheetView()`  [INFERRED]
-  src/main.ts → src/views/CharacterSheetView.ts
-- `initApp()` --indirect_call--> `renderCompendiumView()`  [INFERRED]
-  src/main.ts → src/views/CompendiumView.ts
+- `Task 3: Character Sheet Move Card Direct Rolling & Filter Tabs (Fisik vs Sosial)` --references--> `resolveMoveRollParameters()`  [INFERRED]
+  docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md → src/rules/combatActions.ts
+- `Task 5: DM Character & Love Interest Creator / Editor Wizard with Supabase Sync` --references--> `dmUpsertCharacter()`  [INFERRED]
+  docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md → src/api/codex.ts
+- `Task 5: DM Character & Love Interest Creator / Editor Wizard with Supabase Sync` --references--> `loveInterestDetailModal`  [INFERRED]
+  docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md → src/components/LoveInterestDetailModal.ts
+- `Task 1: Type Definitions & Multi-Category Hierarchy Modeling` --references--> `CombatActionDefinition`  [INFERRED]
+  docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md → src/types/index.ts
+- `Task 5: DM Character & Love Interest Creator / Editor Wizard with Supabase Sync` --references--> `dmUploadCharacterImage()`  [INFERRED]
+  docs/superpowers/plans/2026-10-20-codex-hierarchy-moves-rebalance-character-crud.md → src/api/codex.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (115 total, 62 thin omitted)
+## Communities (103 total, 54 thin omitted)
 
 ### Community 0 - "DamselDesireApp"
 Cohesion: 0.05
@@ -130,27 +119,27 @@ Nodes (3): app, DamselDesireApp, SUPABASE_CONFIG
 
 ### Community 1 - "map3DUtils.ts"
 Cohesion: 0.06
-Nodes (49): three, Map2DRenderer, Map2DRendererOptions, Map3DRenderer, Map3DRendererOptions, create3DRoomGroup(), createCampusFacilitiesGroup(), createChainLinkFence() (+41 more)
+Nodes (50): three, FALLBACK_DD_DATA, Map2DRenderer, Map2DRendererOptions, Map3DRenderer, Map3DRendererOptions, create3DRoomGroup(), createCampusFacilitiesGroup() (+42 more)
 
-### Community 2 - "syncCanonNpcs.js"
-Cohesion: 0.23
-Nodes (10): allFiles, buildPayload(), extractH3Subsections(), findSectionsByKeyword(), mapClassRoomToCategory(), payloads, scanDir(), SESSION1_SLUGS (+2 more)
+### Community 2 - "combatActions.ts"
+Cohesion: 0.15
+Nodes (18): Task 2: Action & Move Rebalancing, Move Fisik vs Sosial, and Direct Dice Roller Linking, ALL_REWORKED_ARCHETYPE_IDS, ALL_REWORKED_SOCIAL_CLASS_IDS, ARCHETYPE_REWORK_CATALOG, calculateCombatSaveDC(), getStatModifierFromScore(), MoveRollParameters, resolveMoveRollParameters() (+10 more)
 
-### Community 3 - "LandingView.ts"
-Cohesion: 0.19
-Nodes (16): listMyCharacters, renderBuilderSkeleton(), renderCardSkeleton(), renderSheetSkeleton(), validateCharacterJson(), escapeHtml(), attachLandingEvents(), cachedCharacters (+8 more)
+### Community 3 - "Task Decomposition"
+Cohesion: 0.18
+Nodes (10): File Structure & Responsibilities, Files to Create:, Files to Modify:, Global Constraints, Kamus Karakter Hierarkis, Rework Action & Moves, dan DM Character Creator/Editor Implementation Plan, Review Focus, Task 3: Character Sheet Move Card Direct Rolling & Filter Tabs (Fisik vs Sosial), Task 4: Hierarchical Kamus Karakter (Codex) UI Overhaul (+2 more)
 
 ### Community 4 - "gameRpc.ts"
-Cohesion: 0.26
-Nodes (8): adjustSavingsRpc(), isValidUuid(), longRestRpc(), shortRestRpc(), resetFeatUsage(), AdjustSavingsRpcResult, LongRestRpcResult, RollLogEntry
+Cohesion: 0.16
+Nodes (9): adjustSavingsRpc(), isValidUuid(), longRestRpc(), shortRestRpc(), savingsModal, resetFeatUsage(), AdjustSavingsRpcResult, LongRestRpcResult (+1 more)
 
 ### Community 5 - "all_migrations_combined.sql"
 Cohesion: 0.07
 Nodes (43): idx_archetype_moves_archetype, idx_calendar_progress_char, idx_campaign_members_user, idx_campaigns_join_code, idx_campaigns_owner, idx_character_secrets_campaign, idx_character_secrets_char, idx_characters_campaign (+35 more)
 
 ### Community 6 - "CalendarView.ts"
-Cohesion: 0.10
-Nodes (51): @supabase/supabase-js, applyAddCustomEvent(), applyDeleteCustomEvent(), applyMarkMonthEvents(), applySaveMonthNote(), applySetCurrentMonth(), applyToggleEventDone(), CalendarStateLoadResult (+43 more)
+Cohesion: 0.08
+Nodes (56): @supabase/supabase-js, applyAddCustomEvent(), applyDeleteCustomEvent(), applyMarkMonthEvents(), applySaveMonthNote(), applySetCurrentMonth(), applyToggleEventDone(), CalendarStateLoadResult (+48 more)
 
 ### Community 7 - "handbook/index.ts"
 Cohesion: 0.11
@@ -161,32 +150,36 @@ Cohesion: 0.05
 Nodes (37): 10. Bucchigiri?! / Shonan Junai Gumi, 10. Rascal Does Not Dream of Bunny Girl Senpai, 1. Kaguya-sama: Love Is War (*Kaguya-sama wa Kokurasetai*), 1. Tokyo Revengers, 1. TOP 10 ANIME ROMCOM SMA & PLOT POINTS, 2. TOP 10 ANIME GENG BERANDAL SEKOLAH & PLOT POINTS, 2. Toradora!, 2. Wind Breaker (+29 more)
 
 ### Community 9 - "BuilderWizardView.ts"
-Cohesion: 0.17
-Nodes (26): getArchetypeReworkData(), attachBuilderEvents(), buildCandidateCharForFeatCheck(), buildFinalPreviewCharacter(), compAbilities, compArchetypes, compEkskul, compSocial (+18 more)
+Cohesion: 0.14
+Nodes (32): getArchetypeReworkData(), getSocialClassReworkData(), calculatePointBuyTotal(), isValidStandardArray(), AbilityKey, attachBuilderEvents(), buildCandidateCharForFeatCheck(), BuilderDraft (+24 more)
 
 ### Community 10 - "CharacterSheetView.ts"
-Cohesion: 0.12
-Nodes (39): toggleCalendarEvent(), updateCharacterSecret(), applyVitalChangeRpc(), calculateEffectiveStats(), extractAbilityScore(), getArchetypeStatBonus(), useFeatAction(), exportCharacterJson() (+31 more)
+Cohesion: 0.13
+Nodes (30): toggleCalendarEvent(), updateCharacterSecret(), applyVitalChangeRpc(), useFeatAction(), triggerPrintCharacterSheet(), activeRenderedMoves, alterVitalDirect(), attachInventoryDeleteEvents() (+22 more)
 
-### Community 11 - "showToast"
-Cohesion: 0.28
-Nodes (3): VitalType, showToast(), characterStore
+### Community 11 - "characterStore"
+Cohesion: 0.16
+Nodes (8): escapeHtml(), itemDetailModal, VitalType, getAllCompendiumItems(), getItemDetails(), MASTER_ITEM_REGISTRY, characterStore, ItemDefinition
 
 ### Community 13 - "loveInterests.ts"
-Cohesion: 0.24
-Nodes (16): dmListAll(), fetchCodexList(), fetchDynamicLoveInterestDetail(), fetchDynamicLoveInterests(), matchTargetToLoveInterest(), normalizeDbToLoveInterest(), CANON_LOVE_INTERESTS, findLoveInterestByName() (+8 more)
+Cohesion: 0.13
+Nodes (18): fetchDynamicLoveInterestDetail(), fetchDynamicLoveInterests(), matchTargetToLoveInterest(), normalizeDbToLoveInterest(), addLoveInterestModal, escapeHtml(), escapeHtml(), loveInterestDetailModal (+10 more)
 
 ### Community 14 - "20261008000003_codex_system.sql"
 Cohesion: 0.09
 Nodes (15): idx_codex_characters_category, idx_codex_characters_slug, idx_codex_dm_sessions_token, idx_codex_reveals_char, idx_codex_sections_char, public.codex_categories, public.codex_character_sections, public.codex_characters (+7 more)
 
-### Community 17 - "progression.ts"
-Cohesion: 0.20
-Nodes (25): getCachedEkskul(), calculateComposureGainAtLevel(), calculateHpGainAtLevel(), calculateMaxComposure(), calculateMaxHp(), canLevelUp(), getAllMovesSummary(), getEffectiveAbilityScore() (+17 more)
+### Community 16 - "codexSecurity.test.ts"
+Cohesion: 0.05
+Nodes (31): vite, buildLoveInterests(), findSection(), mapClassRoomToCategory(), parseDateSpots(), parseGifts(), parseHeartMilestones(), parsePersonalitySection() (+23 more)
 
-### Community 18 - "CodexDetailView.ts"
-Cohesion: 0.26
-Nodes (20): buildCanonDetail(), dmGetCharacter(), dmIntroduce(), dmLockAll(), dmSetReveal(), dmSetTierReveal(), dmUpsertCharacter(), ensureCanonNpcsSyncedToDb() (+12 more)
+### Community 17 - "progression.ts"
+Cohesion: 0.16
+Nodes (27): getCachedEkskul(), calculateComposureGainAtLevel(), calculateHpGainAtLevel(), calculateMaxComposure(), canLevelUp(), CharacterMovesSummary, getAllMovesSummary(), getEffectiveAbilityScore() (+19 more)
+
+### Community 18 - "api/codex.ts"
+Cohesion: 0.13
+Nodes (29): buildCanonCard(), buildCanonDetail(), dmBatchIntroduce(), dmBatchLockAll(), dmBatchSetTier(), dmGetCharacter(), dmIntroduce(), dmListAll() (+21 more)
 
 ### Community 19 - "package.json"
 Cohesion: 0.08
@@ -200,13 +193,9 @@ Nodes (22): 1. RINGKASAN KRISIS & OBJEKTIF UTAMA (THE TICKING CLOCK), 2. PETA KE
 Cohesion: 0.19
 Nodes (18): idx_calendar_progress_char, idx_campaign_members_user, idx_campaigns_join_code, idx_campaigns_owner, idx_character_secrets_campaign, idx_character_secrets_char, idx_characters_campaign, idx_characters_owner (+10 more)
 
-### Community 22 - "importCodex.js"
-Cohesion: 0.26
-Nodes (9): buildCharacterPayload(), extractH3Subsections(), findSectionsByKeyword(), getObfuscatedAssetPath(), main(), scan(), mapClassRoomToCategory(), parseMarkdownCharacter() (+1 more)
-
 ### Community 23 - "EditCharacterModal.ts"
-Cohesion: 0.19
-Nodes (8): ALLOWED_MIME_TYPES, uploadAvatar(), editCharacterModal, escapeAttr(), ArchetypeCompendium, EkskulCompendium, isDmPinValid(), SocialClassCompendium
+Cohesion: 0.25
+Nodes (6): editCharacterModal, escapeAttr(), ArchetypeCompendium, EkskulCompendium, isDmPinValid(), SocialClassCompendium
 
 ### Community 24 - "compilerOptions"
 Cohesion: 0.12
@@ -221,32 +210,28 @@ Cohesion: 0.19
 Nodes (15): idx_archetype_moves_archetype, idx_ekskul_moves_ekskul, idx_ekskul_subclasses_ekskul, idx_skills_ability, public.abilities, public.archetype_moves, public.archetypes, public.basic_actions (+7 more)
 
 ### Community 27 - "characters.ts"
-Cohesion: 0.42
-Nodes (14): createCharacterRpc(), deleteCharacter(), getCharacter(), getLocalRoster(), importLegacyCharacter(), isUuid(), listAllCharacters(), listCampaignCharacters() (+6 more)
+Cohesion: 0.34
+Nodes (16): createCharacterRpc(), deleteCharacter(), getCalendarProgress(), getCharacter(), getCharacterSecret(), getLocalRoster(), importLegacyCharacter(), isUuid() (+8 more)
 
 ### Community 28 - "build_charsheet.py"
 Cohesion: 0.15
 Nodes (3): build_charsheet(), add_p(), format_run()
 
-### Community 29 - "api/codex.ts"
-Cohesion: 0.12
-Nodes (14): buildCanonCard(), SUPABASE_STORAGE_PORTRAITS_URL, ALL_CANON_NPCS, getCanonNpcBySlug(), CANON_SESSION1_NPCS, CodexCategory, CodexCharacterCard, CodexCharacterDetail (+6 more)
+### Community 29 - "types/codex.ts"
+Cohesion: 0.18
+Nodes (13): Task 1: Type Definitions & Multi-Category Hierarchy Modeling, CodexCategory, CodexCharacterCard, CodexCharacterDetail, CodexRootGroup, CodexRootGroupId, CodexSectionDetail, CodexSectionKey (+5 more)
 
 ### Community 30 - "20261007000006_game_logic_rpc.sql"
 Cohesion: 0.19
 Nodes (5): public.adjust_savings(), public.apply_vital_change(), public.create_character(), public.long_rest(), public.short_rest()
 
 ### Community 32 - "CodexCharacterEditorModal.ts"
-Cohesion: 0.23
-Nodes (5): compressImageFile(), DEFAULT_CODEX_CATEGORIES, dmDeleteCharacter(), dmUploadCharacterImage(), codexCharacterEditorModal
-
-### Community 33 - "buildLoveInterests.js"
-Cohesion: 0.36
-Nodes (8): buildLoveInterests(), findSection(), mapClassRoomToCategory(), parseDateSpots(), parseGifts(), parseHeartMilestones(), parsePersonalitySection(), scanDir()
+Cohesion: 0.22
+Nodes (7): Task 5: DM Character & Love Interest Creator / Editor Wizard with Supabase Sync, compressImageFile(), DEFAULT_CODEX_CATEGORIES, dmDeleteCharacter(), dmUploadCharacterImage(), invalidateLoveInterestsCache(), codexCharacterEditorModal
 
 ### Community 34 - "compendium.ts"
-Cohesion: 0.10
-Nodes (29): getCalendarProgress(), getCharacterSecret(), getCachedArchetypes(), getCompendiumAbilities(), getCompendiumArchetypes(), getCompendiumBasicActions(), getCompendiumCalendarEvents(), getCompendiumEkskul() (+21 more)
+Cohesion: 0.15
+Nodes (17): getCachedArchetypes(), getCompendiumAbilities(), getCompendiumArchetypes(), getCompendiumBasicActions(), getCompendiumCalendarEvents(), getCompendiumEkskul(), getCompendiumSocialClasses(), renderBuilderSkeleton() (+9 more)
 
 ### Community 36 - "🌸 PANDUAN CAMPAIGN SESI 1 — PEKAN PERTAMA BULAN APRIL: *THE FIRST ENCOUNTER*"
 Cohesion: 0.07
@@ -264,13 +249,13 @@ Nodes (18): 1. 💖 Affection Tracker & Dynamic Love Interest System (DM Only), 
 Cohesion: 0.14
 Nodes (13): 👑 Catatan Khusus DM (DM Notes - Mode DM Only), Celah Emosional & Kelemahan Batin, Gaya Bicara & Kebiasaan Khas, 👥 Jaringan Relasi (Relationships - Tier 2), Kehidupan di Housen Academy & Klub Ekskul, 🧠 Kepribadian & Sifat (Personality - Tier 2), 📖 Latar Belakang & Kehidupan Klub (Background - Tier 2), Masa Kecil & Keluarga (+5 more)
 
-### Community 42 - "main.ts"
-Cohesion: 0.17
-Nodes (19): attachDmCodexBarEvents(), renderDmCodexBar(), setMobileNavigationOpen(), attachNavbarEvents(), getActivePath(), renderNavbar(), updateNavbarActive(), initApp() (+11 more)
+### Community 42 - "showToast"
+Cohesion: 0.18
+Nodes (15): attachDmCodexBarEvents(), renderDmCodexBar(), attachNavbarEvents(), getActivePath(), renderNavbar(), updateNavbarActive(), showToast(), initApp() (+7 more)
 
-### Community 43 - "auth.ts"
-Cohesion: 0.20
-Nodes (11): getSession(), onAuthStateChange(), signInWithOAuth(), signInWithOtp(), signOut(), buildAuthCallbackUrl(), getProtectedRouteRedirect(), normalizeBasePath() (+3 more)
+### Community 43 - "LandingView.ts"
+Cohesion: 0.06
+Nodes (36): getCurrentUser(), getSession(), onAuthStateChange(), signInWithOAuth(), signInWithOtp(), signOut(), updateProfile(), listMyCharacters (+28 more)
 
 ### Community 46 - "20261008000002_feat_and_achievement_system.sql"
 Cohesion: 0.70
@@ -284,13 +269,13 @@ Nodes (9): 🤝 Batasan Kerja & Kolaborasi dengan Tim Backend, 🎨 Brand Identi
 Cohesion: 0.20
 Nodes (9): 🔒 Aturan Keamanan & Akses Data (CRITICAL & STRICT), 🤝 Batasan Kerja & Kolaborasi dengan Luna (Front-End), Format Laporan Setiap Selesai Tugas, Marcus Vance (Back-End & Database Architect), 🎭 Persona & Gaya Komunikasi, 📜 Protokol Konsistensi Kanon & Database (Housen Academy), 🛠️ Stack Teknologi Backend & Arsitektur Data, 📋 Standar Kode & Protokol Laporan Akhir (+1 more)
 
-### Community 90 - "AchievementAwardModal.ts"
-Cohesion: 0.53
-Nodes (4): ALL_ACHIEVEMENTS, FALLBACK_DD_DATA, ALL_FEATS, AchievementCompendium
+### Community 90 - "vitest"
+Cohesion: 0.20
+Nodes (5): vitest, getCompendiumEquipmentPacks(), ALL_ACHIEVEMENTS, ALL_FEATS, AchievementCompendium
 
 ### Community 91 - "FeatPickerModal.ts"
-Cohesion: 0.17
-Nodes (13): featPickerModal, FeatPickerOptions, checkFeatEligibility(), getAvailableFeats(), grantFeat(), LevelUpChoices, retrainFeat(), takeFeat() (+5 more)
+Cohesion: 0.16
+Nodes (14): featPickerModal, FeatPickerOptions, checkFeatEligibility(), extractAbilityScore(), getAvailableFeats(), grantFeat(), LevelUpChoices, retrainFeat() (+6 more)
 
 ### Community 92 - "Draft Sementara"
 Cohesion: 0.25
@@ -309,52 +294,40 @@ Cohesion: 0.40
 Nodes (4): 1. PANTANGAN KARAKTER FIKTIF SEKALI PAKAI (ANTI-DISPOSABLE CHARACTERS), 2. PROTOKOL PENAMBAHAN KARAKTER BARU (MANDATORY REGISTRATION), 3. STRUKTUR & DEMOGRAFI KELAS, ATURAN PEMBUATAN KARAKTER, KONSISTENSI DATABASE & DEMOGRAFI KELAS
 
 ### Community 100 - "CodexCategoryView.ts"
-Cohesion: 0.15
-Nodes (14): dmBatchIntroduce(), dmBatchLockAll(), dmBatchSetTier(), fetchCodexCategories(), renderCodexSilhouetteSvg(), codexRealtime, CodexRealtimePayload, CodexRevealListener (+6 more)
+Cohesion: 0.14
+Nodes (16): CODEX_HIERARCHY, fetchCodexCategories(), fetchCodexList(), getAllSubcategories(), isCharacterInSubcategory(), resolveCharacterAffiliations(), renderCodexSilhouetteSvg(), codexRealtime (+8 more)
 
 ### Community 102 - "types/index.ts"
-Cohesion: 0.05
-Nodes (38): CharacterMovesSummary, EffectiveCharacterStats, AbilityKey, ArchetypeMoveCompendium, ArchetypeRollBonus, ArchetypeSocialFocus, ArchetypeUniqueTrait, CalendarProgress (+30 more)
+Cohesion: 0.06
+Nodes (32): EffectiveCharacterStats, ArchetypeMoveCompendium, ArchetypeRollBonus, ArchetypeSocialFocus, ArchetypeUniqueTrait, CalendarProgress, Campaign, CampaignMember (+24 more)
 
 ### Community 106 - "migration.ts"
-Cohesion: 0.31
-Nodes (9): migrateCharacter(), migrateCharacters(), migrateCharacterToV3(), MigrationOptions, MigrationResult, normalizeGradeAndLevel(), MAX_LEVEL, MIN_LEVEL (+1 more)
+Cohesion: 0.35
+Nodes (9): migrateCharacter(), migrateCharacters(), migrateCharacterToV3(), MigrationOptions, MigrationResult, normalizeGradeAndLevel(), calculateMaxHp(), getRestDiceCountForLevel() (+1 more)
 
-### Community 107 - "SettingsView.ts"
-Cohesion: 0.29
-Nodes (6): getCurrentUser(), updateProfile(), authStore, Profile, attachSettingsEvents(), renderSettingsView()
-
-### Community 109 - "Character"
-Cohesion: 0.38
-Nodes (3): addLoveInterestModal, escapeHtml(), Character
-
-### Community 110 - "ruleEngine.ts"
-Cohesion: 0.33
-Nodes (8): calculatePointBuyTotal(), calculateProficiencyBonus(), isValidStandardArray(), POINT_BUY_COSTS, rupiahToYen(), STANDARD_ARRAY, yenToRupiah(), initDraftFromCharacter()
-
-### Community 112 - "vitest"
-Cohesion: 0.46
-Nodes (5): vitest, getAllCompendiumItems(), getItemDetails(), MASTER_ITEM_REGISTRY, ItemDefinition
+### Community 110 - "calculateEffectiveStats"
+Cohesion: 0.27
+Nodes (11): calculateEffectiveStats(), getArchetypeStatBonus(), calculateAbilityModifier(), calculateProficiencyBonus(), formatModifier(), POINT_BUY_COSTS, rupiahToYen(), STANDARD_ARRAY (+3 more)
 
 ## Knowledge Gaps
 - **2 isolated node(s):** `@types/three`, `typescript`
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 437 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **62 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 444 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **54 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `vitest` connect `vitest` to `map3DUtils.ts`, `compendium.ts`, `rlsPolicies.test.ts`, `gameRpc.ts`, `CalendarView.ts`, `handbook/index.ts`, `migration.ts`, `auth.ts`, `loveInterests.ts`, `ruleEngine.ts`, `codexSecurity.test.ts`, `progression.ts`, `package.json`, `EditCharacterModal.ts`, `AchievementAwardModal.ts`, `FeatPickerModal.ts`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+- **Why does `vitest` connect `vitest` to `map3DUtils.ts`, `combatActions.ts`, `CodexCategoryView.ts`, `gameRpc.ts`, `CalendarView.ts`, `handbook/index.ts`, `migration.ts`, `characterStore`, `LandingView.ts`, `loveInterests.ts`, `calculateEffectiveStats`, `codexSecurity.test.ts`, `progression.ts`, `package.json`, `FeatPickerModal.ts`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `@types/three`, `typescript` to the rest of the system?**
   _2 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `DamselDesireApp` be split into smaller, more focused modules?**
   _Cohesion score 0.05442329227323628 - nodes in this community are weakly interconnected._
-- **Why does `showToast()` connect `showToast` to `LandingView.ts`, `CalendarView.ts`, `BuilderWizardView.ts`, `CharacterSheetView.ts`, `DmRevealHistoryModal.ts`, `loveInterests.ts`, `achievementAwardModal`, `progression.ts`, `CodexDetailView.ts`, `EditCharacterModal.ts`, `CodexCharacterEditorModal.ts`, `compendium.ts`, `subclassSelectModal`, `quickVitalsPopover`, `addItemModal`, `main.ts`, `auth.ts`, `dmAuthModal`, `AchievementAwardModal.ts`, `FeatPickerModal.ts`, `levelUpWizardModal`, `baitoModal`, `CodexCategoryView.ts`, `savingsModal`, `router`, `backstoryModal`, `SettingsView.ts`, `Character`, `loveInterestDetailModal`, `diceRollerModal`?**
-  _High betweenness centrality (0.034) - this node is a cross-community bridge._
+- **Why does `showToast()` connect `showToast` to `gameRpc.ts`, `CalendarView.ts`, `BuilderWizardView.ts`, `CharacterSheetView.ts`, `characterStore`, `dmRevealHistoryModal`, `loveInterests.ts`, `achievementAwardModal`, `progression.ts`, `api/codex.ts`, `EditCharacterModal.ts`, `CodexCharacterEditorModal.ts`, `compendium.ts`, `subclassSelectModal`, `quickVitalsPopover`, `addItemModal`, `LandingView.ts`, `dmAuthModal`, `vitest`, `FeatPickerModal.ts`, `levelUpWizardModal`, `baitoModal`, `CodexCategoryView.ts`, `backstoryModal`, `diceRollerModal`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Should `map3DUtils.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05659583420997265 - nodes in this community are weakly interconnected._
-- **Why does `dmAuthStore` connect `dmAuthStore` to `CodexCharacterEditorModal.ts`, `CodexCategoryView.ts`, `CalendarView.ts`, `main.ts`, `DmRevealHistoryModal.ts`, `loveInterests.ts`, `CodexDetailView.ts`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+  _Cohesion score 0.056070913213770356 - nodes in this community are weakly interconnected._
+- **Why does `router` connect `LandingView.ts` to `map3DUtils.ts`, `CodexCategoryView.ts`, `CalendarView.ts`, `BuilderWizardView.ts`, `showToast`, `CharacterSheetView.ts`, `loveInterests.ts`, `api/codex.ts`?**
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
 - **Should `all_migrations_combined.sql` be split into smaller, more focused modules?**
   _Cohesion score 0.06801346801346801 - nodes in this community are weakly interconnected._

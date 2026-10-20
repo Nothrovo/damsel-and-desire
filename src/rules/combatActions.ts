@@ -6,73 +6,107 @@ import type {
 
 /**
  * Standard Combat Action Economy for Damsel & Desire (5e Adaptation).
- * Provides 8 core action options across Action, Bonus Action, and Reaction.
+ * Provides core action options across Action, Bonus Action, and Reaction.
  */
 export const STANDARD_COMBAT_ACTIONS: CombatActionDefinition[] = [
   // --- ACTIONS (5) ---
   {
     id: "action_unarmed_strike",
-    name: "Pukulan/Serangan Fisik (Unarmed Strike)",
+    name: "Pukulan Cepat & Jab (Quick Jab / Unarmed Strike)",
     actionType: "action",
     category: "combat",
+    moveKind: "physical",
     cost: "Action",
-    check: "Physique / Power (vs Guard Fisik Target)",
+    check: "Physique / Power (+1 to-hit bonus)",
     effect: "1d4 + Mod Physique Physical Damage",
-    description: "Pukulan mentah, tamparan, atau tendangan kuat saat adu fisik jarak dekat.",
+    damageDie: "1d4",
+    statKey: "physique",
+    rollBonus: 1,
+    pros: "Akurat & Cepat: Mendapat bonus +1 pada Attack Check.",
+    cons: "Plafon damage lebih rendah dibanding tendangan berat (1d4 vs 1d6).",
+    clearEffect: "Disorientasi: Jika serangan kena, target menderita penalti -1 pada d20 lemparan aksi pertamanya di giliran berikutnya.",
+    description: "Tinju mentah atau tamparan presisi yang mengincar celah pertahanan lawan untuk merusak ritmenya.",
     range: "Melee (5 ft)"
   },
   {
     id: "action_shove",
-    name: "Dorongan Kuat (Shove)",
+    name: "Dorongan Taktis (Tactical Shove)",
     actionType: "action",
     category: "combat",
+    moveKind: "physical",
     cost: "Action",
     check: "Physique / Power vs Target Physique Save",
-    effect: "Target terdorong 5 ft atau jatuh Prone",
+    effect: "1d4 Physical Damage & Target terdorong 10 ft / jatuh Prone",
+    damageDie: "1d4",
+    statKey: "physique",
+    pros: "Merusak Formasi: Mendorong lawan 10 ft atau menjatuhkannya tersungkur (Prone).",
+    cons: "Tanpa Bonus Mod: Damage murni 1d4 tanpa tambahan modifier Physique.",
+    clearEffect: "Target terdorong 10 ft menjauhi penyerang ATAU tersungkur Prone (serangan melee sekutu dapat Advantage).",
     description: "Mendorong lawan dengan kedua tangan penuh tenaga untuk merusak posisi berdirinya.",
     range: "Melee (5 ft)"
   },
   {
     id: "action_dodge_guard",
-    name: "Tangkis & Bertahan (Dodge & Guard)",
+    name: "Kuda-Kuda Tangkis & Balas (Guard & Counter Stance)",
     actionType: "action",
     category: "defense",
+    moveKind: "physical",
     cost: "Action",
     check: "Otomatis",
-    effect: "+2 Physical & Social Guard (AC) hingga awal giliranmu berikutnya",
+    effect: "+3 Physical Guard (PAC) & Buka Reaksi Counter Jab",
+    pros: "Pertahanan Kokoh: Memberikan +3 Guard fisik (AC) hingga awal giliran berikutnya.",
+    cons: "Pasif: Tidak melancarkan serangan aktif pada gilirannya sendiri.",
+    clearEffect: "Jika diserang jarak dekat dan musuh meleset, pengguna dapat menggunakan Reaction untuk melancarkan 1 Counter Jab instan.",
     description: "Memasang kuda-kuda rapat dan memfokuskan pertahanan terhadap semua serangan."
   },
   {
     id: "action_help_support",
-    name: "Bantuan & Dukungan (Help / Support)",
+    name: "Sorakan Semangat & Wingman (Help / Support Cheer)",
     actionType: "action",
     category: "social",
+    moveKind: "social",
     cost: "Action",
-    check: "Mind / Interpersonal (atau Sub-Skill relevan)",
-    effect: "Memberikan Advantage pada roll check berikutnya milik 1 sekutu",
+    check: "Mind / Interpersonal (DC 10)",
+    effect: "Pulihkan 1d4 + Mod Mind Composure & Beri Advantage",
+    damageDie: "1d4",
+    statKey: "mind",
+    isHeal: true,
+    pros: "Support Kuat: Memulihkan Composure sekutu dan memberi Advantage.",
+    cons: "Tidak menghasilkan damage pada musuh.",
+    clearEffect: "Memulihkan Composure 1 sekutu (1d4 + Mod Mind) dan memberi Advantage pada roll check d20 berikutnya milik sekutu tersebut.",
     description: "Memberikan arahan taktis, memegangi objek, atau membantu teman secara langsung.",
     range: "30 ft"
   },
   {
     id: "action_disengage",
-    name: "Kabur & Menghindar (Disengage)",
+    name: "Mundur Teratur (Tactical Disengage & Dash)",
     actionType: "action",
     category: "movement",
+    moveKind: "physical",
     cost: "Action",
     check: "Physique / Agility",
-    effect: "Gerakanmu tidak memicu Opportunity Attack selama ronde ini",
+    effect: "Gerakanmu tidak memicu Opportunity Attack selama ronde ini & +10 ft Movement",
+    pros: "Mobilitas Aman: Gerakan tidak memicu Opportunity Attack dan langkah +10 ft.",
+    cons: "Menggunakan seluruh Action utama tanpa menghasilkan damage.",
+    clearEffect: "Mundur tanpa risiko serang balik dan memposisikan ulang diri di medan tempur.",
     description: "Mundur dengan langkah cerdas memanfaatkan celah pergerakan lawan."
   },
 
   // --- BONUS ACTIONS (2) ---
   {
     id: "action_social_remark",
-    name: "Ucapkan Kata-Kata / Gestur Sosial (Social Remark)",
+    name: "Sindiran Pedas & Provokasi (Sharp Taunt & Social Remark)",
     actionType: "bonus_action",
     category: "social",
+    moveKind: "social",
     cost: "Bonus Action",
-    check: "Sub-Skill Sosial (Charm / Aura / People / Interpersonal vs Target Mind Save / DC)",
-    effect: "Fleksibel (DM Menentukan Outcome)",
+    check: "Intelligent / People vs Target Mind Save",
+    effect: "1d4 + Mod Intelligent Composure Damage & Target Terprovokasi",
+    damageDie: "1d4",
+    statKey: "intelligent",
+    pros: "Hanya Bonus Action: Bisa digabung dengan aksi fisik di giliran yang sama.",
+    cons: "Target Terpancing: Menjadi sasaran utama serangan musuh.",
+    clearEffect: "Target terprovokasi dan wajib menyerangmu pada gilirannya, namun dengan Disadvantage karena emosi meluap.",
     description: "Melontarkan ejekan/sindiran, tatapan intimidasi, rayuan singkat, atau teriakan penyemangat di sela aksi.",
     range: "30 ft"
   },
@@ -81,26 +115,188 @@ export const STANDARD_COMBAT_ACTIONS: CombatActionDefinition[] = [
     name: "Gunakan Barang / Konsumsi (Use Item / Consume)",
     actionType: "bonus_action",
     category: "utility",
+    moveKind: "utility",
     cost: "Bonus Action",
     check: "Otomatis",
-    effect: "Meminum minuman kemasan, memakan bekal/permen, atau menggunakan peralatan kecil dari saku/tas",
+    effect: "Meminum minuman kemasan, memakan bekal/permen, atau menggunakan peralatan kecil",
+    pros: "Aksi Cepat: Menerapkan efek consumable tanpa menghabiskan Action utama.",
+    cons: "Membutuhkan ketersediaan item di inventaris tas/saku.",
+    clearEffect: "Mengonsumsi 1 item dari tas sekolah untuk memulihkan stamina atau memicu efek khusus item.",
     description: "Aksi praktis mengambil dan menggunakan item konsumsi ringan di tengah pertempuran atau eksplorasi."
   },
 
   // --- REACTIONS (1) ---
   {
     id: "action_opportunity_attack",
-    name: "Serangan Kesempatan (Opportunity Attack)",
+    name: "Serangan Kesempatan (Opportunity Strike)",
     actionType: "reaction",
     category: "combat",
+    moveKind: "physical",
     cost: "Reaction",
     check: "Physique / Power (vs Guard Fisik Target)",
-    effect: "Lakukan 1 kali Unarmed Strike (1d4 + Mod Physique) atau serangan senjata jarak dekat standar.",
+    effect: "1d4 + Mod Physique Physical Damage & Kurangi Speed Musuh 10 ft",
+    damageDie: "1d4",
+    statKey: "physique",
+    pros: "Menyerang di Luar Giliran: Menggunakan giliran musuh yang mencoba kabur.",
+    cons: "Mengonsumsi slot Reaction satu-satunya untuk ronde ini.",
+    clearEffect: "Jika mengenai target, sisa kecepatan gerak musuh berkurang 10 ft pada giliran ini.",
     description: "Memanfaatkan kelengahan lawan saat mereka mencoba kabur atau berpindah posisi di dekatmu.",
     range: "Melee (5 ft)",
     trigger: "Saat musuh yang berada dalam jangkauan jarak dekatmu bergerak keluar dari area jangkauanmu tanpa menggunakan aksi Disengage."
   }
 ];
+
+export const STANDARD_PHYSICAL_MOVES: CombatActionDefinition[] = [
+  STANDARD_COMBAT_ACTIONS[0], // action_unarmed_strike (Quick Jab)
+  {
+    id: "action_heavy_kick",
+    name: "Tendangan Berbobot (Heavy Roundhouse Kick)",
+    actionType: "action",
+    category: "combat",
+    moveKind: "physical",
+    cost: "Action",
+    check: "Physique / Agility (vs Guard Fisik Target)",
+    effect: "1d6 + Mod Physique Physical Damage & Potensi Knockback",
+    damageDie: "1d6",
+    statKey: "physique",
+    pros: "Daya Hancur Tinggi: Dadu 1d6 dan berpotensi memicu Knockback.",
+    cons: "Overcommit: Jika lemparan meleset dengan selisih 4 atau lebih dari Guard target, kamu kena penalti -1 AC hingga awal giliranmu berikutnya.",
+    clearEffect: "Knockback: Jika damage minimal 3, target terdorong mundur 5 ft dan kehilangan posisi stabil (DC 11 Physique save atau kehilangan hak Reaction).",
+    description: "Tendangan tumit atau tendangan memutar bertenaga penuh mengincar pinggang atau pelipis lawan.",
+    range: "Melee (5 ft)"
+  },
+  {
+    id: "action_grapple",
+    name: "Kuncian & Bantingan (Grapple & Takedown)",
+    actionType: "action",
+    category: "combat",
+    moveKind: "physical",
+    cost: "Action",
+    check: "Physique / Power vs Target Physique Save",
+    effect: "1d4 + Mod Physique Physical Damage & Target Restrained",
+    damageDie: "1d4",
+    statKey: "physique",
+    pros: "Kontrol Penuh: Menahan lawan agar tidak bisa melarikan diri.",
+    cons: "Terkunci: Pengguna harus tetap berada di samping target dan tidak bisa menendang berat selama kuncian aktif.",
+    clearEffect: "Restrained: Kecepatan gerak target menjadi 0 ft. Serangan jarak dekat sekutu ke arah target mendapat Advantage.",
+    description: "Mencengkeram kerah baju lawan, memelintir lengannya, atau membantingnya ke lantai.",
+    range: "Melee (5 ft)"
+  },
+  STANDARD_COMBAT_ACTIONS[1], // action_shove (Tactical Shove)
+  STANDARD_COMBAT_ACTIONS[2], // action_dodge_guard (Guard & Counter)
+  STANDARD_COMBAT_ACTIONS[4], // action_disengage (Tactical Disengage)
+  STANDARD_COMBAT_ACTIONS[7]  // action_opportunity_attack (Opportunity Strike)
+];
+
+export const STANDARD_SOCIAL_MOVES: CombatActionDefinition[] = [
+  STANDARD_COMBAT_ACTIONS[5], // action_social_remark (Sharp Taunt)
+  {
+    id: "action_menacing_stare",
+    name: "Tatapan Dingin Berandal (Menacing Stare / Men-tsuke)",
+    actionType: "action",
+    category: "social",
+    moveKind: "social",
+    cost: "Action",
+    check: "Looks / Aura vs Target Mind Save",
+    effect: "1d6 + Mod Looks Composure Damage & Target Rattled",
+    damageDie: "1d6",
+    statKey: "looks",
+    pros: "Meruntuhkan Nyali: Composure damage tinggi dan membuat lawan ragu.",
+    cons: "Kebal Jika Gagal: Jika target berhasil menahan (Save berhasil), target menjadi kebal intimidasi dari karaktermu selama sisa pertempuran.",
+    clearEffect: "Rattled: Target mengalami kegentaran batin (Disadvantage pada lemparan aksi berikutnya selama 1 ronde).",
+    description: "Menatap tajam dengan sorot mata dingin khas berandal Housen yang menusuk langsung ke rasa percaya diri lawan.",
+    range: "20 ft (Pandangan)"
+  },
+  {
+    id: "action_charming_flirt",
+    name: "Senyuman Pemikat / Salting (Charming Banter & Witty Flirt)",
+    actionType: "action",
+    category: "social",
+    moveKind: "social",
+    cost: "Action",
+    check: "Looks / Charm vs Target Mind Save",
+    effect: "1d6 + Mod Looks Composure Damage & Target Flustered",
+    damageDie: "1d6",
+    statKey: "looks",
+    pros: "Membuat Salting: Menguras Composure dan melumpuhkan Reaction musuh.",
+    cons: "Hanya Efektif pada Target Sadar: Tidak mempan pada lawan yang sedang Berserk atau hilang kesadaran.",
+    clearEffect: "Flustered: Target salah tingkah, kehilangan Reaction miliknya ronde ini, dan memberi Advantage pada negosiasi sosial berikutnya.",
+    description: "Melontarkan rayuan manis, kedipan mata, atau senyuman percaya diri yang membuat degup jantung target berdebar kencang.",
+    range: "15 ft"
+  },
+  STANDARD_COMBAT_ACTIONS[3], // action_help_support (Support Cheer)
+  {
+    id: "action_deescalate",
+    name: "De-eskalasi & Mediasi Dingin (De-escalate & Truce Call)",
+    actionType: "action",
+    category: "social",
+    moveKind: "social",
+    cost: "Action",
+    check: "Mind / Composure vs DC 12",
+    effect: "+2 Social Guard (SAC) Seluruh Sekutu & Damage Reduction 2 Poin",
+    pros: "Proteksi Mental Tim: Memberikan +2 SAC ke semua teman dan mengurangi Composure Damage yang masuk.",
+    cons: "Membatalkan provokasi atau taunt yang sedang aktif di lapangan.",
+    clearEffect: "Mendinginkan tensi pertempuran; seluruh sekutu dalam jarak 20 ft mendapat +2 SAC dan menyerap 2 Composure Damage selama 1 ronde.",
+    description: "Mengangkat tangan dengan tenang, menenangkan kedua pihak yang bersitegang, dan menghentikan eskalasi keributan sebelum guru datang.",
+    range: "20 ft (Area)"
+  }
+];
+
+export function getStatModifierFromScore(score: number): number {
+  return Math.floor(((score || 10) - 10) / 2);
+}
+
+export interface MoveRollParameters {
+  checkDie: string;
+  checkMod: number;
+  checkLabel: string;
+  damageDie?: string;
+  damageMod?: number;
+  damageLabel?: string;
+  isHeal?: boolean;
+}
+
+export function resolveMoveRollParameters(
+  move: CombatActionDefinition | any,
+  charStats?: Record<string, number>
+): MoveRollParameters {
+  const stats = charStats || {};
+  const statKey = move.statKey || (move.category === "basic_social" || move.category === "social" ? "looks" : "physique");
+  const statScore = stats[statKey] ?? 10;
+  const baseStatMod = getStatModifierFromScore(statScore);
+
+  const rollBonus = move.rollBonus || 0;
+  const checkMod = baseStatMod + rollBonus;
+  const checkLabel = `${move.name} (Check: ${move.check || 'd20'})`;
+
+  let damageDie = move.damageDie || (move.damage && String(move.damage).match(/(\d*d\d+)/)?.[1]) || undefined;
+  if (!damageDie && move.effect && String(move.effect).match(/(\d*d\d+)/)) {
+    damageDie = String(move.effect).match(/(\d*d\d+)/)?.[1];
+  }
+  if (damageDie && damageDie.startsWith("d")) {
+    damageDie = "1" + damageDie;
+  }
+  // If no die found but move does damage (e.g. flat damage or standard)
+  if (!damageDie && (move.moveKind === "physical" || move.moveKind === "social") && !move.isHeal && move.category !== "defense" && move.category !== "movement") {
+    damageDie = "1d4";
+  }
+
+  const damageMod = move.id === "action_shove" ? 0 : baseStatMod;
+  const damageDieClean = damageDie ? damageDie.replace(/^1/, "") : undefined;
+  const damageLabel = move.isHeal
+    ? `Pemulihan: ${move.name}`
+    : `Damage/Efek: ${move.name}`;
+
+  return {
+    checkDie: "d20",
+    checkMod,
+    checkLabel,
+    damageDie: damageDieClean,
+    damageMod,
+    damageLabel,
+    isHeal: Boolean(move.isHeal)
+  };
+}
 
 /**
  * Calculates standard saving throw DC using D&D 5e formula:

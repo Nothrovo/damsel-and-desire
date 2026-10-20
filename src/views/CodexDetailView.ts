@@ -6,7 +6,9 @@ import {
   dmIntroduce,
   dmLockAll,
   dmUpsertCharacter,
-  resolvePortraitUrl
+  resolvePortraitUrl,
+  resolveCharacterAffiliations,
+  getAllSubcategories
 } from "../api/codex";
 import { dmAuthStore } from "../store/dmAuthStore";
 import { dmAuthModal } from "../components/DmAuthModal";
@@ -163,13 +165,22 @@ function renderRevealedCharacter(container: HTMLElement, char: any, isDmActive: 
   const catName = catLabels[char.category_id] || (char.category_id?.startsWith("class_") ? `Kelas ${char.category_id.replace("class_", "").replace("_", "-")}` : "Daftar Direktori");
   const isMale = String(identity.gender || "").toLowerCase() === "male";
 
+  const charAffiliations = char.affiliations || resolveCharacterAffiliations(char);
+  const allSubs = getAllSubcategories();
+  const affiliationBadges = charAffiliations.map((affId: string) => {
+    const sub = allSubs.find(s => s.id === affId);
+    if (!sub) return "";
+    return `<a href="/codex/${sub.id}" style="text-decoration:none;font-size:0.72rem;padding:3px 10px;border-radius:var(--radius-full);background:rgba(255,255,255,0.06);border:1px solid var(--border-subtle);color:var(--text-main);display:inline-flex;align-items:center;gap:4px;">${sub.icon} ${sub.shortLabel || sub.name}</a>`;
+  }).filter(Boolean).join("");
+
   container.innerHTML = `
     <!-- Top Back Link & Category -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
       <button type="button" id="btnCodexBack" style="background:none;border:none;color:var(--text-muted);font-size:0.9rem;display:flex;align-items:center;gap:6px;cursor:pointer;padding:0;">
         <span>← Kembali ke ${catName}</span>
       </button>
-      <div style="display:flex;gap:8px;align-items:center;">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+        ${affiliationBadges}
         ${char.is_love_interest && !isMale ? `
           <span style="background:var(--rose-primary);color:#fff;font-size:0.75rem;padding:4px 12px;border-radius:var(--radius-full);font-weight:700;letter-spacing:0.04em;">
             ♥ HEROINE & LOVE INTEREST

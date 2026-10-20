@@ -63,6 +63,9 @@ import {
 } from "../rules/progression";
 import {
   STANDARD_COMBAT_ACTIONS,
+  STANDARD_PHYSICAL_MOVES,
+  STANDARD_SOCIAL_MOVES,
+  resolveMoveRollParameters,
   calculateCombatSaveDC,
   getArchetypeReworkData,
   getSocialClassReworkData
@@ -84,6 +87,7 @@ import {
 } from "../types";
 
 interface MoveItem {
+  id?: string;
   name: string;
   category: "basic_combat" | "basic_social" | "club_move" | "subclass_move" | "archetype_move" | string;
   actionType?: "action" | "bonus_action" | "reaction" | "free_action";
@@ -96,6 +100,14 @@ interface MoveItem {
   isLocked?: boolean;
   lockReason?: string;
   unlockGrade?: number;
+  moveKind?: "physical" | "social" | "defense" | "utility";
+  pros?: string;
+  cons?: string;
+  clearEffect?: string;
+  damageDie?: string;
+  statKey?: string;
+  rollBonus?: number;
+  isHeal?: boolean;
 }
 
 // Module-level state for the active sheet session
@@ -680,14 +692,17 @@ function renderDndBeyondSheet(container: HTMLElement, char: Character) {
                 </div>
               </div>
 
-              <div class="moves-filter-bar">
-                <button class="filter-pill ${activeMoveFilter === 'all' ? 'active' : ''}" data-filter="all">ALL</button>
+              <div class="moves-filter-bar" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:1rem;">
+                <button class="filter-pill ${activeMoveFilter === 'all' ? 'active' : ''}" data-filter="all">SEMUA</button>
+                <button class="filter-pill ${activeMoveFilter === 'physical' ? 'active' : ''}" data-filter="physical" style="border-color:#38bdf8;font-weight:700;">🥋 MOVE FISIK</button>
+                <button class="filter-pill ${activeMoveFilter === 'social' ? 'active' : ''}" data-filter="social" style="border-color:#f472b6;font-weight:700;">💬 MOVE SOSIAL</button>
+                <button class="filter-pill ${activeMoveFilter === 'club_move' ? 'active' : ''}" data-filter="club_move">🏆 EKSKUL</button>
+                <button class="filter-pill ${activeMoveFilter === 'subclass_move' ? 'active' : ''}" data-filter="subclass_move">🎓 SUBCLASS</button>
+                <button class="filter-pill ${activeMoveFilter === 'archetype_move' ? 'active' : ''}" data-filter="archetype_move">✨ ARCHETYPE</button>
+                <span style="border-left:1px solid var(--border-subtle);margin:0 4px;height:18px;"></span>
                 <button class="filter-pill ${activeMoveFilter === 'action' ? 'active' : ''}" data-filter="action">⚔️ ACTION</button>
-                <button class="filter-pill ${activeMoveFilter === 'bonus_action' ? 'active' : ''}" data-filter="bonus_action">⚡ BONUS ACTION</button>
+                <button class="filter-pill ${activeMoveFilter === 'bonus_action' ? 'active' : ''}" data-filter="bonus_action">⚡ BONUS</button>
                 <button class="filter-pill ${activeMoveFilter === 'reaction' ? 'active' : ''}" data-filter="reaction">🛡️ REACTION</button>
-                <button class="filter-pill ${activeMoveFilter === 'club_move' ? 'active' : ''}" data-filter="club_move">CLUB MOVES</button>
-                <button class="filter-pill ${activeMoveFilter === 'subclass_move' ? 'active' : ''}" data-filter="subclass_move">SUBCLASS</button>
-                <button class="filter-pill ${activeMoveFilter === 'archetype_move' ? 'active' : ''}" data-filter="archetype_move">ARCHETYPE</button>
               </div>
               <div class="moves-list" id="sheetMovesList">
                 ${renderMovesList(char, activeMoveFilter)}
@@ -951,16 +966,26 @@ function renderMovesList(char: Character, filter: string): string {
   // Basic Actions
   compBasicActions.forEach(b => {
     const actType = (b as any).action_type || (b as any).actionType || resolveActionType(b.cost, "action");
+    const moveKind = (b as any).moveKind || ((b.category === "basic_social" || (b as any).category === "social") ? "social" : "physical");
     moves.push({
+      id: b.id,
       name: b.name,
       category: b.category as any,
       actionType: actType,
       cost: b.cost || "Action",
-      type: `${b.cost || 'Action'} [${b.category === "basic_combat" ? "Fisik" : b.category === "basic_social" ? "Sosial" : "Dasar"}]`,
+      type: `${b.cost || 'Action'} [${moveKind === "physical" ? "Fisik" : "Sosial"}]`,
       range: (b as any).range || "Melee (5 ft)",
       check: b.check_type || (b as any).check || "Physique / Power",
       damage: b.effect || (b as any).damage || "-",
-      desc: b.description || (b as any).desc || ""
+      desc: b.description || (b as any).desc || "",
+      moveKind,
+      pros: (b as any).pros,
+      cons: (b as any).cons,
+      clearEffect: (b as any).clearEffect || (b as any).effect,
+      damageDie: (b as any).damageDie,
+      statKey: (b as any).statKey,
+      rollBonus: (b as any).rollBonus,
+      isHeal: (b as any).isHeal
     });
   });
 
@@ -970,6 +995,7 @@ function renderMovesList(char: Character, filter: string): string {
     arcMoves.forEach((m: any) => {
       const actType = resolveActionType(m.cost || m.move_type, "action");
       moves.push({
+        id: m.id,
         name: m.name,
         category: "archetype_move",
         actionType: actType,
@@ -978,7 +1004,9 @@ function renderMovesList(char: Character, filter: string): string {
         range: m.range || "Self / Pandangan",
         check: m.check_type || m.check || "Otomatis",
         damage: m.effect || m.damage || "-",
-        desc: m.description || m.desc || ""
+        desc: m.description || m.desc || "",
+        moveKind: (m.name.includes("Bicara") || m.name.includes("Social") || m.name.includes("Aura")) ? "social" : "physical",
+        clearEffect: m.description || m.desc || ""
       });
     });
   }
@@ -991,6 +1019,7 @@ function renderMovesList(char: Character, filter: string): string {
       const isLocked = charGrade < unlockGrade;
       const actType = resolveActionType(m.cost || m.move_type, "action");
       moves.push({
+        id: m.id,
         name: m.name,
         category: "club_move",
         actionType: actType,
@@ -1002,7 +1031,9 @@ function renderMovesList(char: Character, filter: string): string {
         desc: m.description || m.desc || "",
         isLocked,
         lockReason: isLocked ? `Terkunci (Terbuka di Kelas ${unlockGrade})` : undefined,
-        unlockGrade
+        unlockGrade,
+        moveKind: (m.name.includes("Bicara") || m.name.includes("Pesona") || m.name.includes("Sosial")) ? "social" : "physical",
+        clearEffect: m.description || m.desc || ""
       });
     });
   }
@@ -1015,6 +1046,7 @@ function renderMovesList(char: Character, filter: string): string {
         const isLocked = charGrade < unlockGrade;
         const actType = resolveActionType(sm.cost || sm.move_type, "action");
         moves.push({
+          id: sm.id,
           name: sm.name,
           category: "subclass_move",
           actionType: actType,
@@ -1026,7 +1058,9 @@ function renderMovesList(char: Character, filter: string): string {
           desc: sm.description || "",
           isLocked,
           lockReason: isLocked ? `Terkunci (Terbuka di Kelas ${unlockGrade})` : undefined,
-          unlockGrade
+          unlockGrade,
+          moveKind: (sm.name.includes("Sosial") || sm.name.includes("Pesona")) ? "social" : "physical",
+          clearEffect: sm.description || ""
         });
       });
     } else if (!char.subclass_id && curEkskul.subclasses) {
@@ -1035,6 +1069,7 @@ function renderMovesList(char: Character, filter: string): string {
         (sc.subclass_moves || []).forEach(sm => {
           const actType = resolveActionType(sm.cost || sm.move_type, "action");
           moves.push({
+            id: sm.id,
             name: sm.name,
             category: "subclass_move",
             actionType: actType,
@@ -1046,7 +1081,9 @@ function renderMovesList(char: Character, filter: string): string {
             desc: sm.description || "",
             isLocked: true,
             lockReason: `Peminatan ${sc.name} Belum Dipilih`,
-            unlockGrade: sm.unlock_grade || (sm.tier === "G12" ? 12 : 11)
+            unlockGrade: sm.unlock_grade || (sm.tier === "G12" ? 12 : 11),
+            moveKind: (sm.name.includes("Sosial") || sm.name.includes("Pesona")) ? "social" : "physical",
+            clearEffect: sm.description || ""
           });
         });
       });
@@ -1056,6 +1093,10 @@ function renderMovesList(char: Character, filter: string): string {
   if (filter !== "all") {
     if (filter === "action" || filter === "bonus_action" || filter === "reaction") {
       moves = moves.filter(m => m.actionType === filter);
+    } else if (filter === "physical" || filter === "basic_combat") {
+      moves = moves.filter(m => m.moveKind === "physical" || m.category === "basic_combat");
+    } else if (filter === "social" || filter === "basic_social") {
+      moves = moves.filter(m => m.moveKind === "social" || m.category === "basic_social");
     } else {
       moves = moves.filter(m => m.category === filter);
     }
@@ -1067,12 +1108,15 @@ function renderMovesList(char: Character, filter: string): string {
     return `<p style="color:var(--text-muted);text-align:center;padding:1.5rem;">Tidak ada aksi dalam kategori ini.</p>`;
   }
 
+  const effectiveAbilities = calculateEffectiveStats(char).abilities;
+
   return moves.map((m, idx) => {
+    const rollParams = resolveMoveRollParameters(m, effectiveAbilities as any);
     const categoryColor = m.category === "club_move" ? "#fda4af"
       : m.category === "subclass_move" ? "#f43f5e"
       : m.category === "archetype_move" ? "#c4b5fd"
-      : m.category === "basic_combat" ? "#60a5fa"
-      : "#86efac";
+      : m.moveKind === "social" ? "#f472b6"
+      : "#38bdf8";
 
     const actionBadgeBg = m.actionType === "bonus_action" ? "rgba(245,158,11,0.18)"
       : m.actionType === "reaction" ? "rgba(139,92,246,0.18)"
@@ -1092,6 +1136,9 @@ function renderMovesList(char: Character, filter: string): string {
             <span class="badge" style="background:${actionBadgeBg};color:${actionBadgeColor};border:1px solid ${actionBadgeColor}44;font-size:0.68rem;padding:2px 6px;border-radius:4px;font-weight:700;">
               ${actionBadgeIcon} ${escapeHtml(m.cost || (m.actionType ? m.actionType.replace('_', ' ').toUpperCase() : 'ACTION'))}
             </span>
+            <span class="badge" style="background:${m.moveKind === 'physical' ? 'rgba(56,189,248,0.15)' : 'rgba(244,114,182,0.15)'};color:${m.moveKind === 'physical' ? '#38bdf8' : '#f472b6'};border:1px solid ${m.moveKind === 'physical' ? '#38bdf844' : '#f472b644'};font-size:0.65rem;padding:2px 6px;border-radius:4px;font-weight:700;">
+              ${m.moveKind === 'physical' ? '🥋 FISIK' : '💬 SOSIAL'}
+            </span>
           </div>
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             ${m.isLocked ? `
@@ -1107,7 +1154,34 @@ function renderMovesList(char: Character, filter: string): string {
           <span><strong>Check:</strong> ${escapeHtml(m.check)}</span>
           <span><strong>Efek:</strong> ${escapeHtml(m.damage)}</span>
         </div>
-        <p class="move-desc" style="${m.isLocked ? 'color:var(--text-muted);font-style:italic;' : ''}">${escapeHtml(m.desc)}</p>
+
+        ${(m.pros || m.cons) ? `
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin:0.5rem 0 0.25rem 0;font-size:0.75rem;">
+            ${m.pros ? `<span style="background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.3);padding:2px 8px;border-radius:var(--radius-sm);line-height:1.4;">👍 ${escapeHtml(m.pros)}</span>` : ''}
+            ${m.cons ? `<span style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:2px 8px;border-radius:var(--radius-sm);line-height:1.4;">⚠️ ${escapeHtml(m.cons)}</span>` : ''}
+          </div>
+        ` : ''}
+
+        ${m.clearEffect ? `
+          <div style="font-size:0.78rem;color:var(--amber-gold);background:rgba(245,158,11,0.08);padding:4px 8px;border-radius:var(--radius-sm);margin-top:0.35rem;border-left:2px solid var(--amber-gold);line-height:1.4;">
+            ✦ ${escapeHtml(m.clearEffect)}
+          </div>
+        ` : ''}
+
+        <p class="move-desc" style="${m.isLocked ? 'color:var(--text-muted);font-style:italic;' : ''};margin-top:0.4rem;font-size:0.83rem;">${escapeHtml(m.desc)}</p>
+
+        ${!m.isLocked ? `
+          <div class="move-card-actions-bar" style="margin-top:0.6rem;padding-top:0.5rem;border-top:1px dashed var(--border-subtle);display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="btn btn-xs btn-move-roll-check" data-move-idx="${idx}" style="background:rgba(245,158,11,0.12);border:1px solid var(--amber-gold);color:var(--amber-gold);font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;">
+              <span>🎲 Check (${rollParams.checkMod >= 0 ? '+' : ''}${rollParams.checkMod})</span>
+            </button>
+            ${rollParams.damageDie ? `
+              <button type="button" class="btn btn-xs btn-move-roll-damage" data-move-idx="${idx}" style="background:${rollParams.isHeal ? 'rgba(244,114,182,0.15)' : 'rgba(225,29,72,0.15)'};border:1px solid ${rollParams.isHeal ? '#f472b6' : 'var(--rose-primary)'};color:${rollParams.isHeal ? '#f472b6' : 'var(--rose-light)'};font-weight:700;display:inline-flex;align-items:center;gap:4px;border-radius:var(--radius-sm);padding:3px 8px;cursor:pointer;">
+                <span>${rollParams.isHeal ? '💖 Pulihkan' : '💥 Roll'}: ${rollParams.damageDie}${rollParams.damageMod ? (rollParams.damageMod >= 0 ? '+' + rollParams.damageMod : rollParams.damageMod) : ''}</span>
+              </button>
+            ` : ''}
+          </div>
+        ` : ''}
       </div>
     `;
   }).join("");
@@ -1533,12 +1607,18 @@ function renderFeatsTabContent(char: Character, isDmUnlocked: boolean): string {
 }
 
 function openMoveDrawer(m: MoveItem, char: Character) {
+  const effectiveAbilities = calculateEffectiveStats(char).abilities;
+  const rollParams = resolveMoveRollParameters(m, effectiveAbilities as any);
   const statsList = [
     { label: "Biaya Aksi", value: m.cost || (m.actionType ? m.actionType.replace('_', ' ').toUpperCase() : "Action") },
+    { label: "Kategori", value: m.moveKind === "social" ? "💬 Move Sosial" : "🥋 Move Fisik" },
     { label: "Jarak / Range", value: m.range },
-    { label: "Check Dadu", value: m.check, accent: true },
+    { label: "Check Dadu", value: `${m.check} (Mod: ${rollParams.checkMod >= 0 ? '+' : ''}${rollParams.checkMod})`, accent: true },
     { label: "Efek / Damage", value: m.damage }
   ];
+  if (m.pros) statsList.push({ label: "Kelebihan Taktis (+)", value: m.pros });
+  if (m.cons) statsList.push({ label: "Kekurangan / Risiko (-)", value: m.cons });
+
   slideOverDrawer.open({
     title: m.name,
     category: m.category.replace(/_/g, " "),
@@ -1550,29 +1630,56 @@ function openMoveDrawer(m: MoveItem, char: Character) {
     badge: m.type,
     subtitle: m.isLocked ? m.lockReason : undefined,
     stats: statsList,
-    flavor: `Aksi atau jurus khusus siswa Housen Academy (${m.type}).`,
+    flavor: m.clearEffect ? `✦ ${m.clearEffect}` : `Aksi atau jurus khusus siswa Housen Academy (${m.type}).`,
     mechanics: m.desc,
     actions: m.isLocked ? [] : [
       {
-        label: `🎲 Lempar Dadu Check: ${m.check}`,
+        label: `🎲 Lempar Check: ${rollParams.checkLabel} (${rollParams.checkMod >= 0 ? '+' : ''}${rollParams.checkMod})`,
         variant: "primary",
         icon: "🎲",
         onClick: () => {
-          diceRollerModal.show("d20", 0, `Move: ${m.name} (${m.check})`);
+          diceRollerModal.show("d20", rollParams.checkMod, rollParams.checkLabel);
         }
-      }
+      },
+      ...(rollParams.damageDie ? [{
+        label: `${rollParams.isHeal ? "💖 Lempar Pemulihan" : "💥 Lempar Damage/Efek"}: ${rollParams.damageDie}${rollParams.damageMod ? (rollParams.damageMod >= 0 ? '+' + rollParams.damageMod : rollParams.damageMod) : ''}`,
+        variant: "secondary" as const,
+        icon: rollParams.isHeal ? "💖" : "💥",
+        onClick: () => {
+          diceRollerModal.show(rollParams.damageDie!, rollParams.damageMod || 0, rollParams.damageLabel || m.name);
+        }
+      }] : [])
     ]
   });
 }
 
 function attachMoveCardEvents(container: HTMLElement, char: Character) {
+  const effectiveAbilities = calculateEffectiveStats(char).abilities;
+
   container.querySelectorAll(".move-card-interactive").forEach((card: any) => {
-    card.addEventListener("click", () => {
-      const idx = Number(card.dataset.moveIdx);
-      const move = activeRenderedMoves[idx];
-      if (move) {
-        openMoveDrawer(move, char);
+    const idx = Number(card.dataset.moveIdx);
+    const move = activeRenderedMoves[idx];
+    if (!move) return;
+
+    const rollParams = resolveMoveRollParameters(move, effectiveAbilities as any);
+
+    // Direct check roll button
+    card.querySelector(".btn-move-roll-check")?.addEventListener("click", (e: Event) => {
+      e.stopPropagation();
+      diceRollerModal.show("d20", rollParams.checkMod, rollParams.checkLabel);
+    });
+
+    // Direct damage roll button
+    card.querySelector(".btn-move-roll-damage")?.addEventListener("click", (e: Event) => {
+      e.stopPropagation();
+      if (rollParams.damageDie) {
+        diceRollerModal.show(rollParams.damageDie, rollParams.damageMod || 0, rollParams.damageLabel || move.name);
       }
+    });
+
+    // Card body click opens drawer
+    card.addEventListener("click", () => {
+      openMoveDrawer(move, char);
     });
   });
 }

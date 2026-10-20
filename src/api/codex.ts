@@ -9,7 +9,10 @@ import type {
   CodexSectionDetail,
   CodexSectionKey,
   DmCodexCharacter,
-  DmRevealLogEntry
+  DmRevealLogEntry,
+  CodexRootGroup,
+  CodexSubCategory,
+  CodexRootGroupId
 } from "../types";
 
 const LOCAL_CANON_REVEALS_KEY = "dnd_canon_session1_reveals_v2";
@@ -193,6 +196,197 @@ export const DEFAULT_CODEX_CATEGORIES: CodexCategory[] = [
   { id: "other", name: "Lainnya", description: "Karakter pendukung lainnya", sort_order: 13, show_totals: false, default_visibility_mode: "placeholder" }
 ];
 
+export const CODEX_HIERARCHY: CodexRootGroup[] = [
+  {
+    id: "housen",
+    name: "Housen Academy",
+    subtitle: "SMA Housen (鳳仙学園)",
+    description: "Akademi swasta prestisius di jantung kota Kredon, tempat berkumpulnya para siswi idola, dewan siswa, dan aliansi berandal pelindung sekolah.",
+    icon: "🌸",
+    accentBorder: "rgba(225, 29, 72, 0.4)",
+    subcategories: [
+      { id: "class_1_1", parentGroupId: "housen", name: "Kelas 10-1", shortLabel: "10-1", description: "Siswa-siswi tahun pertama kelas 10-1 (Grade 10)", icon: "🌸", sort_order: 1, folderCategory: "class" },
+      { id: "class_1_2", parentGroupId: "housen", name: "Kelas 10-2", shortLabel: "10-2", description: "Siswa-siswi tahun pertama kelas 10-2 (Grade 10)", icon: "🎒", sort_order: 2, folderCategory: "class" },
+      { id: "class_2_1", parentGroupId: "housen", name: "Kelas 11-1", shortLabel: "11-1", description: "Siswa-siswi tahun kedua kelas 11-1 (Grade 11)", icon: "⚔️", sort_order: 3, folderCategory: "class" },
+      { id: "class_2_2", parentGroupId: "housen", name: "Kelas 11-2", shortLabel: "11-2", description: "Siswa-siswi tahun kedua kelas 11-2 (Grade 11)", icon: "📚", sort_order: 4, folderCategory: "class" },
+      { id: "class_3_1", parentGroupId: "housen", name: "Kelas 12-1", shortLabel: "12-1", description: "Siswa-siswi tahun ketiga kelas 12-1 (Grade 12 / Senior)", icon: "🎓", sort_order: 5, folderCategory: "class" },
+      { id: "class_3_2", parentGroupId: "housen", name: "Kelas 12-2", shortLabel: "12-2", description: "Siswa-siswi tahun ketiga kelas 12-2 (Grade 12 / Senior)", icon: "👔", sort_order: 6, folderCategory: "class" },
+      { id: "osis", parentGroupId: "housen", name: "Presidium OSIS & Komite Disiplin", shortLabel: "OSIS", description: "Jajaran pimpinan dewan siswa dan komite ketertiban", icon: "👑", sort_order: 7, folderCategory: "club_org" },
+      { id: "kokuhou", parentGroupId: "housen", name: "Geng Berandal Kokuhou (黒鳳)", shortLabel: "Kokuhou", description: "Aliansi berandal pelindung belakang sekolah dan wilayah Housen", icon: "🦅", sort_order: 8, folderCategory: "club_org" },
+      { id: "clubs", parentGroupId: "housen", name: "Klub Ekstrakurikuler", shortLabel: "Ekskul", description: "Seluruh anggota dan ketua 16 klub ekskul Housen", icon: "🏆", sort_order: 9, folderCategory: "club_org" },
+      { id: "faculty", parentGroupId: "housen", name: "Dewan Guru & Staf", shortLabel: "Guru & Staf", description: "Pengajar, staf konseling, kepala sekolah, dan dokter UKS", icon: "🏛️", sort_order: 10, folderCategory: "faculty" },
+      { id: "housen_alumni", parentGroupId: "housen", name: "Alumni Housen", shortLabel: "Alumni Housen", description: "Tokoh lulusan legendaris dan mantan berandal Housen", icon: "📜", sort_order: 11, folderCategory: "alumni" }
+    ]
+  },
+  {
+    id: "touki",
+    name: "SMA Kejuruan Touki",
+    subtitle: "SMA Touki (東鬼高校)",
+    description: "Sekolah kejuruan teknik keras di kawasan pelabuhan dan dermaga industri Kredon, rival bebuyutan Housen.",
+    icon: "👹",
+    accentBorder: "rgba(139, 92, 246, 0.4)",
+    subcategories: [
+      { id: "touki_classes", parentGroupId: "touki", name: "Kelas Siswa Touki", shortLabel: "Kelas Touki", description: "Siswa-siswi kelas 10, 11, dan 12 SMA Touki", icon: "🔧", sort_order: 1, folderCategory: "class" },
+      { id: "touki_clubs_orgs", parentGroupId: "touki", name: "Geng & Aliansi Touki", shortLabel: "Geng Touki", description: "Geng berandal dermaga dan kelompok petarung bengis Touki", icon: "👹", sort_order: 2, folderCategory: "club_org" },
+      { id: "touki_alumni", parentGroupId: "touki", name: "Alumni Touki", shortLabel: "Alumni Touki", description: "Senior dan alumni SMA Kejuruan Touki", icon: "⚓", sort_order: 3, folderCategory: "alumni" }
+    ]
+  },
+  {
+    id: "outside_other",
+    name: "Luar Sekolah & Lainnya",
+    subtitle: "Kota Kredon & Karakter Pendukung",
+    description: "Warga sipil, bos tempat kerja paruh waktu (Baito), kepolisian, keluarga murid, dan tokoh masyarakat.",
+    icon: "🌆",
+    accentBorder: "rgba(245, 158, 11, 0.4)",
+    subcategories: [
+      { id: "outside_school", parentGroupId: "outside_other", name: "Masyarakat Luar Sekolah", shortLabel: "Luar Sekolah", description: "Warga kota Kredon, tempat kerja baito, kepolisian, dan alumni", icon: "🌆", sort_order: 1, folderCategory: "outside" },
+      { id: "other", parentGroupId: "outside_other", name: "Karakter Lainnya", shortLabel: "Lainnya", description: "Karakter pendukung dan tokoh tambahan", icon: "✨", sort_order: 2, folderCategory: "other" }
+    ]
+  }
+];
+
+export function getAllSubcategories(): CodexSubCategory[] {
+  const result: CodexSubCategory[] = [];
+  for (const group of CODEX_HIERARCHY) {
+    for (const sub of group.subcategories) {
+      result.push(sub);
+    }
+  }
+  return result;
+}
+
+export function resolveCharacterAffiliations(char: any): string[] {
+  if (!char) return [];
+  const tags = new Set<string>();
+
+  // 1. Explicit primary category
+  if (char.category_id) {
+    tags.add(char.category_id);
+  }
+  if (char.categoryId) {
+    tags.add(char.categoryId);
+  }
+
+  // 2. Explicit multi-categories array
+  if (Array.isArray(char.categories)) {
+    char.categories.forEach((c: string) => c && tags.add(c));
+  }
+  if (Array.isArray(char.affiliations)) {
+    char.affiliations.forEach((c: string) => c && tags.add(c));
+  }
+
+  // 3. Class Room mapping (Careful boundary check: avoid '11-1' accidentally matching '1-1')
+  const room = String(char.class_room || char.classRoom || "").toLowerCase().trim();
+  if (/(^|[^\d])(10[-_]1|1[-_]1)([^\d]|$)/.test(room)) {
+    tags.add("class_1_1");
+  } else if (/(^|[^\d])(10[-_]2|1[-_]2)([^\d]|$)/.test(room)) {
+    tags.add("class_1_2");
+  } else if (/(^|[^\d])(11[-_]1|2[-_]1)([^\d]|$)/.test(room)) {
+    tags.add("class_2_1");
+  } else if (/(^|[^\d])(11[-_]2|2[-_]2)([^\d]|$)/.test(room)) {
+    tags.add("class_2_2");
+  } else if (/(^|[^\d])(12[-_]1|3[-_]1)([^\d]|$)/.test(room)) {
+    tags.add("class_3_1");
+  } else if (/(^|[^\d])(12[-_]2|3[-_]2)([^\d]|$)/.test(room)) {
+    tags.add("class_3_2");
+  }
+
+  // 4. Club & Role mapping
+  const club = String(char.club || "").toLowerCase().trim();
+  const role = String(char.role || "").toLowerCase().trim();
+
+  // OSIS
+  if (club === "osis" || role.includes("osis") || role.includes("dewan siswa") || role.includes("presidium")) {
+    tags.add("osis");
+  }
+
+  // Kokuhou
+  if (club === "kokuhou" || role.includes("kokuhou") || role.includes("黒鳳") || role.includes("hitotsuboshi")) {
+    tags.add("kokuhou");
+  }
+
+  // Ekskul (General Clubs)
+  const isSpecialOrg = club === "osis" || club === "kokuhou" || club === "touki_gang";
+  if (club && club !== "none" && club !== "tidak ada" && club !== "outside" && !isSpecialOrg) {
+    tags.add("clubs");
+  }
+
+  // Faculty
+  if (
+    tags.has("faculty") ||
+    role.includes("guru") ||
+    role.includes("staf") ||
+    role.includes("wali kelas") ||
+    role.includes("dokter") ||
+    role.includes("konselor") ||
+    role.includes("kepala sekolah") ||
+    room.includes("uks")
+  ) {
+    tags.add("faculty");
+  }
+
+  // Touki Affiliation
+  const isTouki =
+    char.category_id === "touki" ||
+    char.categoryId === "touki" ||
+    role.includes("touki") ||
+    club.includes("touki") ||
+    room.includes("touki") ||
+    String(char.school || "").toLowerCase().includes("touki");
+
+  if (isTouki) {
+    tags.add("touki");
+    tags.add("touki_clubs_orgs");
+    if (room.includes("kelas") || room.includes("10") || room.includes("11") || room.includes("12") || role.includes("siswa")) {
+      tags.add("touki_classes");
+    }
+    if (role.includes("alumni") || role.includes("lulusan") || role.includes("senior")) {
+      tags.add("touki_alumni");
+    }
+  }
+
+  // Alumni Housen
+  if (!isTouki && (role.includes("alumni") || role.includes("lulusan"))) {
+    tags.add("housen_alumni");
+  }
+
+  // Outside school / other
+  if (char.category_id === "outside_school" || role.includes("luar sekolah") || role.includes("warga") || role.includes("polisi")) {
+    tags.add("outside_school");
+    tags.add("outside_other");
+  }
+
+  // Root Group Affiliation
+  if (isTouki) {
+    tags.add("touki");
+  } else if (tags.has("outside_school") || tags.has("other")) {
+    tags.add("outside_other");
+  } else {
+    // Default belongs to Housen
+    tags.add("housen");
+  }
+
+  return Array.from(tags);
+}
+
+export function isCharacterInSubcategory(char: any, subcategoryId: string): boolean {
+  if (!char) return false;
+  if (!subcategoryId || subcategoryId === "all") return true;
+
+  const affiliations = resolveCharacterAffiliations(char);
+  if (affiliations.includes(subcategoryId)) return true;
+
+  // Root group matching
+  if (subcategoryId === "housen" && affiliations.includes("housen")) return true;
+  if (subcategoryId === "touki" && affiliations.includes("touki")) return true;
+  if (subcategoryId === "outside_other" && affiliations.includes("outside_other")) return true;
+
+  // Fallback direct category_id check
+  if (char.category_id === subcategoryId || char.categoryId === subcategoryId) return true;
+
+  return false;
+}
+
 // ----------------------------------------------------------------------------
 // Player APIs (Read sanitized data)
 // ----------------------------------------------------------------------------
@@ -258,11 +452,6 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     }
   }
 
-  // Jika categoryId diminta, filter remoteList yang sudah diharmonisasikan
-  if (categoryId) {
-    remoteList = remoteList.filter((c) => c.category_id === categoryId);
-  }
-
   const existingSlugs = new Set(remoteList.map((c) => c.slug).filter(Boolean));
   const localRevealsMap = getLocalCanonRevealsMap();
 
@@ -270,8 +459,6 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     if (existingSlugs.has(npc.slug)) continue;
     const canon = getLoveInterestBySlug(npc.slug);
     const catId = canon?.category_id || npc.categoryId;
-    const matchesCategory = !categoryId || catId === categoryId;
-    if (!matchesCategory) continue;
 
     const revealed = localRevealsMap[npc.slug] ?? ["identity", "appearance"];
     const card = buildCanonCard(npc, revealed);
@@ -286,8 +473,6 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     if (existingSlugs.has(npc.slug)) continue;
     const canon = getLoveInterestBySlug(npc.slug);
     const catId = canon?.category_id || npc.categoryId;
-    const matchesCategory = !categoryId || catId === categoryId;
-    if (!matchesCategory) continue;
 
     // Default: Tier 1 (identity + appearance) langsung terbuka untuk semua player
     // Tier 2 (personality, background, relationships) dan Tier 3 (mind, secrets) dibuka DM
@@ -304,8 +489,6 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
   const allCompendium = getAllLoveInterests();
   for (const compChar of allCompendium) {
     if (existingSlugs.has(compChar.slug)) continue;
-    const matchesCategory = !categoryId || compChar.category_id === categoryId;
-    if (!matchesCategory) continue;
 
     const revealed = localRevealsMap[compChar.slug] ?? ["identity", "appearance"];
     const hasIdentity = revealed.includes("identity");
@@ -332,7 +515,7 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     existingSlugs.add(compChar.slug);
   }
 
-  // Harmonisasi card dengan definisi canon compendium resmi & pastikan T1 selalu terbuka untuk player
+  // Harmonisasi card dengan definisi canon compendium resmi & hitung afiliasi multi-kategori
   for (const card of remoteList) {
     if (card.slug) {
       card.locked = false;
@@ -351,6 +534,12 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
         card.revealed_sections = localRevealsMap[card.slug] ?? ["identity", "appearance"];
       }
     }
+    card.affiliations = resolveCharacterAffiliations(card);
+  }
+
+  // Jika categoryId diminta, filter menggunakan multi-category membership resolver
+  if (categoryId) {
+    remoteList = remoteList.filter((c) => isCharacterInSubcategory(c, categoryId));
   }
 
   return remoteList;

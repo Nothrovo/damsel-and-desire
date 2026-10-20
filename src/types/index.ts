@@ -316,6 +316,14 @@ export interface CombatActionDefinition {
   description: string;
   range?: string;
   trigger?: string;
+  moveKind?: "physical" | "social" | "defense" | "utility";
+  damageDie?: string;
+  statKey?: "physique" | "looks" | "mind" | "intelligent" | "talent" | "luck";
+  pros?: string;
+  cons?: string;
+  clearEffect?: string;
+  rollBonus?: number;
+  isHeal?: boolean;
 }
 
 export interface ArchetypeCompendium {
