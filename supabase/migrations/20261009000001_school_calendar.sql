@@ -43,3 +43,20 @@ CREATE POLICY "Public manage school_calendar_state"
   ON public.school_calendar_state FOR ALL USING (true) WITH CHECK (true);
 
 GRANT ALL ON TABLE public.school_calendar_state TO anon, authenticated;
+
+-- Set replica identity for Realtime publication diff payloads
+ALTER TABLE public.school_calendar_state REPLICA IDENTITY FULL;
+
+-- Enable Supabase Realtime broadcast for school_calendar_state
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.school_calendar_state;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN
+    NULL;
+END $$;
+
+-- Reload PostgREST schema cache
+NOTIFY pgrst, 'reload schema';

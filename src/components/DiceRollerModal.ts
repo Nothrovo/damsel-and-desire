@@ -1,5 +1,3 @@
-import { rollDiceRpc } from "../api/gameRpc";
-import { campaignStore } from "../store/campaignStore";
 import { characterStore } from "../store/characterStore";
 import { showToast } from "./Toast";
 
@@ -115,8 +113,6 @@ export class DiceRollerModal {
     const modifier = parseInt(modInput?.value || "0") || 0;
     const labelInput = document.getElementById("diceLabelInput") as HTMLInputElement;
     const label = labelInput?.value.trim() || "";
-    const activeCamp = campaignStore.activeCampaign;
-    const activeChar = characterStore.currentCharacter;
 
     const resultNumEl = document.getElementById("diceModalResultNum");
     const detailsEl = document.getElementById("diceModalDetails");
@@ -125,51 +121,26 @@ export class DiceRollerModal {
     boxEl?.classList.add("shake");
     setTimeout(() => boxEl?.classList.remove("shake"), 300);
 
-    if (activeCamp) {
-      try {
-        const res = await rollDiceRpc(
-          activeCamp.id,
-          activeChar?.id || null,
-          this.selectedDie,
-          this.selectedMode,
-          label,
-          modifier
-        );
+    const faces = parseInt(this.selectedDie.replace("d", "")) || 20;
+    const r1 = Math.floor(Math.random() * faces) + 1;
+    let res = r1;
+    let detail = `1${this.selectedDie} (${r1})`;
 
-        if (resultNumEl) resultNumEl.textContent = res.total.toString();
-        if (detailsEl) {
-          const modStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-          let modeDetail = "";
-          if (this.selectedMode === "advantage") modeDetail = ` [Advantage: (${res.modifiers.firstRoll}, ${res.modifiers.secondRoll})]`;
-          else if (this.selectedMode === "disadvantage") modeDetail = ` [Disadvantage: (${res.modifiers.firstRoll}, ${res.modifiers.secondRoll})]`;
-          detailsEl.textContent = `Dadu: ${res.result} (${this.selectedDie}) ${modStr} = Total ${res.total}${modeDetail}${label ? ' • ' + label : ''}`;
-        }
-        showToast(`Lemparan dadu tercatat di roll log campaign: ${res.total}`, "success");
-      } catch (err: any) {
-        showToast(`Gagal melempar dadu di server: ${err.message}`, "error");
-      }
-    } else {
-      // Local client roll fallback
-      const faces = parseInt(this.selectedDie.replace("d", "")) || 20;
-      const r1 = Math.floor(Math.random() * faces) + 1;
-      let res = r1;
-      let detail = `1${this.selectedDie} (${r1})`;
-
-      if (this.selectedMode === "advantage") {
-        const r2 = Math.floor(Math.random() * faces) + 1;
-        res = Math.max(r1, r2);
-        detail = `Advantage: (${r1}, ${r2}) -> Ambil ${res}`;
-      } else if (this.selectedMode === "disadvantage") {
-        const r2 = Math.floor(Math.random() * faces) + 1;
-        res = Math.min(r1, r2);
-        detail = `Disadvantage: (${r1}, ${r2}) -> Ambil ${res}`;
-      }
-
-      const total = res + modifier;
-      const modStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-      if (resultNumEl) resultNumEl.textContent = total.toString();
-      if (detailsEl) detailsEl.textContent = `${detail} ${modStr} = Total ${total}${label ? ' • ' + label : ''}`;
+    if (this.selectedMode === "advantage") {
+      const r2 = Math.floor(Math.random() * faces) + 1;
+      res = Math.max(r1, r2);
+      detail = `Advantage: (${r1}, ${r2}) -> Ambil ${res}`;
+    } else if (this.selectedMode === "disadvantage") {
+      const r2 = Math.floor(Math.random() * faces) + 1;
+      res = Math.min(r1, r2);
+      detail = `Disadvantage: (${r1}, ${r2}) -> Ambil ${res}`;
     }
+
+    const total = res + modifier;
+    const modStr = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+    if (resultNumEl) resultNumEl.textContent = total.toString();
+    if (detailsEl) detailsEl.textContent = `${detail} ${modStr} = Total ${total}${label ? ' • ' + label : ''}`;
+    showToast(`Lemparan dadu: ${total} (${detail} ${modStr})`, "info");
   }
 }
 

@@ -1337,11 +1337,13 @@ BEGIN
     'restDiceSpent', 0
   );
 
-  -- Auto Financial Deposit
+  -- Auto Financial Deposit with Living Cost (300 Yen) deduction
   v_daily_amt := COALESCE((v_char.finances->>'dailyMoneyAmount')::int, 0);
   v_wage_amt := COALESCE((v_char.finances->>'jobWageAmount')::int, 0);
   v_cur_savings := COALESCE((v_char.finances->>'savingsAmount')::int, 0);
-  v_new_savings := v_cur_savings + v_daily_amt + v_wage_amt;
+  
+  v_net_change := v_daily_amt + v_wage_amt - 300;
+  v_new_savings := GREATEST(0, v_cur_savings + v_net_change);
 
   v_new_finances := v_char.finances || jsonb_build_object(
     'savingsAmount', v_new_savings
@@ -1360,18 +1362,24 @@ BEGIN
     'finances', v_new_finances,
     'depositDaily', v_daily_amt,
     'depositWage', v_wage_amt,
-    'totalAdded', v_daily_amt + v_wage_amt,
+    'livingCost', 300,
+    'netFinancialChange', v_net_change,
+    'totalAdded', v_net_change,
     'newVersion', v_char.version + 1
   );
 END;
 $$;
 
--- 4. Adjust Savings RPC (¥1 = Rp100 Server-Calculated)
+-- 4. Adjust Savings RPC (supports direct Yen or Rupiah, returns full finances payload)
+DROP FUNCTION IF EXISTS public.adjust_savings(UUID, NUMERIC, INT, TEXT);
+DROP FUNCTION IF EXISTS public.adjust_savings(UUID, NUMERIC, INT, TEXT, INT);
+
 CREATE OR REPLACE FUNCTION public.adjust_savings(
   p_character_id UUID,
-  p_delta_rupiah NUMERIC,
-  p_client_version INT,
-  p_note TEXT DEFAULT ''
+  p_delta_rupiah NUMERIC DEFAULT NULL,
+  p_client_version INT DEFAULT 1,
+  p_note TEXT DEFAULT '',
+  p_delta_yen INT DEFAULT NULL
 )
 RETURNS JSONB
 LANGUAGE plpgsql
@@ -1392,13 +1400,18 @@ BEGIN
     RAISE EXCEPTION 'ERR_CONCURRENCY_CONFLICT: Versi data karakter telah diperbarui oleh perangkat lain.';
   END IF;
 
-  -- Server computes Yen: ¥1 = Rp100
-  v_delta_yen := floor(p_delta_rupiah / 100.0)::int;
+  -- Determine delta Yen: prioritize direct Yen if provided, otherwise compute from Rupiah (¥1 = Rp100)
+  IF p_delta_yen IS NOT NULL THEN
+    v_delta_yen := p_delta_yen;
+  ELSE
+    v_delta_yen := trunc(COALESCE(p_delta_rupiah, 0) / 100.0)::int;
+  END IF;
+
   v_cur_savings := COALESCE((v_char.finances->>'savingsAmount')::int, 0);
   v_new_savings := v_cur_savings + v_delta_yen;
 
   IF v_new_savings < 0 THEN
-    RAISE EXCEPTION 'ERR_INSUFFICIENT_FUNDS: Saldo tabungan tidak mencukupi untuk transaksi ini.';
+    RAISE EXCEPTION 'ERR_INSUFFICIENT_FUNDS: Saldo tabungan tidak mencukupi untuk transaksi ini (Saldo: ¥%, Transaksi: ¥%).', v_cur_savings, v_delta_yen;
   END IF;
 
   v_new_finances := v_char.finances || jsonb_build_object(
@@ -1414,8 +1427,9 @@ BEGIN
   RETURN jsonb_build_object(
     'characterId', p_character_id,
     'deltaYen', v_delta_yen,
-    'deltaRupiah', p_delta_rupiah,
+    'deltaRupiah', COALESCE(p_delta_rupiah, v_delta_yen * 100),
     'newSavingsAmount', v_new_savings,
+    'finances', v_new_finances,
     'note', p_note,
     'newVersion', v_char.version + 1
   );
@@ -1980,7 +1994,7 @@ GRANT EXECUTE ON FUNCTION public.create_character(JSONB) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.import_legacy_character(JSONB, UUID) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.short_rest(UUID, INT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.long_rest(UUID, INT) TO anon, authenticated;
-GRANT EXECUTE ON FUNCTION public.adjust_savings(UUID, NUMERIC, INT, TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.adjust_savings(UUID, NUMERIC, INT, TEXT, INT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.apply_vital_change(UUID, TEXT, INT, INT) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.roll_dice(UUID, UUID, TEXT, TEXT, TEXT, INT) TO anon, authenticated;
 
@@ -2519,3 +2533,67 @@ $$;
 -- 3. Izin Eksekusi Fungsi RPC untuk anon dan authenticated
 GRANT EXECUTE ON FUNCTION public.list_love_interests() TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_love_interest_detail(TEXT) TO anon, authenticated;
+
+
+-- ============================================================================
+-- Migration: 20261009000001_school_calendar.sql
+-- Description: Progressive School Calendar Global State (April-March Timeline)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.school_calendar_state (
+  id TEXT PRIMARY KEY DEFAULT 'housen_default',
+  current_month_id TEXT NOT NULL DEFAULT 'april',
+  completed_event_ids JSONB NOT NULL DEFAULT '[]'::jsonb,
+  custom_events JSONB NOT NULL DEFAULT '[]'::jsonb,
+  month_notes JSONB NOT NULL DEFAULT '{}'::jsonb,
+  academic_year INT NOT NULL DEFAULT 1,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Seed default state row
+INSERT INTO public.school_calendar_state (
+  id,
+  current_month_id,
+  completed_event_ids,
+  custom_events,
+  month_notes,
+  academic_year
+) VALUES (
+  'housen_default',
+  'april',
+  '[]'::jsonb,
+  '[]'::jsonb,
+  '{}'::jsonb,
+  1
+) ON CONFLICT (id) DO NOTHING;
+
+-- Enable Row Level Security (Communal Open Access)
+ALTER TABLE public.school_calendar_state ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read school_calendar_state" ON public.school_calendar_state;
+DROP POLICY IF EXISTS "Public manage school_calendar_state" ON public.school_calendar_state;
+
+CREATE POLICY "Public read school_calendar_state"
+  ON public.school_calendar_state FOR SELECT USING (true);
+
+CREATE POLICY "Public manage school_calendar_state"
+  ON public.school_calendar_state FOR ALL USING (true) WITH CHECK (true);
+
+GRANT ALL ON TABLE public.school_calendar_state TO anon, authenticated;
+
+-- Set replica identity for Realtime publication diff payloads
+ALTER TABLE public.school_calendar_state REPLICA IDENTITY FULL;
+
+-- Enable Supabase Realtime broadcast for school_calendar_state
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.school_calendar_state;
+  END IF;
+EXCEPTION
+  WHEN duplicate_object THEN
+    NULL;
+END $$;
+
+-- Reload PostgREST schema cache
+NOTIFY pgrst, 'reload schema';

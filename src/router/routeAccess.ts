@@ -1,4 +1,4 @@
-const PROTECTED_ROUTE_PATTERNS = [/^\/campaigns(?:\/|$)/, /^\/settings(?:\/|$)/];
+const PROTECTED_ROUTE_PATTERNS = [/^\/settings(?:\/|$)/];
 
 function normalizeBasePath(basePath: string): string {
   if (!basePath || basePath === "/") return "";

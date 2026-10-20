@@ -11,9 +11,6 @@ import { quickVitalsPopover } from "./components/QuickVitalsPopover";
 
 // Views
 import { renderLandingView } from "./views/LandingView";
-import { renderCampaignsView } from "./views/CampaignsView";
-import { renderCampaignDetailView } from "./views/CampaignDetailView";
-import { renderDmDashboardView } from "./views/DmDashboardView";
 import { renderBuilderWizardView } from "./views/BuilderWizardView";
 import { renderCharacterSheetView } from "./views/CharacterSheetView";
 import { renderCompendiumView } from "./views/CompendiumView";
@@ -96,9 +93,6 @@ function initApp() {
     .register("/handbook", renderHandbookView)
     .register("/map", renderMapView)
     .register("/calendar", renderCalendarView)
-    .register("/campaigns", renderCampaignsView)
-    .register("/campaigns/:id", renderCampaignDetailView)
-    .register("/dm/:campaignId", renderDmDashboardView, { requiresDm: true })
     .register("/settings", renderSettingsView)
     .setNotFound(renderNotFoundView);
 

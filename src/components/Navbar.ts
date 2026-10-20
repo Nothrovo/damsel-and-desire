@@ -4,7 +4,6 @@ import { setMobileNavigationOpen } from "./mobileNavigation";
 
 function getActivePath(): string {
   const path = window.location.pathname;
-  if (path.includes("/campaigns")) return "/campaigns";
   if (path.includes("/codex")) return "/codex";
   if (path.includes("/compendium")) return "/compendium";
   if (path.includes("/handbook")) return "/handbook";
@@ -38,10 +37,6 @@ export function renderNavbar(): string {
           <span></span><span></span><span></span>
         </button>
         <nav class="nav-links" id="mainNavLinks">
-          <a href="/campaigns" class="nav-link ${activePath === '/campaigns' ? 'active' : ''}" data-nav-path="/campaigns">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" class="nav-icon" aria-hidden="true"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5z"/><path d="M8 4v13m8-10v13"/></svg>
-            <span>Campaign</span>
-          </a>
           <a href="/" class="nav-link ${activePath === '/' ? 'active' : ''}" data-nav-path="/">
             <svg viewBox="0 0 20 20" fill="currentColor" class="nav-icon"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
             <span>Roster</span>
@@ -75,7 +70,7 @@ export function renderNavbar(): string {
           </button>
           <a href="/characters/new" class="nav-action-btn nav-btn-create" id="navCreateCharBtn">
             <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
-            <span>+ Buat Karakter</span>
+            <span>Buat Karakter</span>
           </a>
 
           ${isDmActive ? `
@@ -107,7 +102,6 @@ export function updateNavbarActive(currentPath: string) {
   else if (currentPath.includes("/handbook")) target = "/handbook";
   else if (currentPath.includes("/map")) target = "/map";
   else if (currentPath.includes("/calendar")) target = "/calendar";
-  else if (currentPath.includes("/campaigns")) target = "/campaigns";
   else if (currentPath === "/" || currentPath.startsWith("/characters/")) target = "/";
 
   const links = document.querySelectorAll("#mainNavLinks .nav-link");

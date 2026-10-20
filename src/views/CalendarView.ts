@@ -20,6 +20,7 @@ import {
   getDefaultCalendarState,
   loadLocalCalendarState,
   normalizeCalendarState,
+  onCalendarSyncStatusChange,
   saveSchoolCalendarState
 } from "../api/calendar";
 import { supabase } from "../api/supabase";
@@ -35,13 +36,20 @@ import type {
   SchoolEventCategoryTag
 } from "../types";
 import type { RealtimeChannel } from "@supabase/supabase-js";
-import { setCalendarSyncState } from "./calendarSyncState";
+import { setCalendarSyncState, type CalendarSyncState } from "./calendarSyncState";
 
 type CalendarTabMode = "monthly" | "overview" | "worldbuilding";
 
 let calendarState: SchoolCalendarState = getDefaultCalendarState();
 let selectedMonthId: SchoolCalendarMonthId = "april";
 let activeTab: CalendarTabMode = "monthly";
+let currentSyncState: CalendarSyncState = "local";
+
+// Update sync indicator when calendar save events complete
+onCalendarSyncStatusChange((saveResult) => {
+  currentSyncState = saveResult.synced ? "synced" : "offline";
+  setCalendarSyncState(document.querySelector(".calendar-sync-status"), currentSyncState);
+});
 let showStoryGuides: boolean = true;
 let calendarChannel: RealtimeChannel | null = null;
 let hasInitializedSelection: boolean = false;
@@ -365,6 +373,7 @@ function renderCalendarDOM() {
   `;
 
   attachCalendarEvents(selectedMonth);
+  setCalendarSyncState(document.querySelector(".calendar-sync-status"), currentSyncState);
 }
 
 function renderMonthlyDetailTab(month: SchoolCalendarMonth): string {

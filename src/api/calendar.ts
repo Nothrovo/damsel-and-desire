@@ -137,7 +137,36 @@ export async function fetchSchoolCalendarState(): Promise<SchoolCalendarState> {
   return result.state;
 }
 
-export async function saveSchoolCalendarState(state: SchoolCalendarState): Promise<SchoolCalendarState> {
+export interface CalendarStateSaveResult {
+  state: SchoolCalendarState;
+  synced: boolean;
+  error?: string | null;
+}
+
+type CalendarSyncListener = (result: CalendarStateSaveResult) => void;
+const calendarSyncListeners: CalendarSyncListener[] = [];
+
+export function onCalendarSyncStatusChange(listener: CalendarSyncListener): () => void {
+  calendarSyncListeners.push(listener);
+  return () => {
+    const idx = calendarSyncListeners.indexOf(listener);
+    if (idx !== -1) calendarSyncListeners.splice(idx, 1);
+  };
+}
+
+function notifyCalendarSyncListeners(result: CalendarStateSaveResult): void {
+  calendarSyncListeners.forEach((fn) => {
+    try {
+      fn(result);
+    } catch (e) {
+      console.warn("Calendar sync listener error:", e);
+    }
+  });
+}
+
+export async function saveSchoolCalendarStateResult(
+  state: SchoolCalendarState
+): Promise<CalendarStateSaveResult> {
   const updated: SchoolCalendarState = {
     ...state,
     updatedAt: new Date().toISOString()
@@ -146,7 +175,7 @@ export async function saveSchoolCalendarState(state: SchoolCalendarState): Promi
   saveLocalCalendarState(updated);
 
   try {
-    await supabase.from("school_calendar_state").upsert({
+    const { error } = await supabase.from("school_calendar_state").upsert({
       id: DEFAULT_ROW_ID,
       current_month_id: updated.currentMonthId,
       completed_event_ids: updated.completedEventIds,
@@ -155,11 +184,29 @@ export async function saveSchoolCalendarState(state: SchoolCalendarState): Promi
       academic_year: updated.academicYear,
       updated_at: updated.updatedAt
     });
-  } catch {
-    // Tetap aman di localStorage
-  }
 
-  return updated;
+    if (error) {
+      console.warn("Gagal sinkronisasi school_calendar_state ke cloud:", error.message);
+      const res: CalendarStateSaveResult = { state: updated, synced: false, error: error.message };
+      notifyCalendarSyncListeners(res);
+      return res;
+    }
+
+    const res: CalendarStateSaveResult = { state: updated, synced: true };
+    notifyCalendarSyncListeners(res);
+    return res;
+  } catch (err: any) {
+    const msg = err?.message || String(err);
+    console.warn("Pengecualian sinkronisasi school_calendar_state:", msg);
+    const res: CalendarStateSaveResult = { state: updated, synced: false, error: msg };
+    notifyCalendarSyncListeners(res);
+    return res;
+  }
+}
+
+export async function saveSchoolCalendarState(state: SchoolCalendarState): Promise<SchoolCalendarState> {
+  const result = await saveSchoolCalendarStateResult(state);
+  return result.state;
 }
 
 // ============================================================================

@@ -72,6 +72,9 @@ END;
 $$;
 
 -- 2. Adjust Savings RPC (supports direct Yen or Rupiah, returns full finances payload)
+DROP FUNCTION IF EXISTS public.adjust_savings(UUID, NUMERIC, INT, TEXT);
+DROP FUNCTION IF EXISTS public.adjust_savings(UUID, NUMERIC, INT, TEXT, INT);
+
 CREATE OR REPLACE FUNCTION public.adjust_savings(
   p_character_id UUID,
   p_delta_rupiah NUMERIC DEFAULT NULL,
@@ -133,5 +136,12 @@ BEGIN
   );
 END;
 $$;
+
+-- Grant EXECUTE permissions for anon & authenticated roles so PostgREST exposes RPC in schema cache
+GRANT EXECUTE ON FUNCTION public.long_rest(UUID, INT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.adjust_savings(UUID, NUMERIC, INT, TEXT, INT) TO anon, authenticated;
+
+-- Reload PostgREST schema cache
+NOTIFY pgrst, 'reload schema';
 
 COMMIT;

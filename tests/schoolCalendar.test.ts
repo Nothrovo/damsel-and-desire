@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { supabase } from "../src/api/supabase";
 import {
   SCHOOL_CALENDAR_MONTHS,
   SCHOOL_DAILY_ROUTINES,
@@ -17,7 +18,9 @@ import {
   applySetCurrentMonth,
   applyToggleEventDone,
   getDefaultCalendarState,
-  normalizeCalendarState
+  normalizeCalendarState,
+  saveSchoolCalendarStateResult,
+  onCalendarSyncStatusChange
 } from "../src/api/calendar";
 
 describe("School Calendar Data & Worldbuilding (Calender Sekolah.txt)", () => {
@@ -165,5 +168,52 @@ describe("Progressive Calendar Tracking & State Transitions", () => {
     // Verify normalizeCalendarState preserves everything
     const normalized = normalizeCalendarState(state);
     expect(normalized.monthNotes.november).toBe("Kelompok Kyoto tersesat di dekat Fushimi Inari.");
+  });
+});
+
+describe("Calendar Persistence & Sync Reporting", () => {
+  it("reports sync failure cleanly without throwing and preserves local state", async () => {
+    const initialState = getDefaultCalendarState();
+    let notifiedState: any = null;
+
+    const fromSpy = vi.spyOn(supabase, "from").mockReturnValue({
+      upsert: () => Promise.resolve({ data: null, error: { message: "Cloud table unavailable" } })
+    } as any);
+
+    const unsubscribe = onCalendarSyncStatusChange((result) => {
+      notifiedState = result;
+    });
+
+    const result = await saveSchoolCalendarStateResult(initialState);
+    expect(result.state).toBeDefined();
+    expect(result.state.currentMonthId).toBe("april");
+    expect(result.synced).toBe(false);
+    expect(result.error).toContain("Cloud table unavailable");
+    expect(notifiedState).not.toBeNull();
+    expect(notifiedState.synced).toBe(false);
+
+    unsubscribe();
+    fromSpy.mockRestore();
+  });
+
+  it("reports sync success and notifies subscribers when cloud upsert resolves", async () => {
+    const initialState = getDefaultCalendarState();
+    let notifiedState: any = null;
+
+    const fromSpy = vi.spyOn(supabase, "from").mockReturnValue({
+      upsert: () => Promise.resolve({ data: { id: "housen_default" }, error: null })
+    } as any);
+
+    const unsubscribe = onCalendarSyncStatusChange((result) => {
+      notifiedState = result;
+    });
+
+    const result = await saveSchoolCalendarStateResult(initialState);
+    expect(result.synced).toBe(true);
+    expect(result.error).toBeUndefined();
+    expect(notifiedState.synced).toBe(true);
+
+    unsubscribe();
+    fromSpy.mockRestore();
   });
 });

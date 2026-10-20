@@ -24,22 +24,21 @@ describe("Calendar sync status", () => {
 
 
 describe("Protected route and auth return paths", () => {
-  it("sends anonymous campaign and profile routes to login with their return path", () => {
-    expect(getProtectedRouteRedirect("/campaigns", false)).toBe("/login?redirect=%2Fcampaigns");
-    expect(getProtectedRouteRedirect("/campaigns/session-7", false)).toBe(
-      "/login?redirect=%2Fcampaigns%2Fsession-7"
-    );
+  it("sends anonymous settings and profile routes to login with their return path", () => {
     expect(getProtectedRouteRedirect("/settings", false)).toBe("/login?redirect=%2Fsettings");
+    expect(getProtectedRouteRedirect("/settings/profile", false)).toBe(
+      "/login?redirect=%2Fsettings%2Fprofile"
+    );
   });
 
   it("leaves public routes alone and does not redirect authenticated users", () => {
     expect(getProtectedRouteRedirect("/codex", false)).toBeNull();
-    expect(getProtectedRouteRedirect("/campaigns", true)).toBeNull();
+    expect(getProtectedRouteRedirect("/settings", true)).toBeNull();
   });
 
   it("keeps auth redirects on this app and includes the GitHub Pages base path", () => {
-    expect(buildAuthCallbackUrl("/campaigns?tab=members", "https://dnd.example", "/damsel-and-desire")).toBe(
-      "https://dnd.example/damsel-and-desire/campaigns?tab=members"
+    expect(buildAuthCallbackUrl("/settings?tab=profile", "https://dnd.example", "/damsel-and-desire")).toBe(
+      "https://dnd.example/damsel-and-desire/settings?tab=profile"
     );
     expect(resolveInternalRedirect("https://phishing.example/", "/damsel-and-desire")).toBe("/");
     expect(resolveInternalRedirect("//phishing.example/", "/damsel-and-desire")).toBe("/");

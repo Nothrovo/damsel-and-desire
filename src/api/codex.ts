@@ -332,18 +332,23 @@ export async function fetchCodexList(categoryId?: string): Promise<CodexCharacte
     existingSlugs.add(compChar.slug);
   }
 
-  // Harmonisasi card dengan definisi canon compendium resmi
+  // Harmonisasi card dengan definisi canon compendium resmi & pastikan T1 selalu terbuka untuk player
   for (const card of remoteList) {
-    if (card.slug && !card.locked) {
+    if (card.slug) {
+      card.locked = false;
       card.avatar_url = resolvePortraitUrl(card.avatar_url, card.slug);
       const canon = getLoveInterestBySlug(card.slug);
       if (canon) {
+        if (!card.name || card.name === "???") card.name = canon.name;
         card.role = canon.role;
         card.club = canon.club;
         card.class_room = canon.class_room;
         if (canon.tagline && (!card.tagline || card.tagline === "???")) card.tagline = canon.tagline;
         if (canon.furigana && !card.furigana) card.furigana = canon.furigana;
         if (canon.gender) card.gender = canon.gender;
+      }
+      if (!card.revealed_sections || card.revealed_sections.length === 0) {
+        card.revealed_sections = localRevealsMap[card.slug] ?? ["identity", "appearance"];
       }
     }
   }
@@ -359,24 +364,26 @@ export async function fetchCodexCharacter(idOrSlug: string): Promise<CodexCharac
 
     if (!error && data) {
       const detail = data as CodexCharacterDetail;
-      if (detail.slug) {
-        detail.avatar_url = resolvePortraitUrl(detail.avatar_url, detail.slug);
-        const appSec = detail.sections?.find((s) => s.section_key === "appearance");
-        if (appSec && appSec.content) {
-          appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, detail.slug);
-        }
-        const canon = getLoveInterestBySlug(detail.slug);
-        if (canon) {
-          const idSec = detail.sections?.find((s) => s.section_key === "identity");
-          if (idSec && idSec.content) {
-            idSec.content.role = canon.role;
-            idSec.content.club = canon.club;
-            idSec.content.club_role = canon.club_role;
-            idSec.content.class_room = canon.class_room;
+      if (detail && !detail.locked && detail.sections && detail.sections.length > 0) {
+        if (detail.slug) {
+          detail.avatar_url = resolvePortraitUrl(detail.avatar_url, detail.slug);
+          const appSec = detail.sections?.find((s) => s.section_key === "appearance");
+          if (appSec && appSec.content) {
+            appSec.content.avatar_url = resolvePortraitUrl(appSec.content.avatar_url, detail.slug);
+          }
+          const canon = getLoveInterestBySlug(detail.slug);
+          if (canon) {
+            const idSec = detail.sections?.find((s) => s.section_key === "identity");
+            if (idSec && idSec.content) {
+              idSec.content.role = canon.role;
+              idSec.content.club = canon.club;
+              idSec.content.club_role = canon.club_role;
+              idSec.content.class_room = canon.class_room;
+            }
           }
         }
+        return detail;
       }
-      return detail;
     }
   } catch (e: any) {
     console.error("Gagal memanggil get_codex_character:", e);

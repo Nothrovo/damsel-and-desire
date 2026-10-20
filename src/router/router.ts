@@ -1,4 +1,3 @@
-import { getUserRoleInCampaign } from "../api/campaigns";
 import { showToast } from "../components/Toast";
 import { dmAuthStore } from "../store/dmAuthStore";
 
@@ -135,20 +134,11 @@ class Router {
       }
 
       if (match) {
-        // DM Dashboard: hanya bisa diakses kalau dmAuthStore aktif
+        // Halaman DM: hanya bisa diakses kalau dmAuthStore aktif
         if (route.requiresDm) {
           if (!dmAuthStore.isDmActive()) {
             showToast("Halaman ini hanya tersedia untuk Game Master aktif.", "warning");
-            const campaignId = params.campaignId || params.id;
-            this.navigate(campaignId ? `/campaigns/${campaignId}` : "/campaigns", true);
-            return;
-          }
-          // Verifikasi role DM di campaign
-          const campaignId = params.campaignId || params.id;
-          const role = campaignId ? await getUserRoleInCampaign(campaignId) : null;
-          if (role !== "dm") {
-            showToast("Halaman ini hanya tersedia untuk Game Master campaign.", "warning");
-            this.navigate(campaignId ? `/campaigns/${campaignId}` : "/campaigns", true);
+            this.navigate("/codex", true);
             return;
           }
         }

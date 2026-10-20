@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { characterStore } from "../src/store/characterStore";
-import { longRestRpc, adjustSavingsRpc } from "../src/api/gameRpc";
+import { longRestRpc, adjustSavingsRpc, isValidUuid } from "../src/api/gameRpc";
+import { supabase } from "../src/api/supabase";
 import type { Character } from "../src/types";
 
 function createMockCharacter(overrides: Partial<Character> = {}): Character {
@@ -233,6 +234,79 @@ describe("Game RPC Logic & Financial Integration", () => {
 
       // Balance remains untouched
       expect(char.finances.savingsAmount).toBe(500);
+    });
+  });
+
+  describe("UUID Validation & Fixture Safety Guard", () => {
+    it("differentiates valid UUIDs from mock fixture strings", () => {
+      expect(isValidUuid("test-char-123")).toBe(false);
+      expect(isValidUuid("user-123")).toBe(false);
+      expect(isValidUuid("")).toBe(false);
+      expect(isValidUuid("invalid-uuid-format")).toBe(false);
+
+      expect(isValidUuid("00000000-0000-0000-0000-000000000000")).toBe(true);
+      expect(isValidUuid("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11")).toBe(true);
+      expect(isValidUuid("12345678-1234-1234-1234-1234567890ab")).toBe(true);
+    });
+
+    it("does not call supabase.rpc when character ID is a non-UUID fixture string", async () => {
+      const rpcSpy = vi.spyOn(supabase, "rpc");
+      const char = createMockCharacter({ id: "test-char-123" });
+      characterStore.setCurrentCharacter(char);
+
+      await longRestRpc(char.id, 1);
+      await adjustSavingsRpc(char.id, 10000, 1, "Tabungan");
+
+      expect(rpcSpy).not.toHaveBeenCalled();
+      rpcSpy.mockRestore();
+    });
+
+    it("correctly reconciles full finances and vitals when cloud RPC responds successfully for valid UUID", async () => {
+      const validUuid = "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11";
+      const char = createMockCharacter({
+        id: validUuid,
+        version: 1,
+        finances: {
+          dailyMoneyAmount: 1000,
+          savingsAmount: 10000,
+          job: "-",
+          jobWageAmount: 0
+        }
+      });
+      characterStore.setCurrentCharacter(char);
+
+      const rpcSpy = vi.spyOn(supabase, "rpc").mockResolvedValueOnce({
+        data: {
+          characterId: validUuid,
+          deltaYen: 500,
+          deltaRupiah: 50000,
+          newSavingsAmount: 10500,
+          finances: {
+            dailyMoneyAmount: 1000,
+            savingsAmount: 10500,
+            job: "-",
+            jobWageAmount: 0
+          },
+          note: "Deposit ortu",
+          newVersion: 2
+        },
+        error: null
+      } as any);
+
+      const res = await adjustSavingsRpc(validUuid, 50000, 1, "Deposit ortu");
+
+      expect(rpcSpy).toHaveBeenCalledWith("adjust_savings", expect.objectContaining({
+        p_character_id: validUuid,
+        p_delta_rupiah: 50000,
+        p_client_version: 1,
+        p_note: "Deposit ortu"
+      }));
+
+      expect(res.newSavingsAmount).toBe(10500);
+      expect(characterStore.currentCharacter?.finances.savingsAmount).toBe(10500);
+      expect(characterStore.currentCharacter?.version).toBe(2);
+
+      rpcSpy.mockRestore();
     });
   });
 });
